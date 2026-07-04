@@ -1,0 +1,85 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(/.claude/skills/sofi-reflect/**)",
+      "Edit(/.claude/skills/sofi-secure/**)"
+    ]
+  },
+  "skillOverrides": {
+    "seo": "off",
+    "seo-ahrefs": "off",
+    "seo-audit": "off",
+    "seo-backlinks": "off",
+    "seo-bing": "off",
+    "seo-cluster": "off",
+    "seo-competitor-pages": "off",
+    "seo-content": "off",
+    "seo-content-brief": "off",
+    "seo-dataforseo": "off",
+    "seo-drift": "off",
+    "seo-ecommerce": "off",
+    "seo-firecrawl": "off",
+    "seo-flow": "off",
+    "seo-geo": "off",
+    "seo-google": "off",
+    "seo-hreflang": "off",
+    "seo-image-gen": "off",
+    "seo-images": "off",
+    "seo-local": "off",
+    "seo-maps": "off",
+    "seo-page": "off",
+    "seo-plan": "off",
+    "seo-profound": "off",
+    "seo-programmatic": "off",
+    "seo-schema": "off",
+    "seo-seranking": "off",
+    "seo-sitemap": "off",
+    "seo-sxo": "off",
+    "seo-technical": "off",
+    "seo-unlighthouse": "off"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre_tool_use.py\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_start.py\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/post_tool_use.py\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

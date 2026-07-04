@@ -1,0 +1,29 @@
+{
+  "$schema": "sofi-schema.json",
+  "version": "1.0",
+  "name": "Lorka Monorepo",
+  "description": "SOFI multi-project enterprise workspace",
+  "agents": {
+    "path": ".claude/agents"
+  },
+  "projects": {},
+  "workspace": {
+    "root": ".",
+    "gitRoot": ".git",
+    "ignore": [
+      "node_modules",
+      "vendor",
+      "dist",
+      ".env*",
+      ".sofi-run",
+      "worktrees"
+    ]
+  },
+  "integrations": {
+    "sofi": {
+      "enabled": true,
+      "rostersPath": "engine/ROSTER.md",
+      "protocolsPath": "engine/protocols"
+    }
+  }
+}
