@@ -1,0 +1,9 @@
+Plan steps. Max 5. Use available tools:
+- search_code: search codebase
+- run_tests: run tests
+- create_pr: create pull request
+- send_update: notify user
+
+Output JSON only:
+{"goal":"...","steps":[{"step":1,"action":"...","tool":"...","params":{}}],
+"needs_approval":bool,"estimated_tokens":int}

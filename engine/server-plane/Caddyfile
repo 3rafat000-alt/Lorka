@@ -1,0 +1,24 @@
+# SOFI server-plane front door — installed to /etc/caddy/Caddyfile by bootstrap-server.sh
+# {{NB_HOST}} is substituted with your real NetBird host (e.g. netbird.zanjour.com).
+#
+# Cloudflare is DNS-only (grey cloud): Caddy fetches Let's Encrypt certs itself.
+# One Caddy fronts everything. Project vhosts live in projects.d/ (publish-project.sh).
+
+# --- NetBird control plane (combined container, v0.65+) ----------------------
+# gRPC + dashboard + signal + relay-ws are all multiplexed on this one host.
+{{NB_HOST}} {
+	# control channel is gRPC → plaintext HTTP/2 to the server container
+	@grpc header Content-Type application/grpc*
+	reverse_proxy @grpc h2c://127.0.0.1:8081
+
+	# REST API, oauth/dex, relay, ws-proxy → server container
+	@backend path /api/* /oauth2/* /relay* /ws-proxy/*
+	reverse_proxy @backend 127.0.0.1:8081
+
+	# everything else → static dashboard
+	reverse_proxy 127.0.0.1:8080
+}
+
+# --- per-project public vhosts ----------------------------------------------
+# Each <slug>.<domain> → 127.0.0.1:<port> file is dropped here by publish-project.sh.
+import projects.d/*.caddy

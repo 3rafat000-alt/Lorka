@@ -1,0 +1,45 @@
+# Pure-local NetBird (combined server + dashboard) — internal mesh only, NO Cloudflare.
+# Fronted by the local Caddy on :8443 (Caddyfile.local). Generated config files
+# (config.yaml, dashboard.env) come from bootstrap-local.sh.
+#
+# WHY network_mode: host on the server:
+#   NetBird's combined server does a MANDATORY internet call at boot to resolve the
+#   GeoLite2 geo-DB filename and FATAL-exits if it fails (no full-disable flag).
+#   On hosts where the docker bridge has no outbound internet (restricted iptables
+#   FORWARD / firewall), a bridged server crash-loops forever. host networking lets
+#   it use the host's working egress for that one call. On a server whose containers
+#   DO have internet, you may instead bridge it (publish 127.0.0.1:8081:80).
+#
+# Ports it binds on the host (high ports → no root):
+#   :18081  HTTP + gRPC (management + signal + relay-ws)   ← Caddy upstream
+#   :33073  gRPC backward-compat
+#   :13478/udp  embedded STUN
+services:
+  netbird-server:
+    image: netbirdio/netbird-server:latest
+    container_name: netbird-server-host
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - netbird_host_data:/var/lib/netbird
+      - ./config.yaml:/etc/netbird/config.yaml
+    command: ["--config", "/etc/netbird/config.yaml"]
+    logging:
+      driver: "json-file"
+      options: { max-size: "100m", max-file: "2" }
+
+  # Static SPA — no internet needed, stays on the bridge, published to localhost.
+  dashboard:
+    image: netbirdio/dashboard:latest
+    container_name: netbird-dashboard
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"
+    env_file:
+      - ./dashboard.env
+    logging:
+      driver: "json-file"
+      options: { max-size: "100m", max-file: "2" }
+
+volumes:
+  netbird_host_data:

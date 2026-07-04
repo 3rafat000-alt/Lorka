@@ -1,0 +1,32 @@
+# Pure-local NetBird front door — internal CA cert, NO Let's Encrypt, NO Cloudflare.
+# Serves https://netbird.local:8443 on the loopback/LAN only. Isolated from the
+# public :80 Caddy (separate process, own storage, admin off) so it never touches
+# the live zanjour.com setup.
+#
+# Run (non-root, :8443 is a high port):
+#   caddy run --config Caddyfile.local --adapter caddyfile
+{
+	admin off
+	auto_https disable_redirects
+	storage file_system {
+		root /home/es3dlll/netbird-local/caddy-data
+	}
+}
+
+netbird.local:8443 {
+	# Caddy's own internal CA issues this cert. Trust it once on each client:
+	#   sudo cp <storage>/pki/authorities/local/root.crt \
+	#     /usr/local/share/ca-certificates/caddy-netbird-local.crt && sudo update-ca-certificates
+	tls internal
+
+	# Control channel is gRPC → plaintext HTTP/2 to the combined server.
+	@grpc header Content-Type application/grpc*
+	reverse_proxy @grpc h2c://127.0.0.1:18081
+
+	# REST API, embedded IdP (Dex), relay, ws-proxy → combined server.
+	@backend path /relay* /ws-proxy/* /api/* /oauth2/*
+	reverse_proxy @backend 127.0.0.1:18081
+
+	# Dashboard SPA (everything else).
+	reverse_proxy /* 127.0.0.1:8080
+}

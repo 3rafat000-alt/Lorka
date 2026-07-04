@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: PRJ-XXXX API
+  version: 0.1.0
+  description: Contract frozen at Gate 3. Single source of truth for Gate 4.
+servers:
+  - url: https://api.example.com/v1
+security:
+  - bearerAuth: []
+paths:
+  /resource:
+    get:
+      summary: List resources
+      parameters:
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ResourceList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  responses:
+    Unauthorized:
+      description: Missing/invalid token
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    RateLimited:
+      description: Too many requests
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+  schemas:
+    Error:                      # standard error envelope — every endpoint uses this
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details: { type: object }
+    Resource:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+    ResourceList:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: "#/components/schemas/Resource" } }
+        meta: { type: object, properties: { page: { type: integer }, total: { type: integer } } }
