@@ -1,0 +1,111 @@
+# 📇 SOFI AI Tooling Registry — discovery index for all scripts.
+# Agents read this to find a tool before writing a new one (Rule 4: don't duplicate).
+# Promotion of a script = add its row here + log in DECISIONS.md.
+version: 1.0
+
+# ── Shared library: importable by every role that holds Bash. ──
+shared_library:
+  package: sofi_tools
+  entry: "engine/tooling/bin/sofi"
+  modules:
+    paths:    "resolve workspace + per-project directories"
+    brain:    "read/update STATE·CONTEXT·DECISIONS (universal contract in code)"
+    tickets:  "parse/append/close HANDOFFS tickets; find next-open"
+    routing:  "resolve cheapest route (model·effort·caveman) + priority override"
+    gates:    "9-gate order, no-skip validation, expected-artifact check"
+    guard:    "GOVERNANCE enforcement: scope sandbox, net policy, secret scan"
+    runlog:   "append-only run log + CONTEXT trace"
+
+# ── CLI commands (what `sofi <cmd>` exposes). ──
+cli_commands:
+  projects:    "list project workspaces"
+  brain:       "show STATE + next open ticket  — sofi brain <PRJ>"
+  route:       "cheapest clearing route        — sofi route <role> [PRIORITY]"
+  gate-check:  "validate gate order+artifacts  — sofi gate-check <PRJ>"
+  dispatch:    "render delegation prompt        — sofi dispatch <PRJ> [role]"
+  squad:       "parallel delegation for a gate  — sofi squad <PRJ> <gate>  (gates 3·4·5)"
+  powers:      "list the team's superpowers     — sofi powers"
+  handoff:     "close/flip a ticket            — sofi handoff <PRJ> close <ID>"
+  escalate:    "funnel a blocked ticket up      — sofi escalate <PRJ> <ID> <to> \"<reason>\""
+  scratch:     "list/purge temp scripts        — sofi scratch <PRJ> [clean]"
+  domain:      "local domain (<slug>.local)     — sofi domain init|register|up|down|list|rm|status [PRJ]"
+  tunnel:      "public tunnel for a project     — sofi tunnel up|down|list|status [PRJ]  (DevOps/CI-CD owned; see public-tunnels.md)"
+  gemini:      "external review desk (push->receive->act) — sofi gemini review --file R --prj PRJ [--out F --ask A] | capture | status"
+  tools:       "print this registry"
+  doctor:      "self-check library + governance"
+
+# ── Per-role toolkits: scripts owned by one role/tier. ──
+agent_toolkits:
+  ceo-sofi:
+    - { script: "agents/ceo/route.py",    purpose: "print resolved route for any role+priority", gate: all }
+    - { script: "agents/ceo/dispatch.py", purpose: "render the RUNBOOK delegation prompt for a ticket", gate: all }
+    - { script: "agents/ceo/ceo_toolkit.py",
+        purpose: "CEO console — delegate (RCCF+route+prompt-cache) · inspect/health (tree scan, secret leaks, structural gaps) · comply (guardrails gate)",
+        gate: all }
+    - { script: "agents/ceo/feature_scan.py",
+        purpose: "token-frugal feature locator + 4-pillar pre-flagger (static, 0 model tokens) — powers /sofi-spec-review and /sofi-feature; emits compact JSON/md file-set+preflags so the model reads a skeleton not the tree",
+        gate: all }
+    - { script: "agents/ceo/sofi_scan.py",
+        purpose: "unified static analysis engine (0 model tokens) — modes search·feature·security·design·flow·wiring·all; backs /sofi-audit /sofi-secure /sofi-design-taste /sofi-feature; smart-find, OWASP pre-flags, taste/a11y/RTL, UserFlow (routes→views+orphans), interconnection. Reads never writes",
+        gate: all }
+    - { script: "agents/ceo/gemini_bridge.py",
+        purpose: "low-level bridge — pushes reports OUT of the chat into the pinned Gemini conversation via CDP-attached user browser (push/capture/status; file|stdin|inline; waits for reply w/ text-stability; capture=grab latest reply WITHOUT re-sending after a timeout; --out saves reply). External service — sanitized reports only, never secrets/PII",
+        gate: all }
+    - { script: "agents/ceo/gemini_review.py",
+        purpose: "external-review desk (automation over gemini_bridge) — one call: sanitize-on-send (redact keys/secrets/.env) -> condense-if-long (weak-net safe) -> push -> resilient capture (re-capture not re-post on timeout) -> parse reply into sections+action_items -> ingest digest into project HANDOFFS. CLI review|capture|status; also `sofi gemini ...`. The team's standard push->receive->act channel",
+        gate: all }
+    - { script: "agents/ceo/reflection_engine.py",
+        purpose: "v5 reflection/dreaming engine — scan (0 model tokens) locates NEW learning signals in HANDOFFS history (escalations, circuit-breakers, recurring patterns), dedups vs LESSONS.md; write appends a distilled situation·what-failed·rule lesson to procedural memory. Backs /sofi-reflect. Scheduled/on-demand, never per-turn (per-turn memory updates degrade quality)",
+        gate: all }
+  tier-2-advisor:
+    - { script: "agents/uiux/uiux_pipeline.py",
+        purpose: "Tier-2 Advisor's design/a11y console (0 model tokens to locate) — cmds scan·rtl·gate·brief; wires sofi_scan taste+design + an RTL currency-&lrm; check + sofi_verify into one exit-gated pipeline, then emits paste-ready RCCF delegation briefs routing findings to the relevant Tier-2 engineer. Backs engine/agents/advisors/tier-2-advisor.md and sofi-tier-2-advisor. Reads never writes",
+        gate: "2,4" }
+  principal-system-architect:
+    - { script: "agents/tier-1-architecture/principal-system-architect/fossflow_export.py",
+        purpose: "render a topology spec into an importable FossFLOW isometric diagram (Design is Truth)", gate: 3 }
+  data-schema-engineer:
+    - { script: "agents/tier-1-architecture/data-schema-engineer/migration_check.py",
+        purpose: "reject any migration whose down/rollback is missing", gate: 3 }
+  security-compliance-architect:
+    - { script: "agents/tier-1-architecture/security-compliance-architect/stride_scaffold.py",
+        purpose: "generate a STRIDE threat-model skeleton from a feature name", gate: 3 }
+  qa-sre-lead:
+    - { script: "agents/tier-3-quality/qa-sre-lead/coverage_gate.py",
+        purpose: "fail the build when coverage < 90%", gate: 5 }
+  performance-load-analyst:
+    - { script: "agents/tier-3-quality/performance-load-analyst/perf_budget.py",
+        purpose: "fail when TTI≥2s or CWV thresholds breached", gate: 5 }
+
+# ── Template for adding a new per-role tool. ──
+template: "agents/_TEMPLATE_agent_tool.py"
+
+# ── External power-ups (catalog: engine/SUPERPOWERS.md). status: proposed | pilot | promoted. ──
+# Wield only after the doctrine check; promote = flip status + log in DECISIONS.md.
+external_powers:
+  fossflow:
+    source: "https://github.com/Abrar74774/FossFLOW"
+    power: "isometric architecture diagrams from JSON (npm fossflow) — generatable, version-controlled"
+    wielders: [principal-system-architect, data-schema-engineer, api-integration-specialist, devops-cloud-lead]
+    use: "Gate 3 — emit topology JSON, render, attach to [ID]_Tech_Stack.md"
+    tool: "agents/tier-1-architecture/principal-system-architect/fossflow_export.py"
+    status: pilot
+  taste-skill:
+    source: "https://github.com/leonxlnx/taste-skill"
+    power: "anti-generic-UI design skills; dials DESIGN_VARIANCE/MOTION_INTENSITY/VISUAL_DENSITY (1-10)"
+    wielders: [ui-ux-designer, frontend-react-engineer, backend-blade-engineer, tier-2-advisor]
+    use: "Gate 2/4 — invoke the sofi-design-taste skill; set dials per brief; a11y still gated by WCAG 2.2 AA"
+    tool: ".claude/skills/sofi-design-taste/SKILL.md  (SOFI-native, no external dep)"
+    status: implemented
+  agency-agents:
+    source: "https://github.com/msitarzewski/agency-agents"
+    power: "232-agent / 16-division reference — mine org patterns (escalation chains, parallel squads, per-role success metrics)"
+    wielders: [ceo-sofi]
+    use: "escalation-chain pattern landed: tickets.escalate() + `sofi escalate` CLI"
+    status: applied
+  armory:
+    source: "VoltAgent/awesome-agent-skills · VoltAgent/awesome-claude-code-subagents · wshobson/agents · pm-claude-skills · Citadel"
+    power: "skill/subagent marketplaces — search before writing a new agent/skill (Rule 4)"
+    wielders: ["all"]
+    use: "discovery index for missing capabilities"
+    status: reference

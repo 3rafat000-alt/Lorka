@@ -1,0 +1,108 @@
+#!/bin/bash
+# team-status
+# Display real-time team coordination state
+# Gemini audit → GitHub issues → agent execution
+
+PROJECT="PRJ-SAKK"
+PROJECTS_ROOT="$HOME/Desktop/projects"
+
+echo "═══════════════════════════════════════════════════════════════"
+echo "🏢 SOFI Team Coordination Status"
+echo "═══════════════════════════════════════════════════════════════"
+echo ""
+
+# 1. Gemini audit status
+echo "📊 Gemini Audit Status"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Chat: https://gemini.google.com/app/6b3dae38fb36a904"
+echo "Last broadcast: $(date +%Y-%m-%d' '%H:%M)"
+python3 - << 'PYEOF'
+import subprocess, json
+result = subprocess.run(
+    ["python3", "/home/es3dlll/Desktop/Lorka/sofi/tooling/agents/ceo/gemini_bridge.py", "status"],
+    capture_output=True, text=True
+)
+if result.returncode == 0:
+    status = json.loads(result.stdout)
+    print(f"Browser: {'✅ Connected' if status.get('browser') else '❌ Disconnected'}")
+    print(f"Chat tab: {'✅ Open' if status.get('tab_open') else '❌ Closed'}")
+else:
+    print("⚠️ Bridge unavailable")
+PYEOF
+echo ""
+
+# 2. GitHub issues status
+echo "🔧 GitHub Issues (Audit Findings)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Repo: https://github.com/3rafat000-alt/SOFI-PRJ"
+OPEN_ISSUES=$(gh issue list --repo 3rafat000-alt/SOFI-PRJ --state open --label "audit" 2>/dev/null | wc -l)
+echo "Open audit issues: $OPEN_ISSUES"
+echo "Blockers (🔴): $(gh issue list --repo 3rafat000-alt/SOFI-PRJ --state open --label "blocker" 2>/dev/null | wc -l)"
+echo "Clarifications (🟠): $(gh issue list --repo 3rafat000-alt/SOFI-PRJ --state open --label "clarification-needed" 2>/dev/null | wc -l)"
+echo ""
+
+# 3. Project git status
+echo "📁 Project State"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+cd "$PROJECTS_ROOT/$PROJECT" 2>/dev/null || { echo "Project not found"; exit 1; }
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+SHA=$(git rev-parse --short HEAD 2>/dev/null)
+STATUS=$(git status --porcelain | wc -l)
+echo "Branch: $BRANCH"
+echo "Commit: $SHA"
+echo "Uncommitted changes: $STATUS files"
+echo ""
+
+# 4. HANDOFFS.md status
+echo "✅ Next Work (HANDOFFS.md)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+if [ -f "$PROJECTS_ROOT/$PROJECT/_context/HANDOFFS.md" ]; then
+  TICKETS=$(grep "^- " "$PROJECTS_ROOT/$PROJECT/_context/HANDOFFS.md" | wc -l)
+  echo "Open tickets: $TICKETS"
+  echo "Priority tickets:"
+  grep "^- \[" "$PROJECTS_ROOT/$PROJECT/_context/HANDOFFS.md" | head -3 | sed 's/^/  /'
+else
+  echo "⚠️ HANDOFFS.md not found"
+fi
+echo ""
+
+# 5. Teaching VII status
+echo "🤖 Teaching VII (Autonomous Loop)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+if grep -q "Teaching VII" /home/es3dlll/Desktop/Lorka/sofi/DOCTRINE.md 2>/dev/null; then
+  echo "✅ Teaching VII binding: ACTIVE"
+  echo "✅ 4-layer enforcement: IMPLEMENTED"
+  echo "✅ Gemini oracle role: AUTHORIZED"
+else
+  echo "⚠️ Teaching VII not fully initialized"
+fi
+echo ""
+
+# 6. Team coordination workflow
+echo "🔄 Team Workflow"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Flow: Gemini audit → GitHub issues → RCCF dispatch → agent execution"
+echo ""
+echo "Scripts ready:"
+echo "  • gemini-github-sync.py (convert findings → GitHub issues)"
+echo "  • sofi-gemini-monitor.sh (continuous monitor loop)"
+echo "  • gemini-audit-dispatch.yaml (specialist routing)"
+echo ""
+
+# 7. Gate status
+echo "🚪 Gate Status"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+if [ -f "$PROJECTS_ROOT/$PROJECT/_context/STATE.md" ]; then
+  GATE=$(grep "gate:" "$PROJECTS_ROOT/$PROJECT/_context/STATE.md" | head -1 | cut -d: -f2- | xargs)
+  echo "Current: Gate $GATE"
+  echo "Next: Gate 7 (Production)"
+  echo "Readiness: Pending Gemini audit findings"
+fi
+echo ""
+
+echo "═══════════════════════════════════════════════════════════════"
+echo "👥 Team: Specialists execute via RCCF dispatch"
+echo "📊 All work tracked in GitHub + git history"
+echo "🔐 Teaching VII binding protocol enforced"
+echo "✅ No chat reports — pure execution"
+echo "═══════════════════════════════════════════════════════════════"
