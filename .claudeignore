@@ -1,0 +1,14 @@
+vendor/
+node_modules/
+*.log
+*.min.js
+*.min.css
+dist/
+build/
+tests/fixtures/
+docs/legacy/
+storage/framework/cache/
+storage/logs/
+.bundle
+*.tar.gz
+*.zip

@@ -1,0 +1,94 @@
+# ── SOFI AI workspace — .gitignore ──────────────────────────────
+# Doctrine: secrets, runtime state, caches, and ephemeral scratch
+# NEVER enter history. Code/config templates DO.
+
+# —— Secrets & environment (templates only are tracked) ——
+
+# —— OpenCode (removed — Claude Code only) ——
+.opencode/
+opencode.json
+props-debug.pdf
+
+# —— GitHub workflows (disabled — CI runs in project repos) ——
+.github/
+
+# —— Projects live at their own physical root ~/Desktop/Lorka/projects/ (single-root,
+#    NO symlink, moved in-repo 2026-07-03). Tooling resolves via sofi_tools.paths
+#    (SOFI_PROJECTS_DIR override, else ~/Desktop/projects if present, else this dir).
+#    Ignored here because each PRJ-XXXX/ is its OWN separate git repo — never let
+#    Lorka's repo track/embed another repo's content.
+/projects/
+.env
+.env.*
+!.env.example
+*.env.bak
+*.env.vault
+*.env.testing
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+id_rsa
+id_rsa.*
+*.ppk
+
+# —— SOFI runtime state (machine-local, regenerated) ——
+.gstack/
+.claude/memory/
+**/.claude/memory/
+.sofi-run/
+
+# —— Ephemeral scratch (GOVERNANCE Rule 3 — purged at gate exit, never a deliverable) ——
+_scratch/
+**/_scratch/
+
+# —— Python ——
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# —— Node / JS ——
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# —— PHP / Laravel ——
+vendor/
+.phpunit.result.cache
+/public/storage
+storage/*.key
+
+# —— Flutter / Dart ——
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+build/
+
+# —— Build / coverage / logs ——
+dist/
+coverage/
+*.log
+
+# —— OS / editor cruft ——
+.DS_Store
+Thumbs.db
+*.swp
+
+# server-plane secrets
+engine/server-plane/.env
+
+# pure-local netbird working dirs (secrets: setup keys, internal CA, sqlite)
+netbird-local/
+netbird-host/
+
+# —— Claude Code machine-local state ——
+.claude/settings.local.json
+.claude/cache/
