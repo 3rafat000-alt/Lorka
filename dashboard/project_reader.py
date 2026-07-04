@@ -41,7 +41,7 @@ _AGENT_RE = re.compile(r"sofi-([a-z][a-z0-9-]+)|(?<![a-z-])(" +
                        r")(?![a-z-])")
 _COMMIT_RE = re.compile(r"\b([0-9a-f]{7,40})\b")
 _DATE_RE = re.compile(r"(20\d\d-\d\d-\d\d)")
-_DONE_RE = re.compile(r"✅|CLOSED|DONE|complete|passed|green", re.I)
+_DONE_RE = re.compile(r"✅|CLOSED|DONE|complete|passed|green|SHIPPED|FIXED|RESOLVED|FINISHED", re.I)
 _WARN_RE = re.compile(r"⚠|🟡|FAIL|blocked|BLOCKER|open\b|🔴|🟠|DENIED", re.I)
 
 
@@ -138,7 +138,52 @@ def handoff_tasks(prj: str) -> list[dict]:
                                 "status": "queued", "marker": "open", "type": "dispatch",
                                 "source": f"HANDOFFS.md:{j+1} (dispatch table)"})
                 j += 1
-    # 3) Blocker / Task entries with an outcome marker
+    # 3) narrative ticket blocks — the format real projects actually use:
+    #    "## PRIOR TICKET (2026-07-02, head 81e7e1f) — Permission banners SHIPPED."
+    hdrs = []
+    for i, line in enumerate(lines):
+        m = re.match(r"^#{2,3}\s+(PRIOR|NEXT|OPEN|CURRENT)\s+TICKET\b(.*)$",
+                     line.strip(), re.I)
+        if m:
+            hdrs.append((i, m.group(1).upper(), m.group(2)))
+    for n, (i, kind, rest) in enumerate(hdrs):
+        end = hdrs[n + 1][0] if n + 1 < len(hdrs) else len(lines)
+        body = "\n".join(lines[i:end])
+        parts = re.split(r"\s[—–-]\s", rest, 1)
+        title = (parts[1] if len(parts) > 1 else parts[0]).strip(" -—:()*")
+        if not title:  # bare "## Next ticket" header — first body line is the title
+            title = next((l.strip().strip("*") for l in lines[i + 1:end]
+                          if l.strip() and not l.strip().startswith("#")), "")
+        date = _DATE_RE.search(rest)
+        commit = _COMMIT_RE.search(rest)
+        mk = _marker(title or body)
+        if kind in ("NEXT", "OPEN", "CURRENT") and mk == "info":
+            mk = "open"
+        out.append({"title": (title or f"{kind} ticket")[:90],
+                    "agent": (_agents_in(body) or [""])[0], "gate": "",
+                    "status": {"done": "done", "warn": "blocked"}.get(mk, "open"),
+                    "marker": mk, "type": kind.lower() + "-ticket",
+                    "date": date.group(1) if date else None,
+                    "commit": commit.group(1) if commit else None,
+                    "source": f"HANDOFFS.md:{i+1}"})
+    # 4) "## Backlog" bullet items → queued tasks
+    in_bl = False
+    for i, line in enumerate(lines, 1):
+        s = line.strip()
+        if re.match(r"^#{2,3}\s+Backlog\b", s, re.I):
+            in_bl = True
+            continue
+        if in_bl:
+            if s.startswith("#"):
+                in_bl = False
+                continue
+            m = re.match(r"^[-*]\s+(.+)$", s)
+            if m:
+                out.append({"title": m.group(1).strip()[:90],
+                            "agent": (_agents_in(s) or [""])[0], "gate": "",
+                            "status": "queued", "marker": "open", "type": "backlog",
+                            "source": f"HANDOFFS.md:{i}"})
+    # 5) Blocker / Task entries with an outcome marker
     for i, line in enumerate(lines, 1):
         m = re.match(r"\s*(?:\*\*)?(Blocker\s*#?\d+|Task\s*[\d.]+)[^:]*[:)]", line)
         if m and (_DONE_RE.search(line) or _WARN_RE.search(line)):
