@@ -1,0 +1,43 @@
+{
+  "name": "12 · Health Monitor (hourly)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "hours", "hoursInterval": 1 }] }
+      },
+      "id": "cron",
+      "name": "Every hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:8099/healthz",
+        "options": { "timeout": 8000 }
+      },
+      "id": "gw",
+      "name": "Check Gateway",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ok = $json.status === 'ok';\nconst q = $json.queue;\nreturn [{ json: { healthy: ok, queue: q, ts: new Date().toISOString(),\n  note: ok ? `gateway ok, queue=${q}` : 'gateway DOWN' } }];"
+      },
+      "id": "eval",
+      "name": "Evaluate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Every hour": { "main": [[{ "node": "Check Gateway", "type": "main", "index": 0 }]] },
+    "Check Gateway": { "main": [[{ "node": "Evaluate", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}

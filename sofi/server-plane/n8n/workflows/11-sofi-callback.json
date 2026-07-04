@@ -1,0 +1,58 @@
+{
+  "name": "11 · SOFI Callback → WhatsApp Reply",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sofi-callback",
+        "responseMode": "onReceived",
+        "responseCode": 200,
+        "options": {}
+      },
+      "id": "cb-in",
+      "name": "Gateway Callback",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "sofi-callback"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The gateway POSTs {job_id,status,response,error,meta:{chatId,session}}.\n// Verify the shared token, then shape the WhatsApp reply.\nconst hdr = $input.first().json.headers?.['x-sofi-token'] || '';\nif ($env.SOFI_GATEWAY_TOKEN && hdr && hdr !== $env.SOFI_GATEWAY_TOKEN) {\n  return [];\n}\nconst b = $input.first().json.body || {};\nconst meta = b.meta || {};\nlet text;\nif (b.status === 'done') {\n  text = (b.response || 'تم التنفيذ.').toString().slice(0, 3500);\n} else {\n  text = '⚠️ تعذّر التنفيذ: ' + (b.error || 'خطأ غير معروف');\n}\nif (!meta.chatId) return [];\nreturn [{ json: { chatId: meta.chatId, session: meta.session || 'default', text } }];"
+      },
+      "id": "shape",
+      "name": "Shape Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.WAHA_URL || 'http://127.0.0.1:3000' }}/api/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-Api-Key", "value": "={{ $env.WAHA_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ session: $json.session, chatId: $json.chatId, text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "send",
+      "name": "WhatsApp: Send Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Gateway Callback": { "main": [[{ "node": "Shape Reply", "type": "main", "index": 0 }]] },
+    "Shape Reply": { "main": [[{ "node": "WhatsApp: Send Result", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}
