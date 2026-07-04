@@ -154,6 +154,17 @@
 .chatbar{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--hair-2)}
 .chatbar textarea{flex:1;resize:none;border:1px solid var(--hair-2);border-radius:10px;padding:9px 12px;font:inherit;font-size:.9rem;background:transparent;color:var(--ink);min-height:44px;max-height:130px}
 .chatbar .sel{max-width:150px}
+.chatlist{display:flex;flex-direction:column;gap:6px;max-height:62vh;overflow-y:auto}
+.ci{display:flex;justify-content:space-between;align-items:center;gap:6px;border:1px solid var(--hair-2);border-radius:9px;padding:7px 10px;cursor:pointer;font-size:.8rem}
+.ci:hover{border-color:var(--accent)}
+.ci.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.ci .tt{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ci .tm{color:var(--ink-3);font-size:.68rem}
+.ci .del{border:none;background:none;color:var(--ink-3);cursor:pointer;font-size:.8rem;padding:0 2px}
+.ci .del:hover{color:var(--danger)}
+.quickrow{display:flex;gap:6px;flex-wrap:wrap;padding:8px 0 2px}
+.qc{border:1px solid var(--hair-2);border-radius:999px;padding:4px 12px;font-size:.75rem;cursor:pointer;background:transparent;color:var(--ink)}
+.qc:hover{border-color:var(--accent);color:var(--accent)}
 </style>
 </head>
 <body>
@@ -315,26 +326,30 @@
   <!-- CHAT — free live conversation + prompt builder -->
   <div class="panel" id="tab-chat">
     <div class="sec-h" style="margin-bottom:14px"><span class="kicker">جلسة متواصلة · Claude Code</span><h2>دردشة مباشرة مع كلاود داخل مساحة SOFI</h2></div>
-    <div class="card">
-      <div class="card-h">
-        <span class="kicker" id="chatSess">جلسة جديدة</span>
-        <span style="display:flex;gap:8px;align-items:center">
-          <span class="sub" id="chatStatus">خامل</span>
-          <button class="diagbtn" onclick="newChatSession()">✨ جلسة جديدة</button>
-        </span>
+    <div class="grid" style="grid-template-columns:240px 1fr;gap:16px;align-items:start">
+      <div class="card">
+        <div class="card-h"><span class="kicker">الدردشات</span><button class="diagbtn" onclick="newChatSession()">＋ جديدة</button></div>
+        <div class="card-b"><div id="chatList" class="chatlist"><div class="sub">…</div></div></div>
       </div>
-      <div class="card-b chatwrap">
-        <div class="chatlog" id="chatLog">
-          <div class="msg meta">اكتب رسالة — الوضع «دردشة» ينفّذ مباشرة، والوضع «بناء برمبت» يحوّل طلبك لبرمبت RCCF جاهز للنسخ بدون تنفيذ. الجلسة تتذكّر السياق بين الرسائل.</div>
+      <div class="card">
+        <div class="card-h">
+          <span class="kicker" id="chatSess">جلسة جديدة</span>
+          <span style="display:flex;gap:8px;align-items:center">
+            <span class="sub" id="chatStatus">خامل</span>
+          </span>
         </div>
-        <div class="chatbar">
-          <select class="sel" id="chatMode" title="الوضع">
-            <option value="chat">💬 دردشة</option>
-            <option value="build">🧩 بناء برمبت</option>
-          </select>
-          <textarea id="chatInput" placeholder="اسأل، وجّه، أو اطلب برمبت…" dir="auto"
-            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
-          <button class="runbtn" id="chatSend" onclick="sendChat()">إرسال</button>
+        <div class="card-b chatwrap">
+          <div class="chatlog" id="chatLog"></div>
+          <div class="quickrow" id="quickRow"></div>
+          <div class="chatbar">
+            <select class="sel" id="chatMode" title="الوضع">
+              <option value="chat">💬 دردشة</option>
+              <option value="build">🧩 بناء برمبت</option>
+            </select>
+            <textarea id="chatInput" placeholder="اسأل، وجّه، أو اطلب برمبت…" dir="auto"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+            <button class="runbtn" id="chatSend" onclick="sendChat()">إرسال</button>
+          </div>
         </div>
       </div>
     </div>
@@ -356,7 +371,7 @@ async function boot(){
   state.prj=s.active_project;
   const sel=$('#projSel');sel.innerHTML='';(s.projects||[]).forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;if(p===s.active_project)o.selected=true;sel.appendChild(o);});
   sel.onchange=()=>loadProject(sel.value);
-  buildGraph(s.graph);renderBudgets(s.budgets);renderHome(s);renderProject(s);connectWS();loadPalette();
+  buildGraph(s.graph);renderBudgets(s.budgets);renderHome(s);renderProject(s);connectWS();loadPalette();initChats();
 }
 async function loadProject(prj){
   state.prj=prj;
@@ -557,46 +572,112 @@ async function viewRun(id){
   log.lines.forEach(l=>{if(l.channel!=='chat')onClaudeEvent(l);});
 }
 
-/* ── live chat + prompt builder ── */
-state.chatRun=null;state.chatSession=localStorage.getItem('sofiChatSession')||'';
-state.chatBubble=null;state.chatGotText=false;
-function chatMeta(t){const d=document.createElement('div');d.className='msg meta';d.textContent=t;$('#chatLog').appendChild(d);chatScroll();}
+/* ── live chat + prompt builder — multi-conversation, persisted in localStorage ── */
+state.chatRun=null;state.chatId=null;state.chatBubble=null;state.chatGotText=false;
+const QUICK=[
+ ['📊 الحالة','ما حالة المشروع النشط الآن؟ البوابة، آخر عمل، والتذكرة التالية — باختصار.'],
+ ['🧭 ماذا بعد؟','اقرأ HANDOFFS.md للمشروع النشط: ما التذكرة التالية ومن ينفّذها؟'],
+ ['📝 لخّص آخر جلسة','لخّص آخر ما أُنجز في المشروع النشط من CONTEXT.md بنقاط قصيرة.'],
+ ['⎇ فحص git','شغّل sofi git-check على المشروع النشط والصق الناتج كما هو.'],
+ ['🐞 أين الخلل؟','افحص آخر الأخطاء في سجلات المشروع النشط وأعطني التشخيص باختصار.'],
+];
+function chatStore(){try{return JSON.parse(localStorage.getItem('sofiChats')||'{}')}catch(e){return{}}}
+function chatSave(s){localStorage.setItem('sofiChats',JSON.stringify(s));}
+function curChat(){const s=chatStore();return s[state.chatId]||null;}
+function updChat(fn){const s=chatStore();const c=s[state.chatId];if(!c)return;fn(c);c.t=Date.now();chatSave(s);}
+function initChats(){
+  $('#quickRow').innerHTML=QUICK.map(([l,p],i)=>`<button class="qc" onclick="quickCmd(${i})">${l}</button>`).join('');
+  const s=chatStore();const last=localStorage.getItem('sofiActiveChat');
+  if(last&&s[last])state.chatId=last;
+  else{const ids=Object.keys(s).sort((a,b)=>s[b].t-s[a].t);state.chatId=ids[0]||null;}
+  if(!state.chatId)return newChatSession();
+  renderChatList();renderChatMsgs();
+}
+function quickCmd(i){const inp=$('#chatInput');inp.value=QUICK[i][1];inp.focus();}
+function newChatSession(){
+  const s=chatStore();const id='c'+Date.now().toString(36);
+  s[id]={id,title:'جلسة جديدة',session:'',msgs:[],t:Date.now()};chatSave(s);
+  state.chatId=id;localStorage.setItem('sofiActiveChat',id);
+  renderChatList();renderChatMsgs();
+}
+function switchChat(id){state.chatId=id;localStorage.setItem('sofiActiveChat',id);renderChatList();renderChatMsgs();}
+function deleteChat(id,ev){
+  ev.stopPropagation();
+  const s=chatStore();delete s[id];chatSave(s);
+  if(state.chatId===id){const ids=Object.keys(s).sort((a,b)=>s[b].t-s[a].t);
+    if(ids[0]){state.chatId=ids[0];localStorage.setItem('sofiActiveChat',ids[0]);}
+    else return newChatSession();}
+  renderChatList();if(state.chatId)renderChatMsgs();
+}
+function renderChatList(){
+  const s=chatStore();const ids=Object.keys(s).sort((a,b)=>s[b].t-s[a].t);
+  $('#chatList').innerHTML=ids.length?ids.map(id=>{
+    const c=s[id];const tm=new Date(c.t).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="ci${id===state.chatId?' on':''}" onclick="switchChat('${id}')">
+      <span class="tt">${esc(c.title)}</span><span class="tm">${tm}</span>
+      <button class="del" title="حذف" onclick="deleteChat('${id}',event)">✕</button></div>`;
+  }).join(''):'<div class="sub">لا دردشات</div>';
+}
+function esc(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
+function renderChatMsgs(){
+  const c=curChat();const log=$('#chatLog');log.innerHTML='';state.chatBubble=null;
+  $('#chatSess').textContent=c&&c.session?'جلسة '+c.session.slice(0,8):'جلسة جديدة';
+  if(!c||!c.msgs.length){const d=document.createElement('div');d.className='msg meta';
+    d.textContent='اكتب رسالة — «دردشة» تنفّذ مباشرة، و«بناء برمبت» يحوّل طلبك لبرمبت RCCF جاهز للنسخ. الجلسة تتذكّر السياق، والأزرار السريعة فوق حقل الكتابة.';
+    log.appendChild(d);return;}
+  c.msgs.forEach(m=>{
+    const d=document.createElement('div');d.className='msg '+m.role;
+    d.textContent=m.text;
+    if(m.tools&&m.tools.length){const t=document.createElement('div');t.className='tools';
+      t.textContent=m.tools.map(x=>'🔧 '+x).join('  ');d.prepend(t);}
+    log.appendChild(d);});
+  chatScroll();
+}
+function chatMeta(t){const d=document.createElement('div');d.className='msg meta';d.textContent=t;$('#chatLog').appendChild(d);chatScroll();
+  updChat(c=>c.msgs.push({role:'meta',text:t}));}
 function chatScroll(){const l=$('#chatLog');l.scrollTop=l.scrollHeight;}
 function setChatState(running){
   $('#chatStatus').textContent=running?'⏳ كلاود يعمل…':'خامل';
   $('#chatSend').disabled=running;$('#c-chat').textContent=running?'⏳':'·';
 }
-function newChatSession(){
-  state.chatSession='';localStorage.removeItem('sofiChatSession');
-  $('#chatSess').textContent='جلسة جديدة';$('#chatLog').innerHTML='';
-  chatMeta('جلسة نظيفة — السياق السابق انتهى.');
-}
 async function sendChat(){
   const inp=$('#chatInput');const text=inp.value.trim();if(!text)return;
-  const mode=$('#chatMode').value;
-  const u=document.createElement('div');u.className='msg user';u.textContent=(mode==='build'?'🧩 ':'')+text;
+  if(!curChat())newChatSession();
+  const mode=$('#chatMode').value;const shown=(mode==='build'?'🧩 ':'')+text;
+  const u=document.createElement('div');u.className='msg user';u.textContent=shown;
   $('#chatLog').appendChild(u);chatScroll();inp.value='';
+  updChat(c=>{c.msgs.push({role:'user',text:shown});
+    if(c.title==='جلسة جديدة')c.title=text.slice(0,40);});
+  renderChatList();
   const res=await fetch('/api/chat/send',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({text,mode,session:state.chatSession})}).then(x=>x.json()).catch(e=>({ok:false,error:String(e)}));
+    body:JSON.stringify({text,mode,session:(curChat()||{}).session||''})}).then(x=>x.json()).catch(e=>({ok:false,error:String(e)}));
   if(!res.ok){chatMeta('✗ '+(res.error||'فشل الإرسال'));return;}
   state.chatRun=res.run;state.chatBubble=null;state.chatGotText=false;setChatState(true);
 }
 function chatBubble(){
   if(!state.chatBubble){const b=document.createElement('div');b.className='msg bot';b.textContent='';
-    $('#chatLog').appendChild(b);state.chatBubble=b;}
+    $('#chatLog').appendChild(b);state.chatBubble=b;
+    updChat(c=>c.msgs.push({role:'bot',text:'',tools:[]}));}
   return state.chatBubble;
 }
+function updBotMsg(fn){updChat(c=>{const last=c.msgs[c.msgs.length-1];
+  if(last&&last.role==='bot')fn(last);});}
 function onChatEvent(m){
   if(m.kind==='started'){state.chatRun=m.run;state.chatBubble=null;state.chatGotText=false;setChatState(true);return;}
   if(m.run!==state.chatRun)return;
-  if(m.kind==='init'&&m.session){state.chatSession=m.session;localStorage.setItem('sofiChatSession',m.session);
+  if(m.kind==='init'&&m.session){updChat(c=>c.session=m.session);
     $('#chatSess').textContent='جلسة '+m.session.slice(0,8);}
-  else if(m.kind==='tool'){const b=chatBubble();const t=document.createElement('div');t.className='tools';t.textContent='🔧 '+m.name;b.appendChild(t);chatScroll();}
-  else if(m.kind==='text'){state.chatGotText=true;const b=chatBubble();b.appendChild(document.createTextNode((b.childNodes.length?'\n':'')+m.text));chatScroll();}
-  else if(m.kind==='result'){if(m.session){state.chatSession=m.session;localStorage.setItem('sofiChatSession',m.session);}
-    if(!state.chatGotText&&m.result){const b=chatBubble();b.appendChild(document.createTextNode(m.result));}
+  else if(m.kind==='tool'){const b=chatBubble();const t=document.createElement('div');t.className='tools';t.textContent='🔧 '+m.name;b.appendChild(t);chatScroll();
+    updBotMsg(x=>(x.tools=x.tools||[]).push(m.name));}
+  else if(m.kind==='text'){state.chatGotText=true;const b=chatBubble();
+    b.appendChild(document.createTextNode((b.childNodes.length?'\n':'')+m.text));chatScroll();
+    updBotMsg(x=>x.text+=(x.text?'\n':'')+m.text);}
+  else if(m.kind==='result'){if(m.session)updChat(c=>c.session=m.session);
+    if(!state.chatGotText&&m.result){const b=chatBubble();b.appendChild(document.createTextNode(m.result));
+      updBotMsg(x=>x.text+=m.result);}
     chatScroll();}
-  else if(m.kind==='status'){setChatState(false);if(m.status!=='done')chatMeta(m.status==='stopped'?'⏹ أُوقف':m.status==='timeout'?'⌛ انتهت المهلة':'✗ خطأ في التشغيل');}
+  else if(m.kind==='status'){setChatState(false);renderChatList();
+    if(m.status!=='done')chatMeta(m.status==='stopped'?'⏹ أُوقف':m.status==='timeout'?'⌛ انتهت المهلة':'✗ خطأ في التشغيل');}
 }
 function setLive(on){const d=$('#liveDot'),t=$('#liveTxt');if(on){d.className='dot live';t.textContent='مباشر';}else{d.className='dot off';t.textContent='غير متصل';}}
 function pushEvent(kind,who,msg){const s=$('#stream');if(s.querySelector('.sub'))s.innerHTML='';const t=new Date().toLocaleTimeString('en-GB',{hour12:false});const d=document.createElement('div');d.className='ev '+(kind==='sec'?'sec':'');d.innerHTML=`<span class="t">${t}</span><span class="who">${who}</span><span class="msg">${msg}</span>`;s.insertBefore(d,s.firstChild);while(s.children.length>100)s.removeChild(s.lastChild);}
