@@ -22,10 +22,14 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import pathlib
 import re
+import shutil
 import sys
 import time
+import uuid
+from collections import deque
 
 # ── wire in sofi_tools (the real data layer) ─────────────────────────────────
 _HERE = pathlib.Path(__file__).resolve().parent
@@ -376,6 +380,203 @@ async def api_diag(action: str, prj: str | None = None):
                          "took": round(time.time() - t0, 2)})
 
 
+# ── Claude Code command palette runner (headless, whitelisted) ──────────────
+# Executes /sofi-* skills directly via `claude -p` and streams the run live to
+# the dashboard. Safety model: (1) whitelist of command slugs — never arbitrary
+# prompts; (2) argv exec, no shell; (3) args validated per-policy; (4) server
+# binds 127.0.0.1 only; (5) SOFI PreToolUse guard hooks stay active inside the
+# headless session (dangerous commands, secrets, bad commits stay blocked).
+CLAUDE_BIN = shutil.which("claude") or str(pathlib.Path.home() / ".local" / "bin" / "claude")
+
+PALETTE: dict[str, dict] = {
+    "sofi-boot":        {"arg": "none",   "icon": "🚀", "label_ar": "إقلاع وتوجيه"},
+    "sofi-team":        {"arg": "none",   "icon": "👥", "label_ar": "الفريق — من يفعل ماذا"},
+    "sofi-gate":        {"arg": "none",   "icon": "⛩",  "label_ar": "فحص البوابة والتقدّم"},
+    "sofi-audit":       {"arg": "choice", "icon": "🔍", "label_ar": "تدقيق طبقة",
+                         "choices": ["all", "ui", "blade", "css", "js", "db", "api", "integration", "agents"]},
+    "sofi-secure":      {"arg": "choice", "icon": "🛡",  "label_ar": "الفرقة الأمنية",
+                         "choices": ["scan", "threat", "pentest", "verify"]},
+    "sofi-report":      {"arg": "choice", "icon": "📋", "label_ar": "تقرير موثّق",
+                         "choices": ["audit", "security", "status"]},
+    "sofi-fix":         {"arg": "text",   "icon": "🔧", "label_ar": "إصلاح الملاحظات", "hint": "الهدف — طبقة أو تقرير"},
+    "sofi-feature":     {"arg": "text",   "icon": "⚙",  "label_ar": "الحلقة الكاملة على ميزة", "hint": "اسم الميزة"},
+    "sofi-spec-review": {"arg": "text",   "icon": "🏛",  "label_ar": "مراجعة معمارية 4 أركان", "hint": "اسم الميزة"},
+    "sofi-delegate":    {"arg": "text",   "icon": "📨", "label_ar": "بناء تفويض RCCF", "hint": "<agent> <task>"},
+    "sofi-reflect":     {"arg": "none",   "icon": "🌙", "label_ar": "التأمّل واستخلاص الدروس"},
+    "sofi-handoff":     {"arg": "none",   "icon": "🤝", "label_ar": "تسليم منضبط"},
+}
+# free-text args: word chars + Arabic + space/-/./:  · no leading dash (no flag smuggling)
+_ARG_OK = re.compile(r"^[\w؀-ۿ][\w؀-ۿ\s\-./:]{0,119}$")
+
+RUNS: dict[str, dict] = {}      # run_id -> {cmd,arg,prompt,status,t0,lines,proc,exit}
+RUN_LOCK = asyncio.Lock()
+WS_QUEUES: set[asyncio.Queue] = set()
+MAX_LINES = 3000
+RUN_TIMEOUT = 1800              # 30 min hard kill
+
+
+def _broadcast(ev: dict) -> None:
+    for q in list(WS_QUEUES):
+        try:
+            q.put_nowait(ev)
+        except Exception:
+            pass
+
+
+def _condense(ev: dict) -> list[dict]:
+    """stream-json event -> 0..n compact UI events."""
+    t = ev.get("type")
+    if t == "system" and ev.get("subtype") == "init":
+        return [{"kind": "init", "model": ev.get("model", "")}]
+    if t == "assistant":
+        out = []
+        for b in (ev.get("message") or {}).get("content") or []:
+            if b.get("type") == "text" and (b.get("text") or "").strip():
+                out.append({"kind": "text", "text": b["text"][:4000]})
+            elif b.get("type") == "tool_use":
+                inp = json.dumps(b.get("input") or {}, ensure_ascii=False)[:160]
+                out.append({"kind": "tool", "name": b.get("name", "?"), "input": inp})
+        return out
+    if t == "result":
+        return [{"kind": "result", "ok": not ev.get("is_error"),
+                 "result": (ev.get("result") or "")[:6000],
+                 "turns": ev.get("num_turns"),
+                 "secs": round((ev.get("duration_ms") or 0) / 1000, 1)}]
+    return []
+
+
+async def _watchdog(run_id: str) -> None:
+    await asyncio.sleep(RUN_TIMEOUT)
+    r = RUNS.get(run_id)
+    if r and r["status"] == "running":
+        try:
+            r["proc"].kill()
+        except Exception:
+            pass
+        r["status"] = "timeout"
+
+
+async def _pump(run_id: str) -> None:
+    r = RUNS[run_id]
+    proc = r["proc"]
+    try:
+        while True:
+            raw = await proc.stdout.readline()
+            if not raw:
+                break
+            line = raw.decode("utf-8", errors="ignore").strip()
+            if not line:
+                continue
+            try:
+                items = _condense(json.loads(line))
+            except Exception:
+                # non-JSON (CLI error text merged from stderr) — surface it raw
+                items = [{"kind": "text", "text": line[:500]}]
+            for it in items:
+                it = {"type": "claude", "run": run_id, "cmd": r["cmd"], **it, "ts": time.time()}
+                r["lines"].append(it)
+                _broadcast(it)
+                if it["kind"] == "result":
+                    r["status"] = "done" if it["ok"] else "error"
+        rc = await proc.wait()
+        r["exit"] = rc
+        if r["status"] == "running":
+            r["status"] = "done" if rc == 0 else "error"
+    except Exception as e:
+        r["status"] = "error"
+        err = {"type": "claude", "run": run_id, "cmd": r["cmd"],
+               "kind": "text", "text": f"[runner error] {e}", "ts": time.time()}
+        r["lines"].append(err)
+        _broadcast(err)
+    finally:
+        fin = {"type": "claude", "run": run_id, "cmd": r["cmd"], "kind": "status",
+               "status": r["status"], "exit": r.get("exit"),
+               "took": round(time.time() - r["t0"], 1), "ts": time.time()}
+        r["lines"].append(fin)
+        _broadcast(fin)
+
+
+@app.get("/api/palette")
+def api_palette():
+    return JSONResponse({"commands": PALETTE,
+                         "claude": pathlib.Path(CLAUDE_BIN).exists()})
+
+
+@app.post("/api/claude/run")
+async def api_claude_run(payload: dict):
+    cmd = (payload or {}).get("cmd", "")
+    arg = ((payload or {}).get("arg") or "").strip()
+    spec = PALETTE.get(cmd)
+    if not spec:
+        return JSONResponse({"ok": False, "error": f"unknown command: {cmd}"}, status_code=400)
+    if spec["arg"] == "none":
+        arg = ""
+    elif spec["arg"] == "choice":
+        if arg not in spec["choices"]:
+            return JSONResponse({"ok": False, "error": f"arg must be one of {spec['choices']}"},
+                                status_code=400)
+    else:  # text
+        if not arg or not _ARG_OK.match(arg):
+            return JSONResponse({"ok": False,
+                                 "error": "arg required — letters/digits/spaces, max 120, no leading dash"},
+                                status_code=400)
+    if not pathlib.Path(CLAUDE_BIN).exists():
+        return JSONResponse({"ok": False, "error": "claude CLI not found on server"}, status_code=500)
+    async with RUN_LOCK:
+        if any(r["status"] == "running" for r in RUNS.values()):
+            return JSONResponse({"ok": False, "error": "run already in progress — one at a time"},
+                                status_code=409)
+        prompt = f"/{cmd} {arg}".strip()
+        run_id = uuid.uuid4().hex[:10]
+        proc = await asyncio.create_subprocess_exec(
+            CLAUDE_BIN, "-p", prompt, "--output-format", "stream-json", "--verbose",
+            "--permission-mode", "bypassPermissions",
+            cwd=str(_ROOT),
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
+            env={**os.environ, "SOFI_DASH_RUN": run_id})
+        RUNS[run_id] = {"cmd": cmd, "arg": arg, "prompt": prompt, "status": "running",
+                        "t0": time.time(), "lines": deque(maxlen=MAX_LINES),
+                        "proc": proc, "exit": None}
+        asyncio.create_task(_pump(run_id))
+        asyncio.create_task(_watchdog(run_id))
+    started = {"type": "claude", "run": run_id, "cmd": cmd, "kind": "started",
+               "prompt": prompt, "ts": time.time()}
+    RUNS[run_id]["lines"].append(started)
+    _broadcast(started)
+    return JSONResponse({"ok": True, "run": run_id, "prompt": prompt})
+
+
+@app.post("/api/claude/stop")
+async def api_claude_stop(payload: dict):
+    run_id = (payload or {}).get("run", "")
+    r = RUNS.get(run_id)
+    if not r:
+        return JSONResponse({"ok": False, "error": "unknown run"}, status_code=404)
+    if r["status"] == "running" and r["proc"]:
+        try:
+            r["proc"].kill()
+        except ProcessLookupError:
+            pass
+        r["status"] = "stopped"
+    return JSONResponse({"ok": True, "run": run_id, "status": r["status"]})
+
+
+@app.get("/api/claude/runs")
+def api_claude_runs():
+    return JSONResponse({"runs": [
+        {"run": k, "cmd": r["cmd"], "arg": r["arg"], "status": r["status"],
+         "t0": r["t0"], "exit": r["exit"], "n": len(r["lines"])}
+        for k, r in sorted(RUNS.items(), key=lambda kv: -kv[1]["t0"])][:20]})
+
+
+@app.get("/api/claude/log")
+def api_claude_log(run: str):
+    r = RUNS.get(run)
+    if not r:
+        return JSONResponse({"ok": False, "error": "unknown run"}, status_code=404)
+    return JSONResponse({"ok": True, "run": run, "status": r["status"], "lines": list(r["lines"])})
+
+
 # ── WebSocket live stream ────────────────────────────────────────────────────
 def _tail_new(path: pathlib.Path, pos: int) -> tuple[list[str], int]:
     if not path.exists():
@@ -405,6 +606,9 @@ def _runlogs() -> list[pathlib.Path]:
 @app.websocket("/ws")
 async def ws(sock: WebSocket):
     await sock.accept()
+    # per-client queue for claude-run events (pushed by _broadcast)
+    claude_q: asyncio.Queue = asyncio.Queue(maxsize=500)
+    WS_QUEUES.add(claude_q)
     # seek to current end so we stream only NEW events
     pos = {SESSIONS: SESSIONS.stat().st_size if SESSIONS.exists() else 0,
            AUDIT: AUDIT.stat().st_size if AUDIT.exists() else 0}
@@ -415,6 +619,12 @@ async def ws(sock: WebSocket):
     try:
         while True:
             events = []
+            # claude command-palette stream — drain whatever arrived
+            while True:
+                try:
+                    events.append(claude_q.get_nowait())
+                except asyncio.QueueEmpty:
+                    break
             # sessions.jsonl — the primary activity feed
             lines, pos[SESSIONS] = _tail_new(SESSIONS, pos[SESSIONS])
             for l in lines:
@@ -457,6 +667,8 @@ async def ws(sock: WebSocket):
         return
     except Exception:
         return
+    finally:
+        WS_QUEUES.discard(claude_q)
 
 
 # ── static: the dashboard itself ─────────────────────────────────────────────
