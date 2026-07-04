@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SOFI — مؤسسة الوكلاء الذاتية · ثلاثون وكيلاً يبنون البرمجيات</title>
+<meta name="description" content="سوفي: مؤسسة برمجية من 30 وكيل ذكاء اصطناعي عبر 5 طبقات و9 بوابات. الإصدار 5 يضيف طبقة النزاهة — وكلاء لا يهلوسون بلا استشهاد، ولا يُصدَّق نجاحهم إلا بدليل، ومنظومة تتعلّم من تاريخها."/>
+<meta name="theme-color" content="#f6f2ea"/>
+<meta property="og:title" content="SOFI — مؤسسة الوكلاء الذاتية"/>
+<meta property="og:description" content="30 وكيلاً · 5 طبقات · 9 بوابات · طبقة النزاهة v5"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f2ea;--paper-2:#fbf8f2;--card:#fffdf9;--sunk:#efe9dd;
+  --ink:#1b1712;--ink-2:#4a4239;--ink-3:#8a7f70;--hair:#e3dcce;--hair-2:#d3c9b6;
+  --accent:#b4530b;--accent-2:#d97316;--accent-soft:#f6e6cf;--accent-line:#e9c9a0;
+  --ink-blue:#2b3a67;--ink-blue-soft:#e6e9f2;
+  --t0:#0e7490;--t1:#1d4ed8;--t2:#5b3fd8;--t3:#8b2fb8;--t4:#b83280;
+  --ff:"IBM Plex Sans Arabic",system-ui,sans-serif;--ff-en:"IBM Plex Sans",system-ui,sans-serif;
+  --ff-display:"Fraunces","IBM Plex Sans Arabic",serif;--ff-mono:"IBM Plex Mono",ui-monospace,monospace;
+  --r:10px;--r-lg:16px;--r-xl:24px;--shadow:0 1px 2px rgba(27,23,18,.05),0 10px 34px -14px rgba(27,23,18,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--ff);font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(58% 40% at 100% 0%,rgba(180,83,11,.05),transparent 62%);overflow-x:hidden}
+::selection{background:var(--accent-soft)}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px;border-radius:5px}
+.mono{direction:ltr;unicode-bidi:isolate;display:inline-block;font-family:var(--ff-mono);font-feature-settings:"tnum"}
+.en{font-family:var(--ff-en);color:var(--ink-3);font-size:.8rem;letter-spacing:.01em;direction:ltr;unicode-bidi:isolate}
+.num{font-family:var(--ff-display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.wrap{max-width:1240px;margin:0 auto;padding:0 30px}
+.kicker{font-family:var(--ff-mono);font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:9px}
+.kicker::before{content:"";width:24px;height:1.5px;background:var(--accent)}
+h1,h2,h3,h4{line-height:1.2;letter-spacing:-.01em;font-weight:700}
+.rule{height:1px;background:var(--hair);border:0}
+
+/* masthead */
+.mast{position:sticky;top:0;z-index:40;background:rgba(246,242,234,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--hair)}
+.mast .row{display:flex;align-items:center;gap:20px;padding:14px 30px;max-width:1240px;margin:0 auto}
+.brand{display:flex;align-items:baseline;gap:11px}
+.brand .s{font-family:var(--ff-display);font-weight:700;font-size:27px;letter-spacing:-.03em}
+.brand .t{font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.mnav{display:flex;gap:22px;margin-inline-start:auto}
+.mnav a{color:var(--ink-2);font-size:.9rem;font-weight:500}
+.mnav a:hover{color:var(--accent);text-decoration:none}
+.cta{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--paper-2);font-weight:600;font-size:.86rem;padding:9px 18px;border-radius:100px;border:0;cursor:pointer;font-family:var(--ff)}
+.cta:hover{background:var(--accent);text-decoration:none;color:#fff}
+@media(max-width:900px){.mnav{display:none}}
+
+/* hero */
+.hero{padding:64px 0 40px}
+.hero-grid{display:grid;grid-template-columns:1.42fr .58fr;gap:46px;align-items:end}
+@media(max-width:960px){.hero-grid{grid-template-columns:1fr;gap:28px}}
+.hero h1{font-family:var(--ff-display);font-weight:600;font-size:clamp(40px,7vw,82px);line-height:.98;letter-spacing:-.035em;margin-top:16px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub-en{margin-top:14px;font-family:var(--ff-en);direction:ltr;color:var(--ink-3);font-size:1.05rem;letter-spacing:-.01em}
+.lede{font-size:1.14rem;color:var(--ink-2);line-height:1.8;max-width:62ch;margin-top:20px}
+.doctrine-strip{margin-top:24px;font-family:var(--ff-mono);font-size:.82rem;letter-spacing:.02em;color:var(--ink-3);direction:ltr}
+.doctrine-strip b{color:var(--accent);font-weight:600}
+.hero-side{border-inline-start:2px solid var(--ink);padding-inline-start:24px}
+.hero-side .r{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid var(--hair)}
+.hero-side .r:last-child{border:0}.hero-side .k{color:var(--ink-2);font-size:.9rem}
+.hero-side .v{font-family:var(--ff-display);font-weight:600;font-size:20px}
+.statband{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--hair);border-radius:var(--r-lg);overflow:hidden;background:var(--card);margin-top:40px}
+@media(max-width:700px){.statband{grid-template-columns:1fr}}
+.statband .c{padding:26px 28px;border-inline-start:1px solid var(--hair)}
+.statband .c:first-child{border:0}
+.statband .n{font-family:var(--ff-display);font-weight:600;font-size:46px;line-height:1;letter-spacing:-.03em}
+.statband .l{font-size:.9rem;color:var(--ink-2);margin-top:8px}
+.statband .l .en{display:block;margin-top:2px}
+
+/* sections */
+section{padding:56px 0;border-top:1px solid var(--hair)}
+.sec-h{max-width:70ch;margin-bottom:34px}
+.sec-h h2{font-family:var(--ff-display);font-weight:600;font-size:clamp(26px,4vw,42px);letter-spacing:-.025em;margin-top:12px}
+.sec-h h2 .en{display:block;margin-top:4px;font-size:.95rem}
+.sec-h p{margin-top:14px;color:var(--ink-2);font-size:1.05rem}
+
+/* v5 cards */
+.v5grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair);border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:960px){.v5grid{grid-template-columns:1fr 1fr}}@media(max-width:640px){.v5grid{grid-template-columns:1fr}}
+.v5card{background:var(--card);padding:24px}
+.v5card .code{font-family:var(--ff-mono);font-size:.72rem;font-weight:600;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);padding:2px 9px;border-radius:100px}
+.v5card h3{margin:14px 0 4px;font-size:1.12rem}
+.v5card h3 .en{display:block;margin-top:2px}
+.v5card p{font-size:.92rem;color:var(--ink-2);line-height:1.75}
+
+/* org tiers */
+.tiers{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+@media(max-width:1100px){.tiers{grid-template-columns:1fr 1fr}}@media(max-width:640px){.tiers{grid-template-columns:1fr}}
+.tier{border:1px solid var(--hair);border-radius:var(--r-lg);background:var(--card);overflow:hidden;display:flex;flex-direction:column}
+.tier .head{padding:14px 16px;border-bottom:1px solid var(--hair)}
+.tier .tno{font-family:var(--ff-mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.tier .tnm{font-weight:700;font-size:1rem;margin-top:2px}
+.tier .tnm .en{display:block;font-size:.7rem;margin-top:1px}
+.tier .adv{display:flex;align-items:center;gap:8px;padding:11px 16px;background:var(--accent-soft);border-bottom:1px solid var(--accent-line);font-size:.86rem}
+.tier .adv b{color:var(--accent)}
+.tier ul{list-style:none;padding:8px 16px 16px}
+.tier li{padding:7px 0;border-bottom:1px dashed var(--hair);font-size:.86rem;color:var(--ink-2)}
+.tier li:last-child{border:0}
+.tier li .p{font-family:var(--ff-en);direction:ltr;font-weight:600;color:var(--ink)}
+.tier li .pn{display:block;color:var(--ink-3);font-size:.74rem}
+.iso{margin-top:26px;border:1px solid var(--hair-2);border-radius:var(--r-lg);background:var(--paper-2);padding:24px}
+.iso .path{font-family:var(--ff-mono);font-size:.78rem;direction:ltr;background:var(--card);border:1px solid var(--hair);border-radius:var(--r);padding:12px 14px;margin-top:12px;color:var(--ink-2);overflow-x:auto;white-space:nowrap}
+
+/* gates */
+.gates{display:grid;grid-template-columns:repeat(9,1fr);border:1px solid var(--hair);border-radius:var(--r-lg);overflow:hidden;background:var(--card)}
+@media(max-width:1100px){.gates{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.gates{grid-template-columns:1fr 1fr}}
+.gate{padding:16px 14px;border-inline-start:1px solid var(--hair);border-top:1px solid var(--hair)}
+.gate .g{font-family:var(--ff-mono);font-size:.72rem;color:var(--accent);font-weight:600}
+.gate .nm{font-weight:700;font-size:.92rem;margin-top:4px}
+.gate .nm .en{display:block;font-size:.66rem;margin-top:1px}
+.gate .ex{font-size:.76rem;color:var(--ink-3);margin-top:7px;line-height:1.5}
+
+/* doctrine + ladder */
+.dtwo{display:grid;grid-template-columns:1.1fr .9fr;gap:34px}
+@media(max-width:960px){.dtwo{grid-template-columns:1fr}}
+.teach{list-style:none}
+.teach li{display:flex;gap:14px;padding:15px 0;border-bottom:1px solid var(--hair)}
+.teach .rn{font-family:var(--ff-display);font-weight:600;font-size:22px;color:var(--accent);flex:0 0 40px;line-height:1.2}
+.teach h4{font-size:1rem}.teach h4 .en{display:block;font-size:.72rem;margin:1px 0 3px}
+.teach p{font-size:.86rem;color:var(--ink-2)}
+.ladder{border:1px solid var(--hair);border-radius:var(--r-lg);overflow:hidden}
+.ladder table{width:100%;border-collapse:collapse;font-size:.82rem}
+.ladder th{text-align:start;font-family:var(--ff-mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);padding:10px 12px;border-bottom:2px solid var(--hair-2);background:var(--paper-2)}
+.ladder td{padding:11px 12px;border-bottom:1px solid var(--hair);vertical-align:top}
+.ladder .m{font-family:var(--ff-mono);font-size:.72rem;color:var(--ink-blue);white-space:nowrap}
+.ladder .tier-name{font-weight:700;white-space:nowrap}
+.ladder .use{color:var(--ink-2);font-size:.78rem;line-height:1.5}
+
+/* commands */
+.cmds{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+@media(max-width:900px){.cmds{grid-template-columns:1fr}}
+.cmdcol h3{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.cmdcol .tag{font-family:var(--ff-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);background:var(--sunk);padding:2px 8px;border-radius:100px}
+.cmd{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--hair)}
+.cmd code{font-family:var(--ff-mono);font-size:.8rem;color:var(--accent);flex:0 0 auto;direction:ltr}
+.cmd .d{font-size:.84rem;color:var(--ink-2)}
+.powers{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
+@media(max-width:900px){.powers{grid-template-columns:1fr 1fr}}@media(max-width:520px){.powers{grid-template-columns:1fr}}
+.power{border:1px solid var(--hair);border-radius:var(--r);background:var(--card);padding:16px}
+.power .i{font-size:20px}.power h4{margin:8px 0 4px;font-size:.95rem}
+.power p{font-size:.8rem;color:var(--ink-2)}
+.power .num{color:var(--accent)}
+
+/* dashboard CTA band */
+.dashband{background:radial-gradient(120% 100% at 100% 0%,#12182b,#0b1020 70%);color:#eef4ff;border-radius:var(--r-xl);padding:clamp(30px,5vw,56px);position:relative;overflow:hidden}
+.dashband::after{content:"";position:absolute;inset-inline-start:-10%;top:-40%;width:60%;height:180%;background:radial-gradient(circle,rgba(255,157,60,.16),transparent 62%);pointer-events:none}
+.dashband .kicker{color:var(--accent-2)}.dashband .kicker::before{background:var(--accent-2)}
+.dashband h2{font-family:var(--ff-display);font-weight:600;font-size:clamp(26px,4vw,42px);color:#fff;margin:14px 0;letter-spacing:-.02em}
+.dashband p{color:rgba(238,244,255,.72);max-width:60ch;font-size:1.02rem}
+.dashband .en{color:rgba(238,244,255,.5)}
+.dashfeatures{display:flex;gap:22px;flex-wrap:wrap;margin:22px 0 26px}
+.dashfeatures div{font-size:.9rem;color:rgba(238,244,255,.85)}
+.dashfeatures b{display:block;font-family:var(--ff-display);font-size:1.15rem;color:#ffcf6a}
+.dashband .cta{background:#ffcf6a;color:#2a1400}.dashband .cta:hover{background:#fff}
+.dashband .reach{margin-top:16px;font-family:var(--ff-mono);font-size:.76rem;color:rgba(238,244,255,.55);direction:ltr}
+
+/* footer */
+footer{padding:44px 0 60px;border-top:1px solid var(--hair);color:var(--ink-3);font-size:.86rem}
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+.foot .doc{font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.04em;direction:ltr}
+
+/* reveal */
+.rev{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+.rev.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="row">
+    <div class="brand"><span class="s">SOFI</span><span class="t">الإصدار 5</span></div>
+    <nav class="mnav">
+      <a href="#v5">الطبقة v5</a>
+      <a href="#org">الفريق</a>
+      <a href="#gates">البوابات</a>
+      <a href="#doctrine">العقيدة</a>
+      <a href="#cmd">الأوامر</a>
+    </nav>
+    <a class="cta" href="http://127.0.0.1:8787">افتح الداشبورد الحي ←</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" style="border-top:0">
+  <div class="wrap hero-grid">
+    <div class="rev">
+      <span class="kicker">مؤسسة برمجيات تُدار بالذكاء الاصطناعي</span>
+      <h1>ثلاثون وكيلاً يبنون معاً —<br>ولا <em>يُصدَّقون</em> إلا <em>بدليل</em>.</h1>
+      <div class="sub-en">Thirty agents build together — none are believed without proof.</div>
+      <p class="lede">سوفي مؤسسة برمجية كاملة من وكلاء ذكاء اصطناعي: ثلاثون وكيلاً موزّعين على خمس طبقات، يمرّون بدورة حياة من تسع بوابات، وكل قرار يُسجَّل في ذاكرة مؤسسية موثّقة بـ Git. الإصدار الخامس أضاف ما تفتقده أيّ بنية مهما بدت متقنة: وكلاء لا يهلوسون حقيقةً دون استشهاد، لا يُصدَّق تقريرهم عن نجاح مهمة إلا بمراجعة مستقلة، ومؤسسة تتعلّم فعلاً من تاريخها بدل أن تكرّره.</p>
+      <div class="doctrine-strip"><b>Design is Truth</b> · few token do trick · big brain small mouth</div>
+    </div>
+    <div class="hero-side rev">
+      <div class="r"><span class="k">الوكلاء</span><span class="v">٣٠</span></div>
+      <div class="r"><span class="k">الطبقات</span><span class="v">٥</span></div>
+      <div class="r"><span class="k">البوابات</span><span class="v">٩</span></div>
+      <div class="r"><span class="k">طبقة v5</span><span class="v">النزاهة</span></div>
+      <div class="r"><span class="k">الذاكرة</span><span class="v mono" style="font-size:14px">git-backed</span></div>
+    </div>
+  </div>
+  <div class="wrap"><div class="statband rev">
+    <div class="c"><div class="n">٣٠</div><div class="l">وكيلاً: رئيس تنفيذي + ٥ مستشارين + ٢٤ أخصائياً<span class="en">1 CEO · 5 tier-Advisors · 24 specialists</span></div></div>
+    <div class="c"><div class="n">٥</div><div class="l">طبقات معزولة تماماً<span class="en">strictly isolated tiers</span></div></div>
+    <div class="c"><div class="n">٩</div><div class="l">بوابات دورة الحياة — بلا تخطٍّ<span class="en">lifecycle gates, none skipped</span></div></div>
+  </div></div>
+</section>
+
+<!-- V5 LAYER -->
+<section id="v5">
+  <div class="wrap">
+    <div class="sec-h rev">
+      <span class="kicker">طبقة النزاهة والذكاء · v5</span>
+      <h2>البنية بُنيت. الآن جاءت الطبقة التي تجعلها تُصدَّق.<span class="en">The structure was built. Now comes the layer that makes it trustworthy.</span></h2>
+      <p>v4 بنى الهيكل — 30 وكيلاً، 5 طبقات، بوابات المستشارين، دورة 9 بوابات، عقل موثّق بـ Git. لكن الهيكل وحده لا يكفي: أيّ وكيل يقدر أن يهلوس بثقة ويعتبر «تمّ» دليلاً. v5 يضيف الطبقة الناقصة.</p>
+    </div>
+    <div class="v5grid rev">
+      <div class="v5card"><span class="code">C1</span><h3>التأريض — استشهد أو اصمت<span class="en">Grounding</span></h3><p>خمس قواعد ملزمة لكل وكيل في كل دورة: استشهد بـ ملف:سطر أو ملف الدماغ أو كوميت — وإلا اكتب «غير مؤكَّد» وتوقّف؛ الامتناع مكافأة لا فشل؛ لا تدّعِ تنفيذاً لم تشاهده؛ افصل «تحقّقت» عن «استنتجت»؛ أظهِر التعارض بدل حسمه بصمت.</p></div>
+      <div class="v5card"><span class="code">C2</span><h3>الانعكاس — منظومة تحلم بتاريخها<span class="en">Reflection · "dreaming"</span></h3><p>محرّك مجدول (لا لكل دورة) يقرأ تاريخ HANDOFFS ويقطّره إلى دروس إجرائية دائمة في LESSONS.md عبر <span class="mono">/sofi-reflect</span>. كل درس سطر: الموقف · ما فشل · القاعدة. الاحتفاظ افتراضي — لا يُمحى تاريخ خام.</p></div>
+      <div class="v5card"><span class="code">C4</span><h3>التحقّق — النتيجة لا الإفادة الذاتية<span class="en">Verification</span></h3><p>تذكرة «منجزة» بلا كتلة دليل (أمر + مخرجات + كود خروج) يرفضها <span class="mono">gate-check</span> آلياً. وقبل تقدّم أي بوابة، وكيل مستقل بسياق جديد يراجع ضد معايير التذكرة الأصلية فقط — بأدوار ثابتة، و«غير معروف» حكم صالح دائماً.</p></div>
+      <div class="v5card"><span class="code">C3</span><h3>عقل قابل للاستعلام<span class="en">Structured queryable brain</span></h3><p>حقول frontmatter خفيفة (<span class="mono">status·gate·type·mem·date</span>) تحوّل التذاكر والدروس إلى سجلات قابلة للفلترة حسب نوع الذاكرة — دلالي · حَدَثي · إجرائي — بلا قراءة الملف كاملاً كل مرة.</p></div>
+      <div class="v5card"><span class="code">C5</span><h3>استقلالية محسوبة الميزانية<span class="en">Budgeted autonomy + effort-scaling</span></h3><p>جدول يربط فئة المهمة (تافهة · دور واحد · عابرة للطبقات · مسح · تحكيم) بعرض التفريع وسقف النداءات — يمنع الإفراط والتفريط. كل تفويض يحمل تلميح جهد وشرط توقف آمن.</p></div>
+      <div class="v5card"><span class="code">C6</span><h3>بلوك التفويض RCCF · النسخة 2<span class="en">RCCF v2</span></h3><p>كل استدعاء بلوك من أربعة: الدور · السياق · الأمر · الصيغة. v2 يضيف فرع أسئلة توضيحية قبل بريف ناقص، وتجميد البريف بعد اكتماله، وحقولاً صريحة للحدود وتلميح الجهد وبند التأريض.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ORG -->
+<section id="org">
+  <div class="wrap">
+    <div class="sec-h rev">
+      <span class="kicker">التنظيم · 30 وكيلاً</span>
+      <h2>ثلاثون عقلاً، لا فريقاً واحداً يتشتّت.<span class="en">Thirty minds, not one blurred team.</span></h2>
+      <p>مديرٌ تنفيذي واحد (Magnus Holt) يحمل القرار، وخمسة مستشارين — واحد لكل طبقة — هم الباب الوحيد لأي طلب يعبر حدود طبقته، وأربعة وعشرون أخصائياً يملك كلٌّ حرفته كاملةً. عزلٌ متعمّد: لا يخاطب أخصائيٌّ أخصائياً في طبقة أخرى مباشرةً أبداً.</p>
+    </div>
+    <div class="tiers rev">
+      <div class="tier">
+        <div class="head"><div class="tno" style="color:var(--t0)">Tier 0 · بوابات 0–2</div><div class="tnm">الاستراتيجية<span class="en">Strategy &amp; Product Design</span></div></div>
+        <div class="adv"><span>🚪</span><span>المستشار: <b>Isabelle Duarte</b></span></div>
+        <ul>
+          <li><span class="p">Product Strategist</span><span class="pn">Dr. Amara Okafor · G0</span></li>
+          <li><span class="p">UX Researcher</span><span class="pn">Hiroshi Tanaka · G1</span></li>
+          <li><span class="p">Journey Architect</span><span class="pn">Sofia Marchetti · G1</span></li>
+          <li><span class="p">UI/UX Designer</span><span class="pn">Daniel Kim · G2</span></li>
+          <li><span class="p">Content Strategist</span><span class="pn">Peg O'Sullivan · G2</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="head"><div class="tno" style="color:var(--t1)">Tier 1 · بوابة 3</div><div class="tnm">المعمارية<span class="en">System &amp; Architecture</span></div></div>
+        <div class="adv"><span>🚪</span><span>المستشار: <b>Ingrid Voss</b></span></div>
+        <ul>
+          <li><span class="p">System Architect</span><span class="pn">Vikram Rao</span></li>
+          <li><span class="p">Schema Engineer</span><span class="pn">Elena Petrova</span></li>
+          <li><span class="p">API &amp; Integration</span><span class="pn">Marco Blackwood</span></li>
+          <li><span class="p">Security Architect</span><span class="pn">Dr. Ruth Goldberg</span></li>
+          <li><span class="p">Cloud Architect</span><span class="pn">Kenji Watanabe</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="head"><div class="tno" style="color:var(--t2)">Tier 2 · بوابات 2،4</div><div class="tnm">التطوير<span class="en">Development Execution</span></div></div>
+        <div class="adv"><span>🚪</span><span>المستشار: <b>Elif Kaya</b></span></div>
+        <ul>
+          <li><span class="p">Database Engineer</span><span class="pn">Günther Weber</span></li>
+          <li><span class="p">API Engineer</span><span class="pn">Priya Nair</span></li>
+          <li><span class="p">Backend / Blade</span><span class="pn">Aisha Rahman</span></li>
+          <li><span class="p">Frontend / React</span><span class="pn">Grace Achieng</span></li>
+          <li><span class="p">Mobile Engineer</span><span class="pn">João Silva</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="head"><div class="tno" style="color:var(--t3)">Tier 3 · بوابة 5</div><div class="tnm">الجودة<span class="en">Quality &amp; Reliability</span></div></div>
+        <div class="adv"><span>🚪</span><span>المستشار: <b>Otieno Wambua</b></span></div>
+        <ul>
+          <li><span class="p">QA &amp; SRE Lead</span><span class="pn">Barb Jensen</span></li>
+          <li><span class="p">Test Automation</span><span class="pn">Kwame Mensah</span></li>
+          <li><span class="p">Exploratory QA</span><span class="pn">Rosa Giménez</span></li>
+          <li><span class="p">Perf &amp; Load</span><span class="pn">Ahmed Farouk</span></li>
+          <li><span class="p">Pentester</span><span class="pn">Sirak Haile</span></li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="head"><div class="tno" style="color:var(--t4)">Tier 4 · بوابات 6–8</div><div class="tnm">البنية التحتية<span class="en">Infrastructure &amp; Deploy</span></div></div>
+        <div class="adv"><span>🚪</span><span>المستشار: <b>Astrid Lindqvist</b></span></div>
+        <ul>
+          <li><span class="p">DevOps Lead</span><span class="pn">Linda Schmidt</span></li>
+          <li><span class="p">CI/CD Engineer</span><span class="pn">Tomás Herrera</span></li>
+          <li><span class="p">Observability</span><span class="pn">Naomi Brooks</span></li>
+          <li><span class="p">Release / Incident</span><span class="pn">Camille Dubois</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="iso rev">
+      <span class="kicker">قاعدة عزل الطبقات · v5</span>
+      <p style="margin-top:12px;color:var(--ink-2)">أي حاجة عابرة للطبقات تسلك مساراً واحداً موثّقاً عبر المستشارين — نقطة اتصال واحدة لكل عبور، مسؤولية واضحة، لا خطوط متشابكة بين 24 أخصائياً. مفروضة آلياً، لا مجرد عُرف، بـ <span class="mono">tickets.py::validate_tier_boundary()</span>.</p>
+      <div class="path">Specialist → own-tier Advisor → target-tier Advisor → target specialist → (report) → back the same path</div>
+    </div>
+  </div>
+</section>
+
+<!-- GATES -->
+<section id="gates">
+  <div class="wrap">
+    <div class="sec-h rev">
+      <span class="kicker">دورة الحياة</span>
+      <h2>تسع بوّابات، بالترتيب، بلا تخطٍّ.<span class="en">Nine gates, in order, none skipped.</span></h2>
+      <p>كل بوابة لها مالك، ومُخرَج ملموس، وشرط عبور لا يُفاوَض. مخرجات ناقصة تُرفَض وتُعاد لأعلى. والبوابة الثامنة تُغذّي الأولى — المنظومة تتعلّم من نفسها.</p>
+    </div>
+    <div class="gates rev">
+      <div class="gate"><div class="g">G0</div><div class="nm">البدء<span class="en">Inception</span></div><div class="ex">الميثاق + بيان المشكلة</div></div>
+      <div class="gate"><div class="g">G1</div><div class="nm">الاكتشاف<span class="en">Discovery</span></div><div class="ex">الشخصيات + خريطة الرحلة</div></div>
+      <div class="gate"><div class="g">G2</div><div class="nm">التصميم<span class="en">Solution Design</span></div><div class="ex">نماذج + نصوص · WCAG 2.2 AA</div></div>
+      <div class="gate"><div class="g">G3</div><div class="nm">المعمارية<span class="en">Architecture</span></div><div class="ex">مخطط · OpenAPI · نموذج تهديد</div></div>
+      <div class="gate"><div class="g">G4</div><div class="nm">البناء المتوازي<span class="en">Implementation</span></div><div class="ex">خلفية · واجهة · موبايل معاً</div></div>
+      <div class="gate"><div class="g">G5</div><div class="nm">الجودة<span class="en">Integration &amp; QA</span></div><div class="ex">تغطية &gt;90% · ميزانية أداء</div></div>
+      <div class="gate"><div class="g">G6</div><div class="nm">التجهيز<span class="en">Staging &amp; UAT</span></div><div class="ex">بيئة تجهيز + اعتماد UAT</div></div>
+      <div class="gate"><div class="g">G7</div><div class="nm">الإطلاق<span class="en">Production</span></div><div class="ex">Blue/Green + تراجع جاهز</div></div>
+      <div class="gate"><div class="g">G8</div><div class="nm">المراقبة<span class="en">Observe &amp; Evolve</span></div><div class="ex">خرق SLO ← يعيد للبوابة 1</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DOCTRINE + LADDER -->
+<section id="doctrine">
+  <div class="wrap">
+    <div class="sec-h rev">
+      <span class="kicker">العقيدة والتوجيه الاقتصادي</span>
+      <h2>العقيدة صخرة — كل قاعدة تعود إليها.<span class="en">The doctrine is bedrock — every rule traces back to it.</span></h2>
+    </div>
+    <div class="dtwo">
+      <ul class="teach rev">
+        <li><span class="rn">I</span><div><h4>التصميم هو الحقيقة<span class="en">Design is Truth</span></h4><p>لا سطر كود بلا خطوة في خريطة الرحلة. المصمّمون يقودون، والمهندسون يترجمون.</p></div></li>
+        <li><span class="rn">II</span><div><h4>التدفّق الهرمي<span class="en">Hierarchical Flow</span></h4><p>العمل ينزل بالترتيب، لا تُقفز بوّابة، والعمل الناقص يُرفَض لأعلى — لا ارتجال.</p></div></li>
+        <li><span class="rn">III</span><div><h4>العزل الجذري<span class="en">Radical Isolation</span></h4><p>كل مشروع في فضائه الخاص — صفر تسرّب. الكود المشترك في <span class="mono">shared-packages/</span> فقط.</p></div></li>
+        <li><span class="rn">IV</span><div><h4>اقتصاد التوكن<span class="en">Token Economy</span></h4><p>أرخص نموذج وأقل جهد وأكثف مخرَج يجتاز المعيار. الهدر عيب، التصعيد بدليل فقط.</p></div></li>
+        <li><span class="rn">V</span><div><h4>التحوّل المستمر<span class="en">Continuous Metamorphosis</span></h4><p>بيانات الإنتاج تغذّي الدورة التالية. المنتج لا يكتمل — يتطوّر.</p></div></li>
+        <li><span class="rn">VI</span><div><h4>قابلية التراجع<span class="en">Reversibility</span></h4><p>الرخيص التراجع يُفوَّض بسرعة؛ الغالي يستحق التمهّل و ADR وخطة تراجع موثّقة.</p></div></li>
+      </ul>
+      <div class="rev">
+        <span class="kicker">سلّم النماذج الاقتصادي</span>
+        <div class="ladder" style="margin-top:14px">
+          <table>
+            <thead><tr><th>الطبقة</th><th>النموذج</th><th>متى</th></tr></thead>
+            <tbody>
+              <tr><td class="tier-name">🟢 آلي</td><td class="m">claude-haiku-4-5</td><td class="use">خط الدفاع الأول — 80% من الروتين: استعلامات، قراءة ملف، commits، CRUD</td></tr>
+              <tr><td class="tier-name">🔵 حصان عمل</td><td class="m">claude-sonnet-5</td><td class="use">الخط الثاني — كود ميزات واضح: Blade، هجرات، اختبارات، مراجعات</td></tr>
+              <tr><td class="tier-name">🔮 حارس البوّابة</td><td class="m">claude-fable-5</td><td class="use">المسوحات العابرة للطبقات فقط: بوّابة spec-review الصلبة، التسابق، التحكيم</td></tr>
+              <tr><td class="tier-name">🟣 عميق</td><td class="m">claude-opus-4-8</td><td class="use">الملاذ الأخير — تنقيب مليون توكن لأعطال مجهولة. ممنوع للروتين</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:.82rem;color:var(--ink-3);margin-top:12px">قاعدة واحدة: أرخص طبقة تجتاز الحدّ، والتصعيد بدليل فقط — لا تخمين، لا رفاهية.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMANDS + POWERS -->
+<section id="cmd">
+  <div class="wrap">
+    <div class="sec-h rev">
+      <span class="kicker">لوحة الأوامر والقدرات</span>
+      <h2>لوحة أوامر واحدة تُحرّك مؤسسة كاملة.<span class="en">One command palette. One whole enterprise.</span></h2>
+      <p>ثلاثة عشر أمراً فقط — لا فوضى. كل أمر مرن، يقبل وسيطاً، وينشر فريقاً كاملاً عند الحاجة. ثلاثة تُوجّه، والبقية تُنفّذ.</p>
+    </div>
+    <div class="cmds rev">
+      <div class="cmdcol">
+        <h3>العمود الفقري <span class="tag">العقد الشامل</span></h3>
+        <div class="cmd"><code>/sofi-boot</code><span class="d">مزامنة git + تحميل الدماغ الحي — لا بداية عمياء.</span></div>
+        <div class="cmd"><code>/sofi-team</code><span class="d">يطابق المهمة بالوكيل الصحيح: الطبقة، البوابة، المسار.</span></div>
+        <div class="cmd"><code>/sofi-delegate</code><span class="d">يبني موجز RCCF جاهزاً للّصق قبل كل استدعاء.</span></div>
+        <div class="cmd"><code>/sofi-gate</code><span class="d">يفحص شرط خروج البوابة ويتقدّم واحدة فقط.</span></div>
+        <div class="cmd"><code>/sofi-handoff</code><span class="d">دليل ← commit ← تحديث الدماغ ← التذكرة التالية.</span></div>
+        <div class="cmd"><code>/sofi-reflect</code><span class="d">v5 · «الحلم» — يستخلص دروساً دائمة من التاريخ.</span></div>
+      </div>
+      <div class="cmdcol">
+        <h3>أدوات القوة <span class="tag">غربلة أولاً · الأرخص</span></h3>
+        <div class="cmd"><code>/sofi-audit</code><span class="d">فحص شامل لطبقة — استشهاد file:line، قراءة فقط.</span></div>
+        <div class="cmd"><code>/sofi-spec-review</code><span class="d">مراجعة معمارية عبر مصفوفة رباعية ثابتة.</span></div>
+        <div class="cmd"><code>/sofi-feature</code><span class="d">الأكبر — دورة كاملة على ميزة: فحص←إصلاح←تحقّق←تسليم.</span></div>
+        <div class="cmd"><code>/sofi-secure</code><span class="d">فريق الأمن — OWASP + قاعدة معرفة سيبرانية.</span></div>
+        <div class="cmd"><code>/sofi-fix</code><span class="d">يوجّه كل ملاحظة لأرخص أخصائي + commit لكلٍّ.</span></div>
+        <div class="cmd"><code>/sofi-report</code><span class="d">تقرير موثّق بالأدلة إلى الدماغ، ثنائي اللغة.</span></div>
+        <div class="cmd"><code>/sofi-design-taste</code><span class="d">يقتل واجهات الـAI الرتيبة — 3 مقابض، a11y تفوز.</span></div>
+      </div>
+    </div>
+    <div class="powers rev">
+      <div class="power"><div class="i">🧊</div><h4>FossFLOW</h4><p>مخططات معمارية إيزومترية من JSON قابلة للتتبع — بوابة 3.</p></div>
+      <div class="power"><div class="i">🎨</div><h4>taste-skill</h4><p>ثلاثة مقابض تصميم تكسر الرتابة — a11y لا تتنازل.</p></div>
+      <div class="power"><div class="i">🏢</div><h4>The Agency</h4><p><span class="num">٢٣٢</span> وكيلاً / ١٦ قسماً — تُستخرج بنيتها لا تُنسخ.</p></div>
+      <div class="power"><div class="i">🛡️</div><h4>مكتبة الأمن</h4><p><span class="num">٨١٧</span> مهارة أمنية / ٢٩ مجالاً · MITRE ATT&amp;CK.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD CTA -->
+<section style="border-top:0">
+  <div class="wrap"><div class="dashband rev">
+    <span class="kicker">الداشبورد الحي · v5</span>
+    <h2>لا تكتفِ بالقراءة عن الفريق — شاهده يعمل.</h2>
+    <p>داشبورد مراقبة حيّة بأربع تبويبات، يقرأ بيانات المشروع الحقيقية مباشرةً — لا يكتب للدماغ أبداً، ولا يختلق رقم تكلفة وهمياً.<span class="en" style="display:block;margin-top:6px">Watch 30 agents, 9 gates, and a full lifecycle pulse in real time.</span></p>
+    <div class="dashfeatures">
+      <div><b>🧠 شبكة الدماغ</b>رسم تفاعلي لـ 30 وكيلاً</div>
+      <div><b>🛰️ المرصد الحي</b>بثّ من سجل العمل الفعلي</div>
+      <div><b>📋 المهام</b>طابور HANDOFFS مربوط بالوكلاء</div>
+      <div><b>🎚️ الميزانيات</b>سقوف الاستقلالية ومقاييس الخطر</div>
+    </div>
+    <a class="cta" href="http://127.0.0.1:8787">افتح الداشبورد الحي ←</a>
+    <div class="reach">http://127.0.0.1:8787 · or http://dashboard.local</div>
+  </div></div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div>SOFI · مؤسسة الوكلاء الذاتية · الإصدار 5.0</div>
+    <div class="doc">Design is Truth · few token do trick · big brain small mouth 🪨</div>
+  </div>
+</footer>
+
+<script>
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+  document.querySelectorAll('.rev').forEach(function(el){io.observe(el);});
+}else{document.querySelectorAll('.rev').forEach(function(el){el.classList.add('in');});}
+</script>
+</body>
+</html>

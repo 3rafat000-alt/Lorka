@@ -1,0 +1,117 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SOFI — Visual Identity  ·  "Broadsheet" (light editorial)
+   Design taste: Soft/Premium — VARIANCE 8 · MOTION 6 · DENSITY 5
+   Thesis: a warm light editorial broadsheet with ONE dark "observatory window"
+   where the living system is watched. Arabic-first, RTL. Anti-generic:
+   no centered-hero + 3-equal-cards, no dark-glass-teal. Opinionated type + color.
+   A11y: WCAG 2.2 AA — body contrast ≥ 7:1 on paper, visible focus, motion-reduce.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root{
+  /* — warm paper canvas (not stark white) — */
+  --paper:#f6f2ea; --paper-2:#fbf8f2; --card:#fffdf9; --sunk:#efe9dd;
+  --ink:#1b1712; --ink-2:#4a4239; --ink-3:#8a7f70; --hair:#e3dcce; --hair-2:#d3c9b6;
+  /* — one opinionated accent: warm ochre/amber (echoes the golden core), + ink-blue for data — */
+  --accent:#b4530b; --accent-2:#d97316; --accent-soft:#f6e6cf; --accent-line:#e9c9a0;
+  --ink-blue:#2b3a67; --ink-blue-soft:#e6e9f2;
+  /* — the observatory window (dark inset for the live graph) — */
+  --sky:#0b1020; --sky-2:#0f1730; --gold:#ffcf6a; --gold-2:#ff9d3c;
+  /* — semantic — */
+  --ok:#4f7a2f; --ok-soft:#e4eed7; --warn:#9a6a00; --warn-soft:#f6eccf; --danger:#a12a20; --danger-soft:#f3ddd8;
+  /* — tier spectrum (data encoding; kept vivid on the dark window) — */
+  --t0:#22d3ee; --t1:#38bdf8; --t2:#818cf8; --t3:#c084fc; --t4:#f472b6; --adv:#e0a53a; --ceo:#ff9d3c;
+  /* — type — */
+  --ff:"IBM Plex Sans Arabic",system-ui,sans-serif;
+  --ff-en:"IBM Plex Sans",system-ui,sans-serif;
+  --ff-display:"Fraunces","IBM Plex Sans Arabic",serif;   /* editorial numerals/wordmark */
+  --ff-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace;
+  /* — rhythm — */
+  --sp:8px; --r:10px; --r-lg:16px; --r-xl:24px;
+  --shadow:0 1px 2px rgba(27,23,18,.05),0 8px 30px -12px rgba(27,23,18,.14);
+  --shadow-lift:0 2px 4px rgba(27,23,18,.06),0 18px 50px -18px rgba(27,23,18,.22);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--ff);
+  font-size:15.5px; line-height:1.72; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(60% 40% at 100% 0%,rgba(180,83,11,.05),transparent 60%),
+    linear-gradient(var(--paper),var(--paper));
+}
+::selection{background:var(--accent-soft)}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-thumb{background:var(--hair-2);border-radius:20px;border:3px solid var(--paper)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+.ltr,.mono{direction:ltr;unicode-bidi:isolate}
+.mono{font-family:var(--ff-mono);font-feature-settings:"tnum"}
+.num{font-family:var(--ff-display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+/* — type ramp: has a point of view — */
+h1,h2,h3,h4{font-family:var(--ff);font-weight:700;line-height:1.2;letter-spacing:-.01em;color:var(--ink)}
+.display{font-family:var(--ff-display);font-weight:600;line-height:1.02;letter-spacing:-.03em}
+.kicker{font-family:var(--ff-mono);font-size:.7rem;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:8px}
+.kicker::before{content:"";width:22px;height:1.5px;background:var(--accent)}
+.lede{font-size:1.12rem;color:var(--ink-2);line-height:1.75;max-width:60ch}
+.eyebrow{font-family:var(--ff-mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+
+/* — hairline rule (editorial divider) — */
+.rule{height:1px;background:var(--hair);border:0}
+.rule.strong{height:2px;background:var(--ink)}
+
+/* — components — */
+.card{background:var(--card);border:1px solid var(--hair);border-radius:var(--r-lg);
+  box-shadow:var(--shadow);transition:box-shadow .25s,transform .25s}
+.card.hover:hover{box-shadow:var(--shadow-lift);transform:translateY(-2px)}
+.card-h{padding:16px 20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;gap:10px}
+.card-b{padding:20px}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;
+  padding:4px 11px;border-radius:100px;background:var(--accent-soft);color:var(--accent);
+  border:1px solid var(--accent-line)}
+.pill.blue{background:var(--ink-blue-soft);color:var(--ink-blue);border-color:#c7cfe0}
+.pill.ok{background:var(--ok-soft);color:var(--ok);border-color:#c9dbb2}
+.pill.warn{background:var(--warn-soft);color:var(--warn);border-color:#e6d29a}
+.pill.danger{background:var(--danger-soft);color:var(--danger);border-color:#e2b8b0}
+
+.badge{font-family:var(--ff-mono);font-size:.66rem;font-weight:600;padding:2px 9px;border-radius:6px;
+  background:var(--sunk);color:var(--ink-2);border:1px solid var(--hair)}
+
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+.dot.live{background:var(--ok);box-shadow:0 0 0 0 rgba(79,122,47,.4);animation:beat 2.2s infinite}
+.dot.off{background:var(--danger)}
+@keyframes beat{0%{box-shadow:0 0 0 0 rgba(79,122,47,.45)}70%{box-shadow:0 0 0 7px rgba(79,122,47,0)}100%{box-shadow:0 0 0 0 rgba(79,122,47,0)}}
+
+/* — stat block (editorial big-number) — */
+.stat .n{font-family:var(--ff-display);font-weight:600;font-size:clamp(30px,4vw,46px);line-height:1;letter-spacing:-.03em;color:var(--ink)}
+.stat .n.accent{color:var(--accent)}
+.stat .l{font-size:.78rem;color:var(--ink-3);margin-top:6px;font-family:var(--ff-mono);letter-spacing:.04em}
+
+/* — data table — */
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+thead th{text-align:start;font-family:var(--ff-mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:600;padding:9px 12px;border-bottom:2px solid var(--hair-2)}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--hair);color:var(--ink-2)}
+tbody tr:hover td{background:var(--paper-2)}
+
+/* — meters — */
+.meter{height:7px;border-radius:100px;background:var(--sunk);overflow:hidden}
+.meter>span{display:block;height:100%;border-radius:100px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.meter.warn>span{background:linear-gradient(90deg,#c98a00,#9a6a00)}
+.meter.danger>span{background:linear-gradient(90deg,#c2402f,#a12a20)}
+
+/* — the dark observatory window (holds the cosmic graph on a light page) — */
+.window{background:radial-gradient(120% 90% at 50% 40%,var(--sky-2),var(--sky) 70%);
+  border-radius:var(--r-xl);border:1px solid #1c2744;position:relative;overflow:hidden;
+  box-shadow:inset 0 0 80px rgba(0,0,0,.5),var(--shadow-lift)}
+.window .win-label{position:absolute;top:14px;inset-inline-start:18px;z-index:6;
+  font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
