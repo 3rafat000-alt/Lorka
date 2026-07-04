@@ -427,7 +427,8 @@ def _condense(ev: dict) -> list[dict]:
     """stream-json event -> 0..n compact UI events."""
     t = ev.get("type")
     if t == "system" and ev.get("subtype") == "init":
-        return [{"kind": "init", "model": ev.get("model", "")}]
+        return [{"kind": "init", "model": ev.get("model", ""),
+                 "session": ev.get("session_id", "")}]
     if t == "assistant":
         out = []
         for b in (ev.get("message") or {}).get("content") or []:
@@ -440,7 +441,7 @@ def _condense(ev: dict) -> list[dict]:
     if t == "result":
         return [{"kind": "result", "ok": not ev.get("is_error"),
                  "result": (ev.get("result") or "")[:6000],
-                 "turns": ev.get("num_turns"),
+                 "turns": ev.get("num_turns"), "session": ev.get("session_id", ""),
                  "secs": round((ev.get("duration_ms") or 0) / 1000, 1)}]
     return []
 
@@ -473,7 +474,8 @@ async def _pump(run_id: str) -> None:
                 # non-JSON (CLI error text merged from stderr) — surface it raw
                 items = [{"kind": "text", "text": line[:500]}]
             for it in items:
-                it = {"type": "claude", "run": run_id, "cmd": r["cmd"], **it, "ts": time.time()}
+                it = {"type": "claude", "run": run_id, "cmd": r["cmd"],
+                      "channel": r.get("channel", "palette"), **it, "ts": time.time()}
                 r["lines"].append(it)
                 _broadcast(it)
                 if it["kind"] == "result":
@@ -485,15 +487,46 @@ async def _pump(run_id: str) -> None:
     except Exception as e:
         r["status"] = "error"
         err = {"type": "claude", "run": run_id, "cmd": r["cmd"],
+               "channel": r.get("channel", "palette"),
                "kind": "text", "text": f"[runner error] {e}", "ts": time.time()}
         r["lines"].append(err)
         _broadcast(err)
     finally:
         fin = {"type": "claude", "run": run_id, "cmd": r["cmd"], "kind": "status",
+               "channel": r.get("channel", "palette"),
                "status": r["status"], "exit": r.get("exit"),
                "took": round(time.time() - r["t0"], 1), "ts": time.time()}
         r["lines"].append(fin)
         _broadcast(fin)
+
+
+async def _launch(prompt: str, cmd: str, channel: str, arg: str = "",
+                  resume: str | None = None) -> dict:
+    """Shared headless-Claude launcher for palette + chat. Global one-at-a-time."""
+    if not pathlib.Path(CLAUDE_BIN).exists():
+        return {"ok": False, "error": "claude CLI not found on server", "code": 500}
+    async with RUN_LOCK:
+        if any(r["status"] == "running" for r in RUNS.values()):
+            return {"ok": False, "error": "run already in progress — one at a time", "code": 409}
+        run_id = uuid.uuid4().hex[:10]
+        argv = [CLAUDE_BIN, "-p", prompt, "--output-format", "stream-json", "--verbose",
+                "--permission-mode", "bypassPermissions"]
+        if resume:
+            argv += ["--resume", resume]
+        proc = await asyncio.create_subprocess_exec(
+            *argv, cwd=str(_ROOT),
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
+            env={**os.environ, "SOFI_DASH_RUN": run_id})
+        RUNS[run_id] = {"cmd": cmd, "arg": arg, "prompt": prompt, "status": "running",
+                        "channel": channel, "t0": time.time(),
+                        "lines": deque(maxlen=MAX_LINES), "proc": proc, "exit": None}
+        asyncio.create_task(_pump(run_id))
+        asyncio.create_task(_watchdog(run_id))
+    started = {"type": "claude", "run": run_id, "cmd": cmd, "channel": channel,
+               "kind": "started", "prompt": prompt[:300], "ts": time.time()}
+    RUNS[run_id]["lines"].append(started)
+    _broadcast(started)
+    return {"ok": True, "run": run_id, "prompt": prompt[:300]}
 
 
 @app.get("/api/palette")
@@ -520,30 +553,37 @@ async def api_claude_run(payload: dict):
             return JSONResponse({"ok": False,
                                  "error": "arg required — letters/digits/spaces, max 120, no leading dash"},
                                 status_code=400)
-    if not pathlib.Path(CLAUDE_BIN).exists():
-        return JSONResponse({"ok": False, "error": "claude CLI not found on server"}, status_code=500)
-    async with RUN_LOCK:
-        if any(r["status"] == "running" for r in RUNS.values()):
-            return JSONResponse({"ok": False, "error": "run already in progress — one at a time"},
-                                status_code=409)
-        prompt = f"/{cmd} {arg}".strip()
-        run_id = uuid.uuid4().hex[:10]
-        proc = await asyncio.create_subprocess_exec(
-            CLAUDE_BIN, "-p", prompt, "--output-format", "stream-json", "--verbose",
-            "--permission-mode", "bypassPermissions",
-            cwd=str(_ROOT),
-            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
-            env={**os.environ, "SOFI_DASH_RUN": run_id})
-        RUNS[run_id] = {"cmd": cmd, "arg": arg, "prompt": prompt, "status": "running",
-                        "t0": time.time(), "lines": deque(maxlen=MAX_LINES),
-                        "proc": proc, "exit": None}
-        asyncio.create_task(_pump(run_id))
-        asyncio.create_task(_watchdog(run_id))
-    started = {"type": "claude", "run": run_id, "cmd": cmd, "kind": "started",
-               "prompt": prompt, "ts": time.time()}
-    RUNS[run_id]["lines"].append(started)
-    _broadcast(started)
-    return JSONResponse({"ok": True, "run": run_id, "prompt": prompt})
+    res = await _launch(f"/{cmd} {arg}".strip(), cmd, "palette", arg)
+    return JSONResponse(res, status_code=res.pop("code", 200) if not res["ok"] else 200)
+
+
+# ── live chat + prompt builder ───────────────────────────────────────────────
+_SESSION_OK = re.compile(r"^[0-9a-fA-F-]{8,64}$")
+PROMPT_BUILDER_WRAP = (
+    "أنت مهندس برمبتات SOFI. مهمتك الوحيدة: ابنِ برمبت تفويض RCCF كامل واحترافي "
+    "(🎭 Role · 📂 Context · 🎯 Command · 📐 Format) جاهز للنسخ واللصق، للمهمة التالية. "
+    "اختر الوكيل الأنسب من engine/ROSTER.md، واربط السياق بملفات المشروع الحقيقية. "
+    "أخرج البرمبت داخل كتلة كود واحدة ثم توقف — لا تنفّذ المهمة نفسها.\n\nالمهمة: {task}"
+)
+
+
+@app.post("/api/chat/send")
+async def api_chat_send(payload: dict):
+    text = ((payload or {}).get("text") or "").strip()
+    mode = (payload or {}).get("mode", "chat")
+    session = ((payload or {}).get("session") or "").strip()
+    if not text or len(text) > 4000:
+        return JSONResponse({"ok": False, "error": "message required (max 4000 chars)"},
+                            status_code=400)
+    if text.startswith("-"):
+        return JSONResponse({"ok": False, "error": "message may not start with a dash"},
+                            status_code=400)
+    if session and not _SESSION_OK.match(session):
+        return JSONResponse({"ok": False, "error": "bad session id"}, status_code=400)
+    prompt = PROMPT_BUILDER_WRAP.format(task=text) if mode == "build" else text
+    res = await _launch(prompt, "chat" if mode == "chat" else "prompt-builder",
+                        "chat", resume=session or None)
+    return JSONResponse(res, status_code=res.pop("code", 200) if not res["ok"] else 200)
 
 
 @app.post("/api/claude/stop")
@@ -592,6 +632,28 @@ def _tail_new(path: pathlib.Path, pos: int) -> tuple[list[str], int]:
         return [l for l in chunk.splitlines() if l.strip()], f.tell()
 
 
+def _brain_sig() -> dict:
+    """mtime signature of everything the UI renders — per-project brain files +
+    routing/roster. A change here → push a `refresh` event so tasks, observatory,
+    gates, and budgets re-render live without a page reload."""
+    sig: dict[str, float] = {}
+    pd = _ROOT / "projects"
+    if pd.exists():
+        for p in pd.iterdir():
+            ctx = p / "_context"
+            if not ctx.is_dir():
+                continue
+            for f in ctx.glob("*.md"):
+                try:
+                    sig[f"{p.name}:{f.name}"] = f.stat().st_mtime
+                except OSError:
+                    pass
+    for f in (ROUTING, ROSTER):
+        if f.exists():
+            sig[f.name] = f.stat().st_mtime
+    return sig
+
+
 def _runlogs() -> list[pathlib.Path]:
     out = []
     pd = _ROOT / "projects"
@@ -613,6 +675,8 @@ async def ws(sock: WebSocket):
     pos = {SESSIONS: SESSIONS.stat().st_size if SESSIONS.exists() else 0,
            AUDIT: AUDIT.stat().st_size if AUDIT.exists() else 0}
     runlog_pos = {rl: rl.stat().st_size for rl in _runlogs()}
+    brain_sig = _brain_sig()
+    brain_check = 0.0
     await sock.send_json({"type": "hello", "server_time": time.time(),
                           "sources": {"sessions": SESSIONS.exists(), "audit": AUDIT.exists(),
                                       "runlogs": len(runlog_pos)}})
@@ -661,6 +725,19 @@ async def ws(sock: WebSocket):
             for ev in events:
                 await sock.send_json(ev)
             # heartbeat so the client knows the stream is alive even when idle
+            # brain-change watcher (every ~4.5s): STATE/CONTEXT/HANDOFFS/routing drift
+            # → tell the client exactly which project to re-render
+            if time.time() - brain_check > 4.5:
+                brain_check = time.time()
+                new_sig = _brain_sig()
+                changed = {k for k in set(new_sig) | set(brain_sig)
+                           if brain_sig.get(k) != new_sig.get(k)}
+                if changed:
+                    prjs = sorted({c.split(":", 1)[0] for c in changed if ":" in c})
+                    routing = any(":" not in c for c in changed)
+                    await sock.send_json({"type": "refresh", "projects": prjs,
+                                          "routing": routing, "ts": time.time()})
+                brain_sig = new_sig
             await sock.send_json({"type": "tick", "ts": time.time()})
             await asyncio.sleep(1.5)
     except WebSocketDisconnect:

@@ -139,6 +139,21 @@
 .runbtn{border:1px solid var(--hair-2);background:var(--accent);color:#fff;border-radius:8px;padding:5px 14px;cursor:pointer;font-size:.8rem;white-space:nowrap}
 .runbtn:disabled{opacity:.35;cursor:not-allowed}
 .cmdout{min-height:420px;max-height:65vh;direction:ltr;text-align:left}
+.runhist{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto}
+.rh{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;border:1px solid var(--hair-2);border-radius:8px;padding:5px 9px;cursor:pointer}
+.rh:hover{border-color:var(--accent)}
+.rh .st-done{color:var(--ok)}.rh .st-error,.rh .st-timeout{color:var(--danger)}.rh .st-running{color:var(--accent)}
+/* ── live chat ── */
+.chatwrap{display:grid;grid-template-rows:1fr auto;min-height:60vh;max-height:72vh}
+.chatlog{overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:14px 4px}
+.msg{max-width:78%;border-radius:14px;padding:10px 14px;font-size:.9rem;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.msg.user{align-self:flex-start;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-end;background:transparent;border:1px solid var(--hair-2);border-bottom-left-radius:4px}
+.msg.meta{align-self:center;color:var(--ink-3);font-size:.72rem;background:none;padding:0}
+.msg .tools{color:var(--ink-3);font-size:.72rem;font-family:ui-monospace,monospace;direction:ltr;text-align:left}
+.chatbar{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--hair-2)}
+.chatbar textarea{flex:1;resize:none;border:1px solid var(--hair-2);border-radius:10px;padding:9px 12px;font:inherit;font-size:.9rem;background:transparent;color:var(--ink);min-height:44px;max-height:130px}
+.chatbar .sel{max-width:150px}
 </style>
 </head>
 <body>
@@ -158,6 +173,7 @@
     <div class="t" data-tab="tasks">إدارة المهام <span class="c" id="c-task">0</span></div>
     <div class="t" data-tab="budgets">التخطيط والميزانية <span class="c" id="c-bud">0</span></div>
     <div class="t" data-tab="commands">الأوامر المباشرة <span class="c" id="c-cmd">0</span></div>
+    <div class="t" data-tab="chat">الدردشة المباشرة <span class="c" id="c-chat">·</span></div>
   </div>
 </div>
 
@@ -272,9 +288,15 @@
   <div class="panel" id="tab-commands">
     <div class="sec-h" style="margin-bottom:14px"><span class="kicker">تنفيذ مباشر · Claude Code</span><h2>اضغط الأمر — كلاود ينفّذ والناتج يتدفّق هنا حيّاً</h2></div>
     <div class="grid" style="grid-template-columns:340px 1fr;gap:16px;align-items:start">
-      <div class="card">
-        <div class="card-h"><span class="kicker">لوحة الأوامر · قائمة بيضاء</span></div>
-        <div class="card-b"><div id="palette" class="palette"><div class="sub">…</div></div></div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-h"><span class="kicker">لوحة الأوامر · قائمة بيضاء</span></div>
+          <div class="card-b"><div id="palette" class="palette"><div class="sub">…</div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="kicker">سجل التشغيلات</span><button class="diagbtn" onclick="loadHistory()">↻</button></div>
+          <div class="card-b"><div id="runHist" class="runhist"><div class="sub">لا تشغيلات بعد</div></div></div>
+        </div>
       </div>
       <div class="card">
         <div class="card-h">
@@ -282,9 +304,38 @@
           <span style="display:flex;gap:8px;align-items:center">
             <span class="sub" id="cmdStatus">خامل</span>
             <button class="diagbtn" id="cmdStop" style="display:none" onclick="stopRun()">⏹ إيقاف</button>
+            <button class="diagbtn" onclick="$('#cmdOut').textContent=''">🗑 مسح</button>
           </span>
         </div>
         <div class="card-b"><pre class="diagout cmdout" id="cmdOut">جاهز. أمر واحد في كل مرة — التنفيذ الحقيقي يجري في Claude Code داخل مساحة SOFI، وحُرّاس الأمان (PreToolUse) يبقون فاعلين داخل الجلسة.</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT — free live conversation + prompt builder -->
+  <div class="panel" id="tab-chat">
+    <div class="sec-h" style="margin-bottom:14px"><span class="kicker">جلسة متواصلة · Claude Code</span><h2>دردشة مباشرة مع كلاود داخل مساحة SOFI</h2></div>
+    <div class="card">
+      <div class="card-h">
+        <span class="kicker" id="chatSess">جلسة جديدة</span>
+        <span style="display:flex;gap:8px;align-items:center">
+          <span class="sub" id="chatStatus">خامل</span>
+          <button class="diagbtn" onclick="newChatSession()">✨ جلسة جديدة</button>
+        </span>
+      </div>
+      <div class="card-b chatwrap">
+        <div class="chatlog" id="chatLog">
+          <div class="msg meta">اكتب رسالة — الوضع «دردشة» ينفّذ مباشرة، والوضع «بناء برمبت» يحوّل طلبك لبرمبت RCCF جاهز للنسخ بدون تنفيذ. الجلسة تتذكّر السياق بين الرسائل.</div>
+        </div>
+        <div class="chatbar">
+          <select class="sel" id="chatMode" title="الوضع">
+            <option value="chat">💬 دردشة</option>
+            <option value="build">🧩 بناء برمبت</option>
+          </select>
+          <textarea id="chatInput" placeholder="اسأل، وجّه، أو اطلب برمبت…" dir="auto"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+          <button class="runbtn" id="chatSend" onclick="sendChat()">إرسال</button>
+        </div>
       </div>
     </div>
   </div>
@@ -418,7 +469,20 @@ async function runDiag(action,btn){const out=$('#diagOut');out.className='diagou
     else{out.textContent=j.output.trimEnd()+`\n\n— exit ${j.exit} · ${j.took}s · ${new Date().toLocaleTimeString()}`;out.className='diagout '+(j.ok?'pass':'fail');}}
   catch(e){out.textContent='✗ '+e;out.className='diagout fail';}
   finally{document.querySelectorAll('.diagbtn').forEach(b=>b.disabled=false);}}
-function connectWS(){const proto=location.protocol==='https:'?'wss':'ws';let ws;try{ws=new WebSocket(`${proto}://${location.host}/ws`);}catch(e){setLive(false);return;}ws.onopen=()=>setLive(true);ws.onclose=()=>{setLive(false);setTimeout(connectWS,3000);};ws.onerror=()=>setLive(false);ws.onmessage=ev=>{const m=JSON.parse(ev.data);if(m.type==='tick'||m.type==='hello')return;if(m.type==='activity'){state.evCount++;if(m.agent&&m.agent!=='unknown'){pulseAgent(m.agent);addFlowChip(m.agent,'',true);}pushEvent('',m.agent||'system',(m.action||m.event||'active')+(m.project?' · '+m.project:''));}else if(m.type==='security'){state.secCount++;pushEvent('sec',m.agent||'guard',(m.action||'')+' — '+(m.summary||''));if(m.agent){pulseAgent(m.agent);addFlowChip(m.agent,'warn',true);}}else if(m.type==='claude'){onClaudeEvent(m);}};}
+function connectWS(){const proto=location.protocol==='https:'?'wss':'ws';let ws;try{ws=new WebSocket(`${proto}://${location.host}/ws`);}catch(e){setLive(false);return;}ws.onopen=()=>setLive(true);ws.onclose=()=>{setLive(false);setTimeout(connectWS,3000);};ws.onerror=()=>setLive(false);ws.onmessage=ev=>{const m=JSON.parse(ev.data);if(m.type==='tick'||m.type==='hello')return;if(m.type==='activity'){state.evCount++;if(m.agent&&m.agent!=='unknown'){pulseAgent(m.agent);addFlowChip(m.agent,'',true);}pushEvent('',m.agent||'system',(m.action||m.event||'active')+(m.project?' · '+m.project:''));}else if(m.type==='security'){state.secCount++;pushEvent('sec',m.agent||'guard',(m.action||'')+' — '+(m.summary||''));if(m.agent){pulseAgent(m.agent);addFlowChip(m.agent,'warn',true);}}else if(m.type==='claude'){onClaudeEvent(m);}else if(m.type==='refresh'){scheduleRefresh(m);}};}
+
+/* ── live refresh: brain files changed on disk → re-render without reload ── */
+let refT=null;
+function scheduleRefresh(m){
+  clearTimeout(refT);
+  refT=setTimeout(async()=>{
+    const s=await fetch('/api/snapshot?prj='+encodeURIComponent(state.prj||'')).then(x=>x.json()).catch(()=>null);
+    if(!s)return;
+    renderHome(s);renderProject(s);
+    if(m&&m.routing&&s.budgets)renderBudgets(s.budgets);
+    pushEvent('','النظام','تحديث حي — تغيّر دماغ '+((m&&m.projects&&m.projects.join('، '))||'المشروع'));
+  },1200);
+}
 
 /* ── direct commands palette (headless Claude runs) ── */
 async function loadPalette(){
@@ -439,6 +503,7 @@ async function loadPalette(){
   if(live){state.curRun=live.run;setCmdState('running');
     const log=await fetch('/api/claude/log?run='+live.run).then(x=>x.json()).catch(()=>null);
     if(log&&log.lines){$('#cmdOut').textContent='';log.lines.forEach(onClaudeEvent);}}
+  loadHistory();
 }
 function cmdLine(txt){const o=$('#cmdOut');o.textContent+=txt+'\n';o.scrollTop=o.scrollHeight;}
 function setCmdState(s){
@@ -463,6 +528,7 @@ async function stopRun(){
     body:JSON.stringify({run:state.curRun})}).catch(()=>{});
 }
 function onClaudeEvent(m){
+  if(m.channel==='chat'){onChatEvent(m);return;}
   if(m.kind==='started'){state.curRun=m.run;state.gotText=false;setCmdState('running');return;}
   if(m.run!==state.curRun)return;
   if(m.kind==='init')cmdLine('· النموذج: '+(m.model||'؟'));
@@ -471,7 +537,66 @@ function onClaudeEvent(m){
   else if(m.kind==='result'){cmdLine('─'.repeat(46));
     cmdLine((m.ok?'✓':'✗')+' '+(m.turns||'؟')+' دورة · '+(m.secs||'؟')+' ث');
     if(!state.gotText&&m.result)cmdLine(m.result);}
-  else if(m.kind==='status')setCmdState(m.status);
+  else if(m.kind==='status'){setCmdState(m.status);loadHistory();}
+}
+
+/* ── runs history ── */
+async function loadHistory(){
+  const r=await fetch('/api/claude/runs').then(x=>x.json()).catch(()=>null);
+  const box=$('#runHist');if(!r||!r.runs||!r.runs.length){box.innerHTML='<div class="sub">لا تشغيلات بعد</div>';return;}
+  box.innerHTML=r.runs.map(x=>{
+    const t=new Date(x.t0*1000).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+    const ic=x.status==='done'?'✓':x.status==='running'?'⏳':x.status==='stopped'?'⏹':'✗';
+    return `<div class="rh" onclick="viewRun('${x.run}')"><span dir="ltr">/${x.cmd}${x.arg?' '+x.arg:''}</span><span><span class="st-${x.status}">${ic}</span> <span class="sub">${t}</span></span></div>`;
+  }).join('');
+}
+async function viewRun(id){
+  const log=await fetch('/api/claude/log?run='+id).then(x=>x.json()).catch(()=>null);
+  if(!log||!log.lines)return;
+  $('#cmdOut').textContent='';state.curRun=id;state.gotText=false;
+  log.lines.forEach(l=>{if(l.channel!=='chat')onClaudeEvent(l);});
+}
+
+/* ── live chat + prompt builder ── */
+state.chatRun=null;state.chatSession=localStorage.getItem('sofiChatSession')||'';
+state.chatBubble=null;state.chatGotText=false;
+function chatMeta(t){const d=document.createElement('div');d.className='msg meta';d.textContent=t;$('#chatLog').appendChild(d);chatScroll();}
+function chatScroll(){const l=$('#chatLog');l.scrollTop=l.scrollHeight;}
+function setChatState(running){
+  $('#chatStatus').textContent=running?'⏳ كلاود يعمل…':'خامل';
+  $('#chatSend').disabled=running;$('#c-chat').textContent=running?'⏳':'·';
+}
+function newChatSession(){
+  state.chatSession='';localStorage.removeItem('sofiChatSession');
+  $('#chatSess').textContent='جلسة جديدة';$('#chatLog').innerHTML='';
+  chatMeta('جلسة نظيفة — السياق السابق انتهى.');
+}
+async function sendChat(){
+  const inp=$('#chatInput');const text=inp.value.trim();if(!text)return;
+  const mode=$('#chatMode').value;
+  const u=document.createElement('div');u.className='msg user';u.textContent=(mode==='build'?'🧩 ':'')+text;
+  $('#chatLog').appendChild(u);chatScroll();inp.value='';
+  const res=await fetch('/api/chat/send',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({text,mode,session:state.chatSession})}).then(x=>x.json()).catch(e=>({ok:false,error:String(e)}));
+  if(!res.ok){chatMeta('✗ '+(res.error||'فشل الإرسال'));return;}
+  state.chatRun=res.run;state.chatBubble=null;state.chatGotText=false;setChatState(true);
+}
+function chatBubble(){
+  if(!state.chatBubble){const b=document.createElement('div');b.className='msg bot';b.textContent='';
+    $('#chatLog').appendChild(b);state.chatBubble=b;}
+  return state.chatBubble;
+}
+function onChatEvent(m){
+  if(m.kind==='started'){state.chatRun=m.run;state.chatBubble=null;state.chatGotText=false;setChatState(true);return;}
+  if(m.run!==state.chatRun)return;
+  if(m.kind==='init'&&m.session){state.chatSession=m.session;localStorage.setItem('sofiChatSession',m.session);
+    $('#chatSess').textContent='جلسة '+m.session.slice(0,8);}
+  else if(m.kind==='tool'){const b=chatBubble();const t=document.createElement('div');t.className='tools';t.textContent='🔧 '+m.name;b.appendChild(t);chatScroll();}
+  else if(m.kind==='text'){state.chatGotText=true;const b=chatBubble();b.appendChild(document.createTextNode((b.childNodes.length?'\n':'')+m.text));chatScroll();}
+  else if(m.kind==='result'){if(m.session){state.chatSession=m.session;localStorage.setItem('sofiChatSession',m.session);}
+    if(!state.chatGotText&&m.result){const b=chatBubble();b.appendChild(document.createTextNode(m.result));}
+    chatScroll();}
+  else if(m.kind==='status'){setChatState(false);if(m.status!=='done')chatMeta(m.status==='stopped'?'⏹ أُوقف':m.status==='timeout'?'⌛ انتهت المهلة':'✗ خطأ في التشغيل');}
 }
 function setLive(on){const d=$('#liveDot'),t=$('#liveTxt');if(on){d.className='dot live';t.textContent='مباشر';}else{d.className='dot off';t.textContent='غير متصل';}}
 function pushEvent(kind,who,msg){const s=$('#stream');if(s.querySelector('.sub'))s.innerHTML='';const t=new Date().toLocaleTimeString('en-GB',{hour12:false});const d=document.createElement('div');d.className='ev '+(kind==='sec'?'sec':'');d.innerHTML=`<span class="t">${t}</span><span class="who">${who}</span><span class="msg">${msg}</span>`;s.insertBefore(d,s.firstChild);while(s.children.length>100)s.removeChild(s.lastChild);}
