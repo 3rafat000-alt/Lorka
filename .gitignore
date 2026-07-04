@@ -92,3 +92,6 @@ netbird-host/
 # —— Claude Code machine-local state ——
 .claude/settings.local.json
 .claude/cache/
+
+# —— SOFI runtime pointers (regenerated per session) ——
+engine/.sofi_agent_briefing_current
