@@ -451,6 +451,16 @@ function addFlowChip(agent,marker,live){const strip=$('#flowstrip');if(!strip)re
 /* OBSERVATORY */
 function renderObservatory(o){
   if(o.error){$('#worklog').innerHTML=`<div class="err">${o.error}</div>`;return;}
+  // seed the live stream with recent REAL history so it never sits empty
+  const st=$('#stream');
+  if(st&&st.querySelector('.sub')&&(o.worklog||[]).length){
+    st.innerHTML='';
+    (o.worklog||[]).slice(0,12).reverse().forEach(w=>{
+      const d=document.createElement('div');d.className='ev';
+      d.innerHTML=`<span class="t">${w.date||''}</span><span class="who">${(w.agents||[])[0]||'الفريق'}</span><span class="msg">${(w.summary||'').slice(0,90)}</span>`;
+      st.insertBefore(d,st.firstChild);});
+    $('#c-obs').textContent=st.children.length;
+  }
   const p=o.pulse||{};const gate=(String(p.gate||'').match(/\d+/)||['—'])[0];
   $('#o-gate').textContent=gate;$('#o-ready').textContent=p.readiness?p.readiness+'%':'—';$('#o-agents').textContent=(p.active_agents||[]).length;
   const wl=o.worklog||[];

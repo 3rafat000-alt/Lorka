@@ -751,7 +751,9 @@ async def ws(sock: WebSocket):
 # ── static: the dashboard itself ─────────────────────────────────────────────
 @app.get("/")
 def index():
-    return FileResponse(str(_HERE / "index.html"))
+    # no-store: the UI evolves fast — a stale cached page looks like "nothing works"
+    return FileResponse(str(_HERE / "index.html"),
+                        headers={"Cache-Control": "no-store, must-revalidate"})
 
 
 app.mount("/assets", StaticFiles(directory=str(_HERE / "assets")), name="assets")
