@@ -128,7 +128,7 @@
           "message.sent"
         ],
         "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544",
-        "webhookSecret": "{{ $env.OPENWA_WEBHOOK_SECRET }}"
+        "webhookSecret": "__REDACTED_set_to_OPENWA_WEBHOOK_SECRET__"
       },
       "position": [
         208,
@@ -139,12 +139,12 @@
       "webhookId": "e36375a6-367e-4f60-9e97-f07c955c39c8"
     },
     {
-      "alwaysOutputData": false,
+      "alwaysOutputData": true,
       "executeOnce": false,
       "id": "filter",
       "name": "Filter & Authorize",
       "parameters": {
-        "jsCode": "// SELF-CHAT driver. The owner writes a note TO THEMSELVES that starts with\n// `sofi ` (or `sofi:`). message.sent fires for BOTH the owner's phone-typed\n// notes AND the bot's own API replies — so the `sofi` prefix is the loop guard:\n// bot replies never start with it, so they are dropped here and can't re-trigger.\nconst d = $input.first().json.data || {};\nif (!d.fromMe) return [];                       // only self-authored messages\nif (!d.body) return [];\nif (d.type && !['text', 'chat'].includes(d.type)) return [];  // text only\n\nconst owner = ($env.SOFI_OWNER_CHAT || '').trim();\nif (!owner) return [];                          // fail-closed: no owner => nobody\nconst self = d.to || d.from || d.chatId || '';\nif (self !== owner) return [];                  // only the owner's OWN self-chat\n\nconst m = (d.body || '').trim().match(/^(?:sofi|صوفي)[:\\s]+([\\s\\S]+)/i);  // command prefix\nif (!m) return [];                              // not a command (or a bot reply)\nconst text = m[1].trim();\nif (!text) return [];\n\nreturn [{ json: {\n  chatId: d.chatId || d.to || d.from,           // reply into the same self-chat\n  text,\n  messageId: d.id || ''\n} }];"
+        "jsCode": "// SELF-CHAT driver. The owner writes a note TO THEMSELVES starting with `sofi `\n// (or Arabic `صوفي `). message.sent fires for BOTH the owner's phone-typed notes\n// AND the bot's own API replies, so the `sofi`/`صوفي` prefix is the loop guard\n// (bot replies never carry it). Self-chat is identified by to===from — form-\n// agnostic across @lid vs @c.us, and it stops a `sofi ...` typed in someone\n// else's chat from leaking a reply there.\nconst d = $input.first().json.data || {};\nif (!d.fromMe) return [];                       // only the owner's own account\nif (!d.body) return [];\nif (d.type && !['text', 'chat'].includes(d.type)) return [];  // text only\nif (!d.to || d.to !== d.from) return [];        // self-chat only (any address form)\n\nconst m = (d.body || '').trim().match(/^(?:sofi|صوفي)[:\\s]+([\\s\\S]+)/i);  // prefix guard\nif (!m) return [];                              // not a command (or a bot reply)\nconst text = m[1].trim();\nif (!text) return [];\n\nreturn [{ json: {\n  chatId: d.chatId || d.from,                   // reply into the same self-chat\n  text,\n  messageId: d.id || ''\n} }];"
       },
       "position": [
         432,
@@ -268,6 +268,7 @@
       "typeVersion": 1
     },
     {
+      "alwaysOutputData": true,
       "id": "route",
       "name": "Build Work Dispatch",
       "parameters": {
@@ -357,7 +358,27 @@
       "typeVersion": 1
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "OpenWA Trigger": [
+      {
+        "json": {
+          "data": {
+            "body": "sofi ping",
+            "chatId": "276527795175671@lid",
+            "from": "276527795175671@lid",
+            "fromMe": true,
+            "id": "manual-pin",
+            "to": "276527795175671@lid",
+            "type": "text"
+          },
+          "deliveryId": "manual",
+          "event": "message.sent",
+          "idempotencyKey": "manual-test",
+          "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544"
+        }
+      }
+    ]
+  },
   "settings": {
     "availableInMCP": true,
     "binaryMode": "separate",
@@ -365,7 +386,7 @@
   },
   "staticData": {
     "node:OpenWA Trigger": {
-      "webhookId": "9e003e57-8f7a-427c-99b0-40b202cafec0"
+      "webhookId": "b874777f-fecf-4b0b-8c42-ea03b9c74d01"
     }
   },
   "tags": []

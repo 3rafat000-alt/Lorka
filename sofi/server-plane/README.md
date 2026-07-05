@@ -244,8 +244,11 @@ Both WhatsApp workflows use the community node `@rmyndharis/n8n-nodes-openwa`
 (installed declaratively — see `N8N_COMMUNITY_PACKAGES` in `n8n.env`, not npm-installed
 by hand). The **session UUID** `5b59d3b0-fbcf-4cd6-a8df-2202fc919544` is hardcoded in
 the workflow JSON (`~/.sofi-run/openwa-session-id` holds the same value). The OpenWA
-Trigger's `webhookSecret` uses `{{ $env.OPENWA_WEBHOOK_SECRET }}` (from
-`~/.sofi-run/openwa.env`) and enforces HMAC on every inbound webhook — see SETUP.md.
+Trigger's `webhookSecret` must be the **fixed literal value** of
+`OPENWA_WEBHOOK_SECRET` (from `~/.sofi-run/openwa.env`), **not** an `$env` expression —
+n8n 2.28 doesn't evaluate `$env` in the webhook-verification path, so an expression
+makes HMAC verify against the literal and reject every real message. It enforces HMAC
+on every inbound webhook. Repo JSON keeps it redacted — see SETUP.md.
 
 Re-import after editing:
 ```bash

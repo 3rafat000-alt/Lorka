@@ -110,28 +110,41 @@ A log line `no pinned version and no vetted entry — installed version will not
 reconciled across restarts` is expected (this package isn't in n8n's vetted registry)
 and harmless — it still installs and stays installed.
 
-## Webhook HMAC enforcement (now on)
+## Webhook HMAC enforcement (now on) — secret is a FIXED value, NOT `$env`
 
-Inbound webhooks from OpenWA are HMAC-verified. The OpenWA Trigger's `webhookSecret`
-is the expression `{{ $env.OPENWA_WEBHOOK_SECRET }}`, resolved in **n8n's MAIN
-process** at webhook (de)registration and verification time. That secret lives in
-`~/.sofi-run/openwa.env`.
+Inbound webhooks from OpenWA are HMAC-verified. The OpenWA Trigger's **Webhook
+Secret** must be set to the **literal 48-char value** of `OPENWA_WEBHOOK_SECRET`
+(from `~/.sofi-run/openwa.env`) — as a **plain fixed string**, NOT the expression
+`{{ $env.OPENWA_WEBHOOK_SECRET }}`.
 
-The wiring that makes it work: `~/.config/systemd/user/n8n.service` now loads a
-**second `EnvironmentFile=%h/.sofi-run/openwa.env`** line (in addition to `n8n.env`).
-**Without that line** `$env.OPENWA_WEBHOOK_SECRET` is undefined and the trigger
-**silently skips HMAC verification** — it would accept unsigned webhooks. If you ever
-re-provision the unit, keep both `EnvironmentFile` lines.
+**Why (n8n 2.28 gotcha, verified the hard way):** in the Trigger's **webhook-
+verification** code path, `getNodeParameter('webhookSecret')` does **not evaluate**
+the expression — it returns the raw literal string `{{ $env.OPENWA_WEBHOOK_SECRET }}`
+and uses *that* as the HMAC key. Real OpenWA signs with the true secret, so
+verification mismatches and **every real message is rejected with 401**. (Proof:
+signing a test payload with the literal string as the key returns 200; signing with
+the real secret returns 401.) A fixed value is used identically at registration and
+verification, so HMAC matches.
 
-Enforcement is verified: an unsigned or bad-signature webhook POST → **HTTP 401**; a
-valid `X-OpenWA-Signature: sha256=<hmac>` → **200**.
+The secret lives in n8n's DB (fine — single-user loopback). The repo copy
+`n8n/workflows/10-whatsapp-inbound.json` stores it **redacted**
+(`__REDACTED_set_to_OPENWA_WEBHOOK_SECRET__`); on any re-import, open the OpenWA
+Trigger node and paste the real value from `openwa.env` into the Webhook Secret field
+(Fixed, not Expression). Keeping the `EnvironmentFile=%h/.sofi-run/openwa.env` line on
+the n8n unit is still correct for other uses, but the webhook secret no longer relies
+on it.
 
-> **Cosmetic gotcha:** the n8n editor shows a red
-> `[ERROR: access to env vars denied]` on the OpenWA Trigger's *Webhook Secret*
-> field. **This is only a preview artifact — ignore it.** n8n 2.28 evaluates NDV
-> expression previews inside the task-runner sandbox, which has a scrubbed env, so
-> `$env` never resolves in the editor preview. At **runtime** the expression resolves
-> correctly in the main process (that's what the 401/200 verification above proves).
+Enforcement verified: unsigned / bad-signature POST → **HTTP 401**; valid
+`X-OpenWA-Signature: sha256=<hmac>` with the real secret → **200** → flows to the
+reply send.
+
+> **Editor note:** the red `[ERROR: access to env vars denied]` you may still see on
+> `$env` fields in the n8n editor is a task-runner preview artifact — but as above,
+> for the webhook secret do not rely on `$env` at all; use the fixed value.
+
+> **n8n version churn:** after changing a workflow via the API/CLI, do **not** click
+> *Publish* or revert versions in the n8n editor — it reverts the applied changes
+> (this silently undid the filter fix and dropped the trigger's pinned test data).
 
 ## Direct n8n control (MCP)
 
