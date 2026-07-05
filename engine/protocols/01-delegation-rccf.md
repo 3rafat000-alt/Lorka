@@ -15,6 +15,33 @@ This is the **runtime** half of the org. `00-operating-system.md` says *how an a
 
 ---
 
+## §0. Who spawns whom — the flat execution topology (platform reality · binding)
+
+> **Read this before you picture the org chart running itself. It does not.** This is the #1 cause of "the CEO never delegates / the team is never called."
+
+**Hard platform limit:** in Claude Code a **subagent cannot spawn another subagent** — the `Task`/`Agent` tool is not present inside any spawned agent's context. Every `sofi-*` spec grants only `Read/Write/Edit/Grep/Glob/Bash(+Web)`; **none holds a spawn tool.** Verify it yourself: `grep -L 'Task\|Agent' .claude/agents/sofi-*.md` lists all 30. The `sofi` CLI can't spawn either — `dispatch.py` says *"spawning an agent is one copy-paste"* and `squad_orchestrator_v2.py:149` is an un-implemented stub (`# In production: spawn agent processes`). Nothing in this repo autonomously launches an agent.
+
+**Consequence.** The org's hierarchy (stakeholder → CEO → tier-advisor → specialist, Doctrine Teaching II) is a chart of **authority + gate order, not a chain of live processes.** Exactly **one** context can spawn: **the main Claude Code session.** So execution is **flat and one-hop**:
+
+```
+   the human  ⇄  MAIN SESSION  ←── this IS the CEO (Magnus). The only holder of the Agent tool.
+                      │  spawns directly — one hop, no nesting
+   ┌──────────────────┼──────────────────┐
+sofi-ux-researcher  sofi-backend-…   sofi-qa-sre-lead   … any leaf specialist
+   (each runs, returns its artifact, and CANNOT spawn anyone else)
+```
+
+**What this means in practice:**
+
+- **The main session IS the CEO.** You never *talk to* a separate CEO and you never *spawn* `sofi-ceo` to run the fleet — a spawned CEO can only print RCCF text, never invoke a soul. `sofi-ceo.md` is the **persona + routing rules the main session wears**, not a live orchestrator.
+- **Tier-advisors do not fan out.** "I assign across the 5 specialists" is the *routing decision* the advisor persona makes; the **main session executes it** by spawning that leaf specialist directly. An advisor spawned as a subagent cannot reach its five.
+- **`/sofi-delegate` + the `sofi` CLI render, they do not spawn.** They emit an RCCF brief for the **main session** to spawn from. Python does the thinking; the main session pulls the trigger.
+- **Parallel squads (Gate 4)** = the main session emits several spawns **in one message** (multiple Agent calls) → they run concurrently. That is the *only* concurrency mechanism — no agent parallelises its own children.
+
+**One-line rule:** *render the brief anywhere; pull the trigger only from the main session; never nest a spawn.*
+
+---
+
 ## 1. Why four fields (and not three, not five)
 
 Each field removes one specific failure mode. Drop a field → you re-introduce its failure.

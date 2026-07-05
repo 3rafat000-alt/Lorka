@@ -42,6 +42,8 @@ The FOUNDATIONS.md file says, in essence:
 ## 2. Delegation template — RCCF (this is how each agent is "taught" at runtime)
 Every spawn is a 4-part **RCCF** block — 🎭 Role · 📂 Context · 🎯 Command · 📐 Format. Full doctrine: `engine/protocols/01-delegation-rccf.md`. Build one automatically with `/sofi-delegate <agent> "<task>"`. The CEO passes.
 
+> **⚠ Who actually spawns (flat topology — `engine/protocols/01-delegation-rccf.md` §0):** "The CEO" throughout this RUNBOOK = **the main Claude Code session**, the only context holding the Agent tool. A subagent cannot spawn subagents, so the CEO and tier-advisors never launch anyone autonomously — they *render* the RCCF brief and the **main session spawns the leaf specialist directly** (one hop, no nesting). The Gate-4 "parallel squads" below = the main session emitting several spawns **in one message**. The hierarchy is authority + gate order, not a chain of live processes.
+
 **Every delegation begins by grounding the agent in the Foundation.** The Context field always includes: *"Your Foundation: you serve Teaching(s) ___ of the Doctrine (engine/DOCTRINE.md). Read it before your first task."*
 
 The CEO passes:

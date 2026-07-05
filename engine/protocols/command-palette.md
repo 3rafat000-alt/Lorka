@@ -28,7 +28,9 @@
 
 Plus two CLI queries (not slash commands): `sofi brain-query <PRJ> status=blocked type=security` (v5 structured-brain filter) and `python3 engine/tooling/agents/ceo/reflection_engine.py scan --prj <PRJ>` (locate learning signals, 0 model tokens).
 
-## The standard loop (CEO orchestrates, agents execute)
+## The standard loop (the main session orchestrates *as* the CEO; specialists execute)
+
+> Flat topology (`engine/protocols/01-delegation-rccf.md` §0): the **main session** is the only context that can spawn — `sofi-ceo` and the tier-advisors are personas it *wears*, not live orchestrators. Every step below runs from the main session, one hop to a leaf specialist.
 
 ```
 /sofi-boot            # orient — never blind
