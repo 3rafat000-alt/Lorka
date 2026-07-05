@@ -1,0 +1,442 @@
+{
+  "active": true,
+  "connections": {
+    "Decision?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Msg Failed",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Msg Complete",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Msg Approve",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Msg Advance",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Gate Callback": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Shape & Decide",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Msg Advance": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Trigger Advance",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Shape & Decide": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Update State",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Update State": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Decision?",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "meta": null,
+  "name": "21 · Feature Gate Callback (advance·approve)",
+  "nodes": [
+    {
+      "id": "cb",
+      "name": "Gate Callback",
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {},
+        "path": "sofi-feature-cb",
+        "responseCode": 200,
+        "responseMode": "onReceived"
+      },
+      "position": [
+        220,
+        400
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "sofi-feature-cb"
+    },
+    {
+      "id": "dec",
+      "name": "Shape & Decide",
+      "parameters": {
+        "jsCode": "const tok=$env.SOFI_GATEWAY_TOKEN;\nconst hdr=$input.first().json.headers?.['x-sofi-token']||'';\nif(hdr!==tok) return [];\nconst GATES=[{n:0,name:'Inception',approve:false},{n:1,name:'Discovery',approve:false},{n:2,name:'Design',approve:false},{n:3,name:'Architecture',approve:true},{n:4,name:'Build',approve:true},{n:5,name:'Quality',approve:false},{n:6,name:'Staging',approve:true},{n:7,name:'Prod',approve:true},{n:8,name:'Observe',approve:false}];\nconst b=$input.first().json.body||{}; const meta=b.meta||{};\nconst fid=String(meta.featureId||''); const gate=Number(meta.gate); const chatId=meta.chatId||'';\nif(!fid||Number.isNaN(gate)) return [];\nconst resp=(b.response||'').toString().slice(0,1500);\nlet decision,newStatus,nextGate=gate;\nif(b.status!=='done'){ decision='failed'; newStatus='failed'; }\nelse { const nx=gate+1;\n  if(nx>8){ decision='complete'; newStatus='done'; nextGate=8; }\n  else if(GATES[nx].approve){ decision='approve'; newStatus='awaiting_approval'; nextGate=nx; }\n  else { decision='advance'; newStatus='running'; nextGate=nx; } }\nconst gName=(GATES[gate]||{}).name; const nName=(GATES[nextGate]||{}).name;\nreturn [{ json:{ featureId:fid, gate, nextGate, chatId, resp, decision, newStatus,\n  err:(b.error||'خطأ غير معروف'), gName, nName } }];"
+      },
+      "position": [
+        440,
+        400
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "upd",
+      "name": "Update State",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "title",
+              "id": "title",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "gate",
+              "id": "gate",
+              "required": false,
+              "type": "number"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "status",
+              "id": "status",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "chat_id",
+              "id": "chat_id",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "last_output",
+              "id": "last_output",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "job_id",
+              "id": "job_id",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "gate": "={{ $json.nextGate }}",
+            "last_output": "={{ $json.resp }}",
+            "status": "={{ $json.newStatus }}"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "W1t0OqToRVJ0E2oo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "eq",
+              "keyName": "id",
+              "keyValue": "={{ Number($json.featureId) }}"
+            }
+          ]
+        },
+        "matchType": "allConditions",
+        "operation": "update",
+        "options": {},
+        "resource": "row"
+      },
+      "position": [
+        660,
+        400
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "sw",
+      "name": "Decision?",
+      "parameters": {
+        "options": {},
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Shape & Decide').first().json.decision }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "failed"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                }
+              },
+              "outputKey": "failed"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Shape & Decide').first().json.decision }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "complete"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                }
+              },
+              "outputKey": "complete"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Shape & Decide').first().json.decision }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "approve"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                }
+              },
+              "outputKey": "approve"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Shape & Decide').first().json.decision }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "advance"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                }
+              },
+              "outputKey": "advance"
+            }
+          ]
+        }
+      },
+      "position": [
+        880,
+        400
+      ],
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3
+    },
+    {
+      "credentials": {
+        "openWaApi": {
+          "id": "vZ5cLjILYhlrFNVp",
+          "name": "OpenWA API"
+        }
+      },
+      "id": "msg_failed",
+      "name": "Msg Failed",
+      "parameters": {
+        "chatId": "={{ $('Shape & Decide').first().json.chatId }}",
+        "message": "={{ '❌ فشلت البوابة ' + $('Shape & Decide').first().json.gate + ' (' + $('Shape & Decide').first().json.gName + ') للميزة #' + $('Shape & Decide').first().json.featureId + ':\\n' + $('Shape & Decide').first().json.err }}",
+        "operation": "sendText",
+        "resource": "message",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544"
+      },
+      "position": [
+        1120,
+        160
+      ],
+      "type": "@rmyndharis/n8n-nodes-openwa.openWa",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "openWaApi": {
+          "id": "vZ5cLjILYhlrFNVp",
+          "name": "OpenWA API"
+        }
+      },
+      "id": "msg_complete",
+      "name": "Msg Complete",
+      "parameters": {
+        "chatId": "={{ $('Shape & Decide').first().json.chatId }}",
+        "message": "={{ '✅ اكتملت الميزة #' + $('Shape & Decide').first().json.featureId + ' عبر كل البوابات 🎉\\n\\n' + $('Shape & Decide').first().json.resp }}",
+        "operation": "sendText",
+        "resource": "message",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544"
+      },
+      "position": [
+        1120,
+        320
+      ],
+      "type": "@rmyndharis/n8n-nodes-openwa.openWa",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "openWaApi": {
+          "id": "vZ5cLjILYhlrFNVp",
+          "name": "OpenWA API"
+        }
+      },
+      "id": "msg_approve",
+      "name": "Msg Approve",
+      "parameters": {
+        "chatId": "={{ $('Shape & Decide').first().json.chatId }}",
+        "message": "={{ '⏸️ الميزة #' + $('Shape & Decide').first().json.featureId + ' — البوابة ' + $('Shape & Decide').first().json.gate + ' (' + $('Shape & Decide').first().json.gName + ') تمّت.\\nالتالية: البوابة ' + $('Shape & Decide').first().json.nextGate + ' (' + $('Shape & Decide').first().json.nName + ') تحتاج موافقتك.\\nأرسل:  sofi وافق #' + $('Shape & Decide').first().json.featureId + '   أو   sofi ألغِ #' + $('Shape & Decide').first().json.featureId + '\\n\\n' + $('Shape & Decide').first().json.resp }}",
+        "operation": "sendText",
+        "resource": "message",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544"
+      },
+      "position": [
+        1120,
+        480
+      ],
+      "type": "@rmyndharis/n8n-nodes-openwa.openWa",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "openWaApi": {
+          "id": "vZ5cLjILYhlrFNVp",
+          "name": "OpenWA API"
+        }
+      },
+      "id": "msg_advance",
+      "name": "Msg Advance",
+      "parameters": {
+        "chatId": "={{ $('Shape & Decide').first().json.chatId }}",
+        "message": "={{ '✅ البوابة ' + $('Shape & Decide').first().json.gate + ' (' + $('Shape & Decide').first().json.gName + ') تمّت → التالية: البوابة ' + $('Shape & Decide').first().json.nextGate + ' (' + $('Shape & Decide').first().json.nName + ')…\\n\\n' + $('Shape & Decide').first().json.resp }}",
+        "operation": "sendText",
+        "resource": "message",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544"
+      },
+      "position": [
+        1120,
+        640
+      ],
+      "type": "@rmyndharis/n8n-nodes-openwa.openWa",
+      "typeVersion": 1
+    },
+    {
+      "id": "adv",
+      "name": "Trigger Advance",
+      "parameters": {
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-SOFI-Token",
+              "value": "={{ $env.SOFI_GATEWAY_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "jsonBody": "={{ JSON.stringify({action:'advance', featureId:$('Shape & Decide').first().json.featureId, chatId:$('Shape & Decide').first().json.chatId}) }}",
+        "method": "POST",
+        "options": {
+          "timeout": 15000
+        },
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "url": "http://127.0.0.1:5678/webhook/sofi-feature"
+      },
+      "position": [
+        1340,
+        640
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": []
+}

@@ -46,7 +46,7 @@
         [
           {
             "index": 0,
-            "node": "Build Classify Request",
+            "node": "Shortcut Router",
             "type": "main"
           }
         ]
@@ -105,6 +105,42 @@
           {
             "index": 0,
             "node": "OpenWA: System Error",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Shortcut Router": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Shortcut Switch",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Shortcut Switch": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Call Feature Engine",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Send Help",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Build Classify Request",
             "type": "main"
           }
         ]
@@ -356,6 +392,155 @@
       ],
       "type": "@rmyndharis/n8n-nodes-openwa.openWa",
       "typeVersion": 1
+    },
+    {
+      "id": "shortcut_router",
+      "name": "Shortcut Router",
+      "parameters": {
+        "jsCode": "const j=$input.first().json; const text=(j.text||'').trim(); const chatId=j.chatId;\nconst first=text.split(/\\s+/)[0]||''; const rest=text.slice(first.length).trim();\nconst idm=text.match(/#?(\\d+)/); const fid=idm?idm[1]:'';\nconst R=(o)=>[{ json:{ chatId, text, ...o } }];\nif(/^(ميزة|feature)$/i.test(first)) return R({route:'feature', payload:{action:'start', text:rest, chatId}});\nif(/^(وافق|approve|التالي|next)$/i.test(first)) return R({route:'feature', payload:{action:'advance', featureId:fid, chatId}});\nif(/^(ألغِ|الغ|إلغاء|cancel)$/i.test(first)) return R({route:'feature', payload:{action:'cancel', featureId:fid, chatId}});\nif(/^(حالة|status)$/i.test(first) && fid) return R({route:'feature', payload:{action:'status', featureId:fid, chatId}});\nif(/^(مساعدة|help|أوامر)$/i.test(first)) return R({route:'help'});\nreturn R({route:'classify'});"
+      },
+      "position": [
+        560,
+        400
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "shortcut_switch",
+      "name": "Shortcut Switch",
+      "parameters": {
+        "options": {},
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "feature"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                }
+              },
+              "outputKey": "feature"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "help"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                }
+              },
+              "outputKey": "help"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "classify"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                }
+              },
+              "outputKey": "classify"
+            }
+          ]
+        }
+      },
+      "position": [
+        760,
+        400
+      ],
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3
+    },
+    {
+      "id": "call_feature",
+      "name": "Call Feature Engine",
+      "parameters": {
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-SOFI-Token",
+              "value": "={{ $env.SOFI_GATEWAY_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "method": "POST",
+        "options": {
+          "timeout": 15000
+        },
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "url": "http://127.0.0.1:5678/webhook/sofi-feature"
+      },
+      "position": [
+        980,
+        240
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2
+    },
+    {
+      "credentials": {
+        "openWaApi": {
+          "id": "vZ5cLjILYhlrFNVp",
+          "name": "OpenWA API"
+        }
+      },
+      "id": "send_help",
+      "name": "Send Help",
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "message": "🤖 أوامر SOFI (ابدأ كل أمر بـ sofi أو صوفي):\\n• sofi حالة — حالة المشروع\\n• sofi ميزة <وصف> — دورة ميزة كاملة عبر 9 بوابات\\n• sofi وافق #<رقم> — اعتماد البوابة والمتابعة\\n• sofi حالة #<رقم> — حالة ميزة محددة\\n• sofi ألغِ #<رقم> — إلغاء ميزة\\n• sofi <أي طلب> — تصنيف ذكي وتنفيذ (بحث/تدقيق/إصلاح/تقرير…)",
+        "operation": "sendText",
+        "resource": "message",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544"
+      },
+      "position": [
+        980,
+        400
+      ],
+      "type": "@rmyndharis/n8n-nodes-openwa.openWa",
+      "typeVersion": 1
     }
   ],
   "pinData": {
@@ -386,7 +571,7 @@
   },
   "staticData": {
     "node:OpenWA Trigger": {
-      "webhookId": "b874777f-fecf-4b0b-8c42-ea03b9c74d01"
+      "webhookId": "927456ae-8e1c-4e97-8e99-674f2e360ccb"
     }
   },
   "tags": []

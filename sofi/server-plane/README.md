@@ -239,6 +239,9 @@ Version-controlled JSON in [`n8n/workflows/`](./n8n/workflows/), imported into n
   gateway `/dispatch` → Ack]
 - `11-sofi-callback.json` — gateway callback → shape reply → OpenWA sendText
 - `12-health-monitor.json` — hourly gateway health check
+- `20-feature-command.json` + `21-feature-callback.json` — **Feature Lifecycle**: drive a
+  full 9-gate SOFI feature from WhatsApp (`sofi ميزة <x>`), with WhatsApp approval gates and
+  Data-Table state. See [FEATURE-LIFECYCLE.md](./FEATURE-LIFECYCLE.md).
 
 Both WhatsApp workflows use the community node `@rmyndharis/n8n-nodes-openwa`
 (installed declaratively — see `N8N_COMMUNITY_PACKAGES` in `n8n.env`, not npm-installed
