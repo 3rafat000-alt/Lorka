@@ -18,7 +18,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// The gateway POSTs {job_id,status,response,error,meta:{chatId,session}}.\n// Verify the shared token, then shape the WhatsApp reply.\nconst hdr = $input.first().json.headers?.['x-sofi-token'] || '';\nif ($env.SOFI_GATEWAY_TOKEN && hdr && hdr !== $env.SOFI_GATEWAY_TOKEN) {\n  return [];\n}\nconst b = $input.first().json.body || {};\nconst meta = b.meta || {};\nlet text;\nif (b.status === 'done') {\n  text = (b.response || 'تم التنفيذ.').toString().slice(0, 3500);\n} else {\n  text = '⚠️ تعذّر التنفيذ: ' + (b.error || 'خطأ غير معروف');\n}\nif (!meta.chatId) return [];\nreturn [{ json: { chatId: meta.chatId, session: meta.session || 'default', text } }];"
+        "jsCode": "const hdr = $input.first().json.headers?.['x-sofi-token'] || '';\nif ($env.SOFI_GATEWAY_TOKEN && hdr && hdr !== $env.SOFI_GATEWAY_TOKEN) return [];\nconst b = $input.first().json.body || {};\nconst meta = b.meta || {};\nlet text;\nif (b.status === 'done') {\n  text = (b.response || 'تم التنفيذ.').toString().slice(0, 3500);\n} else {\n  text = '⚠️ تعذّر التنفيذ: ' + (b.error || 'خطأ غير معروف');\n}\nif (!meta.chatId) return [];\nreturn [{ json: { chatId: meta.chatId, text } }];"
       },
       "id": "shape",
       "name": "Shape Reply",
@@ -28,30 +28,25 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "={{ $env.WAHA_URL || 'http://127.0.0.1:3000' }}/api/sendText",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "X-Api-Key", "value": "={{ $env.WAHA_API_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ session: $json.session, chatId: $json.chatId, text: $json.text }) }}",
-        "options": {}
+        "resource": "message",
+        "operation": "sendText",
+        "sessionId": "db82d229-133b-41eb-b90d-1d7a2ad0e83f",
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.text }}"
       },
       "id": "send",
-      "name": "WhatsApp: Send Result",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [680, 300]
+      "name": "OpenWA: Send Result",
+      "type": "@rmyndharis/n8n-nodes-openwa.openWa",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "credentials": {
+        "openWaApi": { "id": "", "name": "OpenWA API" }
+      }
     }
   ],
   "connections": {
     "Gateway Callback": { "main": [[{ "node": "Shape Reply", "type": "main", "index": 0 }]] },
-    "Shape Reply": { "main": [[{ "node": "WhatsApp: Send Result", "type": "main", "index": 0 }]] }
+    "Shape Reply": { "main": [[{ "node": "OpenWA: Send Result", "type": "main", "index": 0 }]] }
   },
   "settings": { "executionOrder": "v1" },
   "active": false

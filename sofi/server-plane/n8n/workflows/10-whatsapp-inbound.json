@@ -3,22 +3,22 @@
   "nodes": [
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "waha",
-        "responseMode": "onReceived",
-        "responseCode": 200,
-        "options": {}
+        "sessionId": "db82d229-133b-41eb-b90d-1d7a2ad0e83f",
+        "events": ["message.received"],
+        "webhookSecret": "={{ $env.OPENWA_WEBHOOK_SECRET }}"
       },
-      "id": "webhook-in",
-      "name": "WAHA Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
+      "id": "trigger",
+      "name": "OpenWA Trigger",
+      "type": "@rmyndharis/n8n-nodes-openwa.openWaTrigger",
+      "typeVersion": 1,
       "position": [240, 300],
-      "webhookId": "waha-inbound"
+      "credentials": {
+        "openWaApi": { "id": "", "name": "OpenWA API" }
+      }
     },
     {
       "parameters": {
-        "jsCode": "// WAHA posts every event here. Keep only inbound text messages.\nconst b = $input.first().json.body || $input.first().json;\nif (b.event !== 'message') return [];\nconst p = b.payload || {};\nif (p.fromMe) return [];\nconst text = (p.body || '').trim();\nif (!text) return [];\n\n// Owner allow-list: only this number may drive SOFI. Set your number in the\n// N8N env as SOFI_OWNER_CHAT (e.g. 963XXXXXXXXX@c.us). Empty = allow all (dev).\nconst owner = ($env.SOFI_OWNER_CHAT || '').trim();\nif (owner && p.from !== owner) return [];\n\nreturn [{ json: {\n  chatId: p.from,\n  session: b.session || 'default',\n  text,\n  messageId: p.id || ''\n} }];"
+        "jsCode": "// Only real inbound text, and only from the owner number.\nconst d = $input.first().json.data || {};\nif (!d.body || d.type && d.type !== 'text') return [];\n\nconst owner = ($env.SOFI_OWNER_CHAT || '').trim();\nif (owner && d.from !== owner) return [];\n\nreturn [{ json: {\n  chatId: d.chatId || d.from,\n  text: (d.body || '').trim(),\n  messageId: d.id || ''\n} }];"
       },
       "id": "filter",
       "name": "Filter & Authorize",
@@ -28,7 +28,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Map the WhatsApp text into a SOFI dispatch.\n// Convention: first word may be a command keyword; otherwise treat whole text\n// as a natural-language instruction for the CEO to route.\nconst text = $json.text;\nconst [w0, ...rest] = text.split(/\\s+/);\nconst kw = w0.toLowerCase();\nconst arg = rest.join(' ').trim();\n\nconst project = 'PRJ-SAKK';\nlet role = 'sofi-ceo';\nlet command = text;\nlet model = 'haiku';\n\nconst map = {\n  audit:   ['sofi-qa-sre-lead',   `Run an audit pass on ${project} (${arg || 'all layers'}). Report findings ranked by severity.`],\n  fix:     ['sofi-ceo',           `Fix in ${project}: ${arg}. Route to the cheapest specialist, checkpoint each change.`],\n  report:  ['sofi-ceo',           `Produce a ${arg || 'status'} report for ${project}.`],\n  feature: ['sofi-ceo',           `Run the full feature loop on ${project}: ${arg}`],\n  gate:    ['sofi-ceo',           `Report the current gate + blockers for ${project}.`],\n  status:  ['sofi-ceo',           `Give a short status of ${project}: gate, last work, open tickets.`],\n  sync:    ['sofi-ceo',           `sofi sync ${project} and summarize what changed.`]\n};\n\nif (map[kw]) { [role, command] = map[kw]; }\nif (kw === 'feature' || kw === 'fix') { model = 'sonnet'; }\n\nconst base = $env.SOFI_CALLBACK_BASE || 'http://127.0.0.1:5678';\nreturn [{ json: {\n  role, project, command, model,\n  mode: 'async',\n  source: 'whatsapp',\n  callback_url: `${base}/webhook/sofi-callback`,\n  meta: { chatId: $json.chatId, session: $json.session }\n} }];"
+        "jsCode": "const text = $json.text;\nconst [w0, ...rest] = text.split(/\\s+/);\nconst kw = w0.toLowerCase();\nconst arg = rest.join(' ').trim();\n\nconst project = 'PRJ-SAKK';\nlet role = 'sofi-ceo';\nlet command = text;\nlet model = 'haiku';\n\nconst map = {\n  audit:   ['sofi-qa-sre-lead', `Run an audit pass on ${project} (${arg || 'all layers'}). Report findings ranked by severity.`],\n  fix:     ['sofi-ceo', `Fix in ${project}: ${arg}. Route to the cheapest specialist, checkpoint each change.`],\n  report:  ['sofi-ceo', `Produce a ${arg || 'status'} report for ${project}.`],\n  feature: ['sofi-ceo', `Run the full feature loop on ${project}: ${arg}`],\n  gate:    ['sofi-ceo', `Report the current gate + blockers for ${project}.`],\n  status:  ['sofi-ceo', `Give a short status of ${project}: gate, last work, open tickets.`],\n  sync:    ['sofi-ceo', `sofi sync ${project} and summarize what changed.`]\n};\n\nif (map[kw]) { [role, command] = map[kw]; }\nif (kw === 'feature' || kw === 'fix') { model = 'sonnet'; }\n\nconst base = $env.SOFI_CALLBACK_BASE || 'http://127.0.0.1:5678';\nreturn [{ json: {\n  role, project, command, model,\n  mode: 'async',\n  source: 'whatsapp',\n  callback_url: `${base}/webhook/sofi-callback`,\n  meta: { chatId: $json.chatId }\n} }];"
       },
       "id": "route",
       "name": "Route to RCCF",
@@ -60,32 +60,27 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "={{ $env.WAHA_URL || 'http://127.0.0.1:3000' }}/api/sendText",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "X-Api-Key", "value": "={{ $env.WAHA_API_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ session: $('Route to RCCF').first().json.meta.session, chatId: $('Route to RCCF').first().json.meta.chatId, text: '⏳ استلمت طلبك، جارٍ التنفيذ… سأرسل النتيجة عند الانتهاء.' }) }}",
-        "options": {}
+        "resource": "message",
+        "operation": "sendText",
+        "sessionId": "db82d229-133b-41eb-b90d-1d7a2ad0e83f",
+        "chatId": "={{ $('Route to RCCF').first().json.meta.chatId }}",
+        "text": "⏳ استلمت طلبك، جارٍ التنفيذ… سأرسل النتيجة عند الانتهاء."
       },
       "id": "ack",
-      "name": "WhatsApp: Ack",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [1120, 300]
+      "name": "OpenWA: Ack",
+      "type": "@rmyndharis/n8n-nodes-openwa.openWa",
+      "typeVersion": 1,
+      "position": [1120, 300],
+      "credentials": {
+        "openWaApi": { "id": "", "name": "OpenWA API" }
+      }
     }
   ],
   "connections": {
-    "WAHA Webhook": { "main": [[{ "node": "Filter & Authorize", "type": "main", "index": 0 }]] },
+    "OpenWA Trigger": { "main": [[{ "node": "Filter & Authorize", "type": "main", "index": 0 }]] },
     "Filter & Authorize": { "main": [[{ "node": "Route to RCCF", "type": "main", "index": 0 }]] },
     "Route to RCCF": { "main": [[{ "node": "SOFI Gateway /dispatch", "type": "main", "index": 0 }]] },
-    "SOFI Gateway /dispatch": { "main": [[{ "node": "WhatsApp: Ack", "type": "main", "index": 0 }]] }
+    "SOFI Gateway /dispatch": { "main": [[{ "node": "OpenWA: Ack", "type": "main", "index": 0 }]] }
   },
   "settings": { "executionOrder": "v1" },
   "active": false
