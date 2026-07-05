@@ -124,8 +124,11 @@
       "id": "trigger",
       "name": "OpenWA Trigger",
       "parameters": {
+        "events": [
+          "message.sent"
+        ],
         "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544",
-        "webhookSecret": "={{ $env.OPENWA_WEBHOOK_SECRET }}"
+        "webhookSecret": "{{ $env.OPENWA_WEBHOOK_SECRET }}"
       },
       "position": [
         208,
@@ -136,15 +139,18 @@
       "webhookId": "e36375a6-367e-4f60-9e97-f07c955c39c8"
     },
     {
+      "alwaysOutputData": false,
+      "executeOnce": false,
       "id": "filter",
       "name": "Filter & Authorize",
       "parameters": {
-        "jsCode": "// Only real inbound text, and only from the owner number.\nconst d = $input.first().json.data || {};\nif (!d.body || d.type && d.type !== 'text') return [];\n\nconst owner = ($env.SOFI_OWNER_CHAT || '').trim();\nif (!owner) return [];               // fail-closed: no owner configured => accept nobody\nif (d.from !== owner) return [];\n\nreturn [{ json: {\n  chatId: d.chatId || d.from,\n  text: (d.body || '').trim(),\n  messageId: d.id || ''\n} }];"
+        "jsCode": "// SELF-CHAT driver. The owner writes a note TO THEMSELVES that starts with\n// `sofi ` (or `sofi:`). message.sent fires for BOTH the owner's phone-typed\n// notes AND the bot's own API replies — so the `sofi` prefix is the loop guard:\n// bot replies never start with it, so they are dropped here and can't re-trigger.\nconst d = $input.first().json.data || {};\nif (!d.fromMe) return [];                       // only self-authored messages\nif (!d.body) return [];\nif (d.type && !['text', 'chat'].includes(d.type)) return [];  // text only\n\nconst owner = ($env.SOFI_OWNER_CHAT || '').trim();\nif (!owner) return [];                          // fail-closed: no owner => nobody\nconst self = d.to || d.from || d.chatId || '';\nif (self !== owner) return [];                  // only the owner's OWN self-chat\n\nconst m = (d.body || '').trim().match(/^(?:sofi|صوفي)[:\\s]+([\\s\\S]+)/i);  // command prefix\nif (!m) return [];                              // not a command (or a bot reply)\nconst text = m[1].trim();\nif (!text) return [];\n\nreturn [{ json: {\n  chatId: d.chatId || d.to || d.from,           // reply into the same self-chat\n  text,\n  messageId: d.id || ''\n} }];"
       },
       "position": [
         432,
         400
       ],
+      "retryOnFail": false,
       "type": "n8n-nodes-base.code",
       "typeVersion": 2
     },
@@ -359,7 +365,7 @@
   },
   "staticData": {
     "node:OpenWA Trigger": {
-      "webhookId": "230a02cb-2ea8-4829-a010-7fb68104d4c3"
+      "webhookId": "9e003e57-8f7a-427c-99b0-40b202cafec0"
     }
   },
   "tags": []

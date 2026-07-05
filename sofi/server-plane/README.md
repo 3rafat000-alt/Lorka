@@ -16,23 +16,36 @@ is untouched. The workflow JSONs hardcode the session **UUID** (not a name);
 
 ---
 
-## ⚠️ Known limitation — read before real use (open item #1)
+## ✅ How you drive it — SELF-CHAT mode (active)
 
-The `claude-bot` WhatsApp session is currently linked to the **same phone number**
-as the owner (`SOFI_OWNER_CHAT`). WhatsApp routes a message you send to yourself as
-`fromMe` / `message.sent` — **never** as `message.received`, which is the only event
-wf10's OpenWA Trigger subscribes to. So **a genuine WhatsApp message the owner types
-cannot reach the pipeline today** — every successful run to date used API-injected
-test payloads.
+The `claude-bot` WhatsApp session is linked to the owner's **own** number, so you
+drive SOFI from your **"message yourself"** chat. WhatsApp routes a self-note as
+`fromMe` / `message.sent`, so wf10's OpenWA Trigger subscribes to **`message.sent`**
+(not `message.received`).
 
-Production needs one of:
+**Every command must start with `sofi ` (or Arabic `صوفي `).** Example:
 
-- a **dedicated bot number distinct from the owner's** (then the owner just messages
-  the bot normally, and it arrives as `message.received`) — recommended; or
-- a **self-chat redesign**: trigger on `message.sent` / `fromMe`, match on the `to`
-  field, and add loop-guarding so the bot's own replies don't re-trigger it.
+```
+sofi status
+sofi audit exchange rates
+صوفي دقّق منطق أسعار الصرف
+```
 
-Until then, treat the WhatsApp entry point as verified only via injected payloads.
+The prefix is the **loop guard**: `message.sent` fires for BOTH your typed notes AND
+the bot's own API replies, so `Filter & Authorize` only accepts messages that (a) are
+`fromMe`, (b) are a self-note (`to === from`, so it's form-agnostic across `@c.us` /
+`@lid` privacy addressing and never leaks a reply into someone else's chat), and
+(c) start with the `sofi`/`صوفي` prefix. Bot replies never carry the prefix, so they
+are dropped and can't re-trigger the flow. A self-note without the prefix (e.g. a
+normal "مرحباً") is silently ignored — this is expected.
+
+Verified end-to-end live: a signed `sofi ping` self-note (both `@c.us` and real
+`@lid` forms) flows Trigger → Filter → Classify → Direct Reply and delivers a
+WhatsApp answer back into the self-chat, while the reply's echo is dropped (no loop).
+
+> If you later want multiple people to drive it, or a cleaner separation, switch
+> `claude-bot` to a **dedicated bot number** and revert the trigger to
+> `message.received` + a sender allowlist.
 
 ---
 
@@ -182,9 +195,9 @@ the gateway *synchronously* with `model: haiku`. The classifier returns strict J
   `gatekeeper → fable`, `deep → opus`.
 
 **Authorization** is upstream of all of this: **Filter & Authorize** is fail-closed —
-only the number in `SOFI_OWNER_CHAT` (n8n env, `963XXXXXXXXX@c.us` format) passes.
-(See the Known-limitation box: same-number self-messages don't reach the trigger at
-all yet.)
+in self-chat mode it accepts only `fromMe` self-notes (`to === from`) that start with
+the `sofi`/`صوفي` prefix (see the "How you drive it" box). `SOFI_OWNER_CHAT` (n8n env,
+`963XXXXXXXXX@c.us`) must be set or all input is dropped.
 
 ---
 
@@ -202,9 +215,9 @@ curl -s -H "X-API-Key: $KEY" "http://127.0.0.1:2785/api/sessions/$SID/qr" \
   | python3 -c "import sys,json,base64;q=json.load(sys.stdin)['qrCode'];open('/tmp/sofi-qr.png','wb').write(base64.b64decode(q.split(',',1)[1]))"
 xdg-open /tmp/sofi-qr.png
 ```
-Scan with the WhatsApp account you want to drive SOFI from: **Settings ▸ Linked
-Devices ▸ Link a Device**. (See the Known-limitation box first — for real use this
-should be a **dedicated bot number**, not the owner's own number.)
+Scan with your **own** WhatsApp (self-chat mode): **Settings ▸ Linked Devices ▸ Link
+a Device**. Then drive SOFI by messaging **yourself** `sofi <command>` (see the "How
+you drive it" box). Already linked and `ready` — re-do this only if the session drops.
 
 Then in n8n (http://n8n.local): open **10 · WhatsApp Inbound** and set up the
 **OpenWA API** credential once (Server URL `http://127.0.0.1:2785`, API key from

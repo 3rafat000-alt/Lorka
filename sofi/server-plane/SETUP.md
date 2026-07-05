@@ -3,16 +3,20 @@
 Everything below is already installed and running on this box. This doc is the
 runbook: how it's wired, how to pair WhatsApp, how to fix it when it breaks.
 
-## ⚠️ Known limitation — read first (open item #1)
+## ✅ How you drive it — SELF-CHAT mode (active)
 
-The `claude-bot` WhatsApp session is linked to the **same phone number** as the owner
-(`SOFI_OWNER_CHAT`). WhatsApp routes a self-message as `fromMe` / `message.sent` —
-never `message.received`, the only event wf10's OpenWA Trigger subscribes to — so **a
-real WhatsApp message the owner types cannot reach the pipeline today**. Every
-successful run so far used API-injected test payloads. Before real use, either link
-`claude-bot` to a **dedicated bot number distinct from the owner's**, or redesign the
-trigger to fire on `message.sent` / `fromMe` (match on `to`, add loop-guarding). This
-is the #1 open item. Details in [README.md](./README.md).
+`claude-bot` is linked to the owner's **own** number, so you drive SOFI from your
+**"message yourself"** WhatsApp chat. wf10's OpenWA Trigger subscribes to
+**`message.sent`** (self-notes are `fromMe`). **Every command must start with
+`sofi ` or `صوفي `** — e.g. `sofi status`, `sofi audit exchange rates`,
+`صوفي دقّق أسعار الصرف`. The prefix is the loop guard (bot replies never carry it, so
+they're dropped and can't re-trigger). `Filter & Authorize` accepts only `fromMe`
+self-notes (`to === from`, form-agnostic across `@c.us`/`@lid`) that start with the
+prefix; a normal self-note like "مرحباً" without the prefix is ignored (expected).
+Verified live E2E (signed `sofi ping`, both `@c.us` and `@lid`, reached the reply
+send with no loop). To switch to multi-user later: give `claude-bot` a dedicated
+number and revert the trigger to `message.received` + a sender allowlist. Details in
+[README.md](./README.md).
 
 ## What's already done (2026-07-05)
 
@@ -143,9 +147,9 @@ env file before then or MCP/REST control breaks.
 
 ## Pair WhatsApp (one-time, manual — needs a phone)
 
-The `claude-bot` session exists on the gateway but isn't linked yet. (Read the
-Known-limitation box first — for real use this should be a **dedicated bot number**,
-not the owner's own number.)
+`claude-bot` is already linked and `ready` (self-chat mode — the owner's own number).
+Re-run this only if the session drops. To move to a dedicated bot number later, link
+a different phone here and revert wf10's trigger to `message.received`.
 
 ```bash
 KEY=$(grep OPENWA_API_KEY ~/.sofi-run/openwa.env | cut -d= -f2)
@@ -270,9 +274,9 @@ raw loopback/private IPs as webhook targets. This is why the n8n Trigger node (n
 manually-curled webhook) is used: n8n registers `http://n8n.local/webhook/...` (a
 hostname, not a literal IP) when the workflow activates.
 
-**WhatsApp reply never arrives** — first re-read the Known-limitation box (a real
-owner self-message never reaches the trigger). If testing via injected payloads,
-check the async job:
+**WhatsApp reply never arrives** — first confirm your command started with `sofi `
+or `صوفي ` (self-notes without the prefix are dropped by design). Then check the
+async job:
 `curl -s -H "X-SOFI-Token: $(cat ~/.sofi-run/gateway-token)" http://127.0.0.1:8099/jobs | jq .`
 Then check WF "11 · SOFI Callback" executions in n8n, look at
 `gateway-callback-deadletter.jsonl` for undeliverable callbacks, and confirm the
