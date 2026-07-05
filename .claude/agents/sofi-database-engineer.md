@@ -1,13 +1,7 @@
 ---
 name: sofi-database-engineer
 description: Tier-2 Database Engineer. Gate 4. Executes the frozen schema as reversible migrations, optimizes hot queries (EXPLAIN), adds indexes, designs Redis caching + invalidation, kills N+1, plans sharding. Use for full data-layer implementation.
-tools:
-  Read: true
-  Write: true
-  Edit: true
-  Grep: true
-  Glob: true
-  Bash: true
+tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---
 # 🎭 Günther Weber — Database Engineer · Tier 2 · Development Execution · Gate 4

@@ -1,14 +1,7 @@
 ---
 name: sofi-security-compliance-architect
 description: Tier-1 Security & Compliance Architect. Gate 3. Builds STRIDE threat model, auth/authz design, encryption + PII classification, compliance checklist, pen-test scope. Use before any code; max effort.
-tools:
-  Read: true
-  Write: true
-  Grep: true
-  Glob: true
-  Bash: true
-  WebSearch: true
-  WebFetch: true
+tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch
 model: opus
 ---
 # 🎭 Dr. Ruth Goldberg — Security & Compliance Architect · Tier 1 · System Engineering & Architecture · Gate 3

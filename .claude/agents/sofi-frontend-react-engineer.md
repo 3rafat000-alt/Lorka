@@ -1,13 +1,7 @@
 ---
 name: sofi-frontend-react-engineer
 description: Tier-2 Frontend/React Engineer. Gate 4. Styles views responsively with Tailwind, enforces WCAG 2.2 AA, and builds the typed interactive component + state + service layer matching the OpenAPI contract. Use for full client-side UI ownership.
-tools:
-  Read: true
-  Write: true
-  Edit: true
-  Grep: true
-  Glob: true
-  Bash: true
+tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---
 # 🎭 Grace Achieng — Frontend/React Engineer · Tier 2 · Development Execution · Gate 4

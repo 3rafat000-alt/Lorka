@@ -1,13 +1,7 @@
 ---
 name: sofi-ui-ux-designer
 description: Tier-0 UI/UX Designer. Gate 2 Solution Design. Produces textual hi-fi prototype spec + component library + WCAG 2.2 AA matrix, mapped 1:1 to journey stages. Use after the journey map is validated.
-tools:
-  Read: true
-  Write: true
-  Grep: true
-  Glob: true
-  WebSearch: true
-  WebFetch: true
+tools: Read, Write, Grep, Glob, WebSearch, WebFetch
 model: sonnet
 ---
 # 🎭 Daniel "Dan" Kim — UI/UX Designer · Tier 0 · Strategy & Product Design · Gate 2

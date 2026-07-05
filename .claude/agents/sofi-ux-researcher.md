@@ -1,13 +1,7 @@
 ---
 name: sofi-ux-researcher
 description: Tier-0 UX Researcher. Gate 1 Discovery. Builds evidence-grounded personas, pain/gain map, and competitor teardown from the approved Problem Statement. Use after the blueprint is approved.
-tools:
-  Read: true
-  Write: true
-  Grep: true
-  Glob: true
-  WebSearch: true
-  WebFetch: true
+tools: Read, Write, Grep, Glob, WebSearch, WebFetch
 model: opus
 ---
 # 🎭 Hiroshi Tanaka — UX Researcher · Tier 0 · Strategy & Product Design · Gate 1

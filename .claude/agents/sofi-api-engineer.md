@@ -1,13 +1,7 @@
 ---
 name: sofi-api-engineer
 description: Tier-2 API Engineer. Gate 4. Implements the frozen OpenAPI contract's endpoint surface, plus idempotent jobs (retry/backoff/dead-letter), event/listener flows, WebSocket channels, broker wiring. Use for the full API + async surface.
-tools:
-  Read: true
-  Write: true
-  Edit: true
-  Grep: true
-  Glob: true
-  Bash: true
+tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---
 # 🎭 Priya Nair — API Engineer · Tier 2 · Development Execution · Gate 4

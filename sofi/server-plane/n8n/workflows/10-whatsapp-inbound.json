@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "sessionId": "db82d229-133b-41eb-b90d-1d7a2ad0e83f",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544",
         "events": ["message.received"],
         "webhookSecret": "={{ $env.OPENWA_WEBHOOK_SECRET }}"
       },
@@ -28,7 +28,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const text = $json.text;\nconst [w0, ...rest] = text.split(/\\s+/);\nconst kw = w0.toLowerCase();\nconst arg = rest.join(' ').trim();\n\nconst project = 'PRJ-SAKK';\nlet role = 'sofi-ceo';\nlet command = text;\nlet model = 'haiku';\n\nconst map = {\n  audit:   ['sofi-qa-sre-lead', `Run an audit pass on ${project} (${arg || 'all layers'}). Report findings ranked by severity.`],\n  fix:     ['sofi-ceo', `Fix in ${project}: ${arg}. Route to the cheapest specialist, checkpoint each change.`],\n  report:  ['sofi-ceo', `Produce a ${arg || 'status'} report for ${project}.`],\n  feature: ['sofi-ceo', `Run the full feature loop on ${project}: ${arg}`],\n  gate:    ['sofi-ceo', `Report the current gate + blockers for ${project}.`],\n  status:  ['sofi-ceo', `Give a short status of ${project}: gate, last work, open tickets.`],\n  sync:    ['sofi-ceo', `sofi sync ${project} and summarize what changed.`]\n};\n\nif (map[kw]) { [role, command] = map[kw]; }\nif (kw === 'feature' || kw === 'fix') { model = 'sonnet'; }\n\nconst base = $env.SOFI_CALLBACK_BASE || 'http://127.0.0.1:5678';\nreturn [{ json: {\n  role, project, command, model,\n  mode: 'async',\n  source: 'whatsapp',\n  callback_url: `${base}/webhook/sofi-callback`,\n  meta: { chatId: $json.chatId }\n} }];"
+        "jsCode": "// No keyword map — the message goes to sofi-ceo as-is. CEO reads the SOFI\n// routing doctrine itself (CLAUDE.md / engine/routing/routing.yaml), decides\n// which of the 30 agents (or itself) should handle it, delegates via the\n// Agent/Task tool if needed, does the work, checkpoints, and replies. This is\n// literally the CEO's job per its own operating contract — n8n just hands it\n// the raw ticket instead of pre-guessing the route with string matching.\nconst text = $json.text;\nconst project = 'PRJ-SAKK';\n\nconst command = `WhatsApp ticket from the project owner:\\n\\n\"${text}\"\\n\\n`\n  + `Read it, decide what's actually being asked, and handle it end-to-end:\\n`\n  + `- Quick question/status check -> answer directly, cheaply (haiku-tier).\\n`\n  + `- Work that maps to a specialist (audit, fix, feature, report, security, `\n  + `deploy, etc.) -> delegate via the Agent tool to the right tier agent per `\n  + `your own routing doctrine (routing.yaml economic ladder) and this project's `\n  + `gate. Do not skip agents to save a step; do not over-escalate model tier.\\n`\n  + `- If it's ambiguous or missing detail you cannot safely assume, say so `\n  + `plainly instead of guessing.\\n`\n  + `- Checkpoint any change per SOFI git discipline before you finish.\\n\\n`\n  + `Reply format: end with a short, WhatsApp-readable summary in Arabic `\n  + `(<= 1200 chars) of what you found/did and what's next — this exact text `\n  + `is sent back to the owner's phone, so no markdown tables, no file trees, `\n  + `just plain readable lines.`;\n\nconst base = $env.SOFI_CALLBACK_BASE || 'http://127.0.0.1:5678';\nreturn [{ json: {\n  role: 'sofi-ceo',\n  project,\n  command,\n  model: 'sonnet',\n  mode: 'async',\n  source: 'whatsapp',\n  callback_url: `${base}/webhook/sofi-callback`,\n  meta: { chatId: $json.chatId }\n} }];"
       },
       "id": "route",
       "name": "Route to RCCF",
@@ -62,9 +62,9 @@
       "parameters": {
         "resource": "message",
         "operation": "sendText",
-        "sessionId": "db82d229-133b-41eb-b90d-1d7a2ad0e83f",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544",
         "chatId": "={{ $('Route to RCCF').first().json.meta.chatId }}",
-        "text": "⏳ استلمت طلبك، جارٍ التنفيذ… سأرسل النتيجة عند الانتهاء."
+        "message": "⏳ استلمت طلبك، جارٍ التنفيذ… سأرسل النتيجة عند الانتهاء."
       },
       "id": "ack",
       "name": "OpenWA: Ack",

@@ -1,14 +1,7 @@
 ---
 name: sofi-principal-system-architect
 description: Tier-1 Principal System Architect. Gate 3. Translates frozen UX into tech stack, component diagram, and screen→component traceability; delegates schema/API/security. Use after prototype + content are frozen.
-tools:
-  Read: true
-  Write: true
-  Grep: true
-  Glob: true
-  Bash: true
-  WebSearch: true
-  WebFetch: true
+tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch
 model: opus
 ---
 # 🎭 Vikram Rao — Principal System Architect · Tier 1 · System Engineering & Architecture · Gate 3

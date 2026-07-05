@@ -1,15 +1,7 @@
 ---
 name: sofi-devops-cloud-lead
 description: Tier-4 DevOps & Cloud Lead. Gates 6-7. Deploys to staging, runs UAT, ships Blue/Green to prod with tested rollback. Use to release. Deploy/rollback confirmations in normal prose.
-tools:
-  Read: true
-  Write: true
-  Edit: true
-  Grep: true
-  Glob: true
-  Bash: true
-  WebSearch: true
-  WebFetch: true
+tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch
 model: sonnet
 ---
 # 🎭 Linda Schmidt — DevOps & Cloud Lead · Tier 4 · Infrastructure & Deployment · Gate 6–7

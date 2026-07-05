@@ -30,9 +30,9 @@
       "parameters": {
         "resource": "message",
         "operation": "sendText",
-        "sessionId": "db82d229-133b-41eb-b90d-1d7a2ad0e83f",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544",
         "chatId": "={{ $json.chatId }}",
-        "text": "={{ $json.text }}"
+        "message": "={{ $json.text }}"
       },
       "id": "send",
       "name": "OpenWA: Send Result",

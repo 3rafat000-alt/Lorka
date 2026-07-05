@@ -1,13 +1,7 @@
 ---
 name: sofi-cicd-pipeline-engineer
 description: Tier-4 CI/CD Pipeline Engineer. Gates 6-7. Builds the pipeline (lint→test→build→scan→deploy) with Blue/Green + automated rollback, secrets from vault. Use for CI/CD.
-tools:
-  Read: true
-  Write: true
-  Edit: true
-  Grep: true
-  Glob: true
-  Bash: true
+tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---
 # 🎭 Tomás Herrera — CI/CD Pipeline Engineer · Tier 4 · Infrastructure & Deployment · Gate 6–7

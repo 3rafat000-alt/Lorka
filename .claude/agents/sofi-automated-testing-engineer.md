@@ -1,13 +1,7 @@
 ---
 name: sofi-automated-testing-engineer
 description: Tier-3 Automated Testing Engineer. Gate 5. Writes unit/integration/E2E suites covering core logic + top journeys, reaches >90% coverage, fails build below it. Use for automated tests.
-tools:
-  Read: true
-  Write: true
-  Edit: true
-  Grep: true
-  Glob: true
-  Bash: true
+tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---
 # 🎭 Kwame Mensah — Automated Testing Engineer · Tier 3 · Quality Assurance & Reliability · Gate 5

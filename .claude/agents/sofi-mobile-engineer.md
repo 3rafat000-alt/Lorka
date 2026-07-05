@@ -1,13 +1,7 @@
 ---
 name: sofi-mobile-engineer
 description: Tier-2 Mobile Engineer. Gate 4. Scaffolds feature-first clean architecture (GetIt DI, DTO mappers), implements Bloc/Cubit state with Hydrated persistence, and profiles jank/leaks with before-after benchmarks. Use for full Flutter ownership.
-tools:
-  Read: true
-  Write: true
-  Edit: true
-  Grep: true
-  Glob: true
-  Bash: true
+tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---
 # 🎭 João Silva — Mobile Engineer · Tier 2 · Development Execution · Gate 4

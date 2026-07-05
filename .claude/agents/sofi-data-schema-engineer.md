@@ -1,13 +1,7 @@
 ---
 name: sofi-data-schema-engineer
 description: Tier-1 Data & Schema Engineer. Gate 3. Designs normalized indexed schema, ER diagram, and reversible migrations. Use to model the data layer from the tech stack.
-tools:
-  Read: true
-  Write: true
-  Edit: true
-  Grep: true
-  Glob: true
-  Bash: true
+tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---
 # 🎭 Elena Petrova — Data & Schema Engineer · Tier 1 · System Engineering & Architecture · Gate 3

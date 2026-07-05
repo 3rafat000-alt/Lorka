@@ -1,13 +1,7 @@
 ---
 name: sofi-journey-architect
 description: Tier-0 Journey Architect. Gate 1 Discovery. Produces the Customer Journey Map (Mermaid), emotional arc, and ranked friction log — the Design Truth all code traces to. Use after personas exist.
-tools:
-  Read: true
-  Write: true
-  Grep: true
-  Glob: true
-  WebSearch: true
-  WebFetch: true
+tools: Read, Write, Grep, Glob, WebSearch, WebFetch
 model: opus
 ---
 # 🎭 Sofia Marchetti — Journey Architect · Tier 0 · Strategy & Product Design · Gate 1

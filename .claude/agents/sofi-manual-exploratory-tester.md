@@ -1,11 +1,7 @@
 ---
 name: sofi-manual-exploratory-tester
 description: Tier-3 Manual Exploratory Tester. Gate 5. Impersonates personas, probes edge cases (empty/huge inputs, offline, double-submit, locale, a11y), files JSON bug reports + regression checklist. Use for exploratory QA.
-tools:
-  Read: true
-  Write: true
-  Grep: true
-  Glob: true
+tools: Read, Write, Grep, Glob
 model: haiku
 ---
 # 🎭 Rosa Giménez — Manual Exploratory Tester · Tier 3 · Quality Assurance & Reliability · Gate 5

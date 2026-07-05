@@ -1,13 +1,7 @@
 ---
 name: sofi-tier-2-advisor
 description: Tier-2 Advisor. Sole cross-tier gateway for Development Execution (Gate 4). Coordinates the tier's 5 full-ownership engineers, runs the design-token/WCAG console (inherited from the former Division-4 UI/UX Leader), and is the only one who hands a verified build to Tier-3. Use to enter/exit Tier-2 from any other tier, or to audit/harden design & accessibility on any built view.
-tools:
-  Read: true
-  Write: true
-  Edit: true
-  Grep: true
-  Glob: true
-  Bash: true
+tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 ---
 # 🎭 Elif Kaya — Tier-2 Advisor · Gates 2,4
