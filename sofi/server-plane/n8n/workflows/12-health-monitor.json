@@ -1,43 +1,169 @@
 {
+  "active": true,
+  "connections": {
+    "Check Gateway": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Evaluate",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Evaluate": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "IF Unhealthy?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Every hour": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Check Gateway",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "IF Unhealthy?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "OpenWA: Health Alert",
+            "type": "main"
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "meta": null,
   "name": "12 · Health Monitor (hourly)",
   "nodes": [
     {
-      "parameters": {
-        "rule": { "interval": [{ "field": "hours", "hoursInterval": 1 }] }
-      },
       "id": "cron",
       "name": "Every hour",
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "position": [
+        240,
+        304
+      ],
       "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
-      "position": [240, 300]
+      "typeVersion": 1.2
     },
     {
-      "parameters": {
-        "url": "http://127.0.0.1:8099/healthz",
-        "options": { "timeout": 8000 }
-      },
       "id": "gw",
       "name": "Check Gateway",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "options": {
+          "timeout": 8000
+        },
+        "url": "http://127.0.0.1:8099/healthz"
+      },
+      "position": [
+        464,
+        304
+      ],
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [460, 300],
-      "onError": "continueRegularOutput"
+      "typeVersion": 4.2
     },
     {
+      "id": "eval",
+      "name": "Evaluate",
       "parameters": {
         "jsCode": "const ok = $json.status === 'ok';\nconst q = $json.queue;\nreturn [{ json: { healthy: ok, queue: q, ts: new Date().toISOString(),\n  note: ok ? `gateway ok, queue=${q}` : 'gateway DOWN' } }];"
       },
-      "id": "eval",
-      "name": "Evaluate",
+      "position": [
+        688,
+        304
+      ],
       "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 300]
+      "typeVersion": 2
+    },
+    {
+      "id": "if_unhealthy",
+      "name": "IF Unhealthy?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "c0845d38-a389-4490-9780-860245afcc7f",
+              "leftValue": "={{ $json.healthy }}",
+              "operator": {
+                "operation": "false",
+                "type": "boolean"
+              },
+              "rightValue": false
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        912,
+        304
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "openWaApi": {
+          "id": "vZ5cLjILYhlrFNVp",
+          "name": "OpenWA API"
+        }
+      },
+      "id": "openwa_health_alert",
+      "name": "OpenWA: Health Alert",
+      "parameters": {
+        "chatId": "={{ $env.SOFI_OWNER_CHAT }}",
+        "message": "🔴 SOFI Gateway DOWN — {{ $json.note }} @ {{ $json.ts }}",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544"
+      },
+      "position": [
+        1120,
+        176
+      ],
+      "type": "@rmyndharis/n8n-nodes-openwa.openWa",
+      "typeVersion": 1
     }
   ],
-  "connections": {
-    "Every hour": { "main": [[{ "node": "Check Gateway", "type": "main", "index": 0 }]] },
-    "Check Gateway": { "main": [[{ "node": "Evaluate", "type": "main", "index": 0 }]] }
+  "pinData": {},
+  "settings": {
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "executionOrder": "v1"
   },
-  "settings": { "executionOrder": "v1" },
-  "active": false
+  "staticData": {
+    "node:Every hour": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": []
 }
