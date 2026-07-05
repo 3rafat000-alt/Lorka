@@ -11,7 +11,7 @@
       "name": "OpenWA Trigger",
       "type": "@rmyndharis/n8n-nodes-openwa.openWaTrigger",
       "typeVersion": 1,
-      "position": [240, 300],
+      "position": [200, 400],
       "credentials": {
         "openWaApi": { "id": "", "name": "OpenWA API" }
       }
@@ -24,17 +24,94 @@
       "name": "Filter & Authorize",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [460, 300]
+      "position": [420, 400]
     },
     {
       "parameters": {
-        "jsCode": "// No keyword map — the message goes to sofi-ceo as-is. CEO reads the SOFI\n// routing doctrine itself (CLAUDE.md / engine/routing/routing.yaml), decides\n// which of the 30 agents (or itself) should handle it, delegates via the\n// Agent/Task tool if needed, does the work, checkpoints, and replies. This is\n// literally the CEO's job per its own operating contract — n8n just hands it\n// the raw ticket instead of pre-guessing the route with string matching.\nconst text = $json.text;\nconst project = 'PRJ-SAKK';\n\nconst command = `WhatsApp ticket from the project owner:\\n\\n\"${text}\"\\n\\n`\n  + `Read it, decide what's actually being asked, and handle it end-to-end:\\n`\n  + `- Quick question/status check -> answer directly, cheaply (haiku-tier).\\n`\n  + `- Work that maps to a specialist (audit, fix, feature, report, security, `\n  + `deploy, etc.) -> delegate via the Agent tool to the right tier agent per `\n  + `your own routing doctrine (routing.yaml economic ladder) and this project's `\n  + `gate. Do not skip agents to save a step; do not over-escalate model tier.\\n`\n  + `- If it's ambiguous or missing detail you cannot safely assume, say so `\n  + `plainly instead of guessing.\\n`\n  + `- Checkpoint any change per SOFI git discipline before you finish.\\n\\n`\n  + `Reply format: end with a short, WhatsApp-readable summary in Arabic `\n  + `(<= 1200 chars) of what you found/did and what's next — this exact text `\n  + `is sent back to the owner's phone, so no markdown tables, no file trees, `\n  + `just plain readable lines.`;\n\nconst base = $env.SOFI_CALLBACK_BASE || 'http://127.0.0.1:5678';\nreturn [{ json: {\n  role: 'sofi-ceo',\n  project,\n  command,\n  model: 'sonnet',\n  mode: 'async',\n  source: 'whatsapp',\n  callback_url: `${base}/webhook/sofi-callback`,\n  meta: { chatId: $json.chatId }\n} }];"
+        "jsCode": "// Stage 1 — cheap classification (mechanical/haiku tier, per SOFI's own\n// routing.yaml economic ladder: 'first line of defense against token drain').\n// The gateway is asked to classify AND, for the 80% trivial case, answer\n// directly in the same cheap call — no escalation, no second Claude call.\n// Real SOFI role slugs only (from .claude/agents/), so a bad classification\n// can never dispatch to a role that doesn't exist.\nconst ROLES = [\n  'ceo','chief-product-strategist','ux-researcher','journey-architect',\n  'ui-ux-designer','content-strategist','principal-system-architect',\n  'data-schema-engineer','api-integration-specialist','security-compliance-architect',\n  'infrastructure-cloud-architect','database-engineer','api-engineer',\n  'backend-blade-engineer','frontend-react-engineer','mobile-engineer',\n  'qa-sre-lead','automated-testing-engineer','manual-exploratory-tester',\n  'performance-load-analyst','security-penetration-tester','devops-cloud-lead',\n  'cicd-pipeline-engineer','observability-sre','release-incident-manager',\n  'tier-0-advisor','tier-1-advisor','tier-2-advisor','tier-3-advisor','tier-4-advisor'\n];\n\nconst text = $json.text;\nconst command = `Classify this WhatsApp ticket. Output STRICT JSON only, no prose, no `\n  + `markdown fences:\\n`\n  + `{\"trivial\": bool, \"direct_answer\": string|null, \"role\": string|null, `\n  + `\"model_tier\": \"mechanical\"|\"workhorse\"|\"gatekeeper\"|\"deep\", \"reason\": string}\\n\\n`\n  + `trivial=true only for: status/gate checks answerable from STATE.md/HANDOFFS.md `\n  + `without code changes, greetings, help requests, or anything you can answer in `\n  + `under 5 lines with no delegation. Put the actual answer in direct_answer `\n  + `(Arabic, WhatsApp-plain, <=800 chars, no markdown).\\n\\n`\n  + `trivial=false for anything needing code changes, audits, fixes, features, `\n  + `reports, deploys, security work. Then set role to the SINGLE best match from `\n  + `this exact list (use the slug as-is): ${ROLES.join(', ')}. `\n  + `model_tier per SOFI's routing.yaml: mechanical=haiku (docs/config/CRUD), `\n  + `workhorse=sonnet (most real feature/fix/audit work — default here), `\n  + `gatekeeper=fable (cross-layer architecture arbitration only), `\n  + `deep=opus (repo-wide unknown-source failures only — rare, expensive).\\n\\n`\n  + `Ticket text: \"${text}\"`;\n\nreturn [{ json: {\n  role: 'sofi-ceo',\n  project: 'PRJ-SAKK',\n  command,\n  model: 'haiku',\n  mode: 'sync',\n  timeout: 60,\n  source: 'whatsapp-classify',\n  format: 'JSON only, exactly the schema described, nothing else.'\n} }];"
       },
-      "id": "route",
-      "name": "Route to RCCF",
+      "id": "classify_build",
+      "name": "Build Classify Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [680, 300]
+      "position": [640, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8099/dispatch",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-SOFI-Token", "value": "={{ $env.SOFI_GATEWAY_TOKEN }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": { "timeout": 65000 }
+      },
+      "id": "classify_dispatch",
+      "name": "Classify (haiku, sync)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [860, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the classifier's JSON, defensively (strip stray fences, fall back\n// to escalation on any parse failure — never silently drop a real ticket).\nconst chatId = $('Filter & Authorize').first().json.chatId;\nconst text = $('Filter & Authorize').first().json.text;\nlet parsed;\ntry {\n  const raw = ($json.response || '').replace(/```json|```/g, '').trim();\n  parsed = JSON.parse(raw);\n} catch (e) {\n  parsed = { trivial: false, role: 'ceo', model_tier: 'workhorse',\n             reason: 'classify parse failed, escalating safe' };\n}\nconst modelMap = { mechanical: 'haiku', workhorse: 'sonnet', gatekeeper: 'fable', deep: 'opus' };\nreturn [{ json: {\n  chatId, text,\n  trivial: !!parsed.trivial,\n  direct_answer: parsed.direct_answer || null,\n  role: parsed.role || 'ceo',\n  model: modelMap[parsed.model_tier] || 'sonnet',\n  reason: parsed.reason || ''\n} }];"
+      },
+      "id": "parse",
+      "name": "Parse Classification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1080, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [{
+            "leftValue": "={{ $json.trivial }}",
+            "rightValue": true,
+            "operator": { "type": "boolean", "operation": "true" }
+          }],
+          "combinator": "and"
+        }
+      },
+      "id": "is_trivial",
+      "name": "IF Trivial?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1300, 400]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendText",
+        "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544",
+        "chatId": "={{ $json.chatId }}",
+        "message": "={{ $json.direct_answer || 'تم.' }}"
+      },
+      "id": "direct_reply",
+      "name": "OpenWA: Direct Reply (cheap path)",
+      "type": "@rmyndharis/n8n-nodes-openwa.openWa",
+      "typeVersion": 1,
+      "position": [1520, 260],
+      "credentials": {
+        "openWaApi": { "id": "", "name": "OpenWA API" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $env.SOFI_CALLBACK_BASE || 'http://127.0.0.1:5678';\nconst text = $json.text;\nconst role = $json.role;\nconst model = $json.model;\n\nconst command = `WhatsApp ticket, pre-classified for you (role=${role}, model=${model}):\\n\\n`\n  + `\"${text}\"\\n\\n`\n  + `Handle it end-to-end per SOFI doctrine: delegate further via the Agent tool `\n  + `ONLY if this ticket genuinely needs another specialist's ownership; otherwise `\n  + `do the work yourself at this role. Checkpoint any change per SOFI git discipline.\\n\\n`\n  + `Reply format: end with a short, WhatsApp-readable summary in Arabic `\n  + `(<= 1200 chars) of what you found/did and what's next — this exact text is `\n  + `sent back to the owner's phone, so no markdown tables, no file trees, `\n  + `just plain readable lines.`;\n\nreturn [{ json: {\n  role,\n  project: 'PRJ-SAKK',\n  command,\n  model,\n  mode: 'async',\n  source: 'whatsapp',\n  callback_url: `${base}/webhook/sofi-callback`,\n  meta: { chatId: $json.chatId }\n} }];"
+      },
+      "id": "route",
+      "name": "Build Work Dispatch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1520, 520]
     },
     {
       "parameters": {
@@ -56,21 +133,21 @@
       "name": "SOFI Gateway /dispatch",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [900, 300]
+      "position": [1740, 520]
     },
     {
       "parameters": {
         "resource": "message",
         "operation": "sendText",
         "sessionId": "5b59d3b0-fbcf-4cd6-a8df-2202fc919544",
-        "chatId": "={{ $('Route to RCCF').first().json.meta.chatId }}",
-        "message": "⏳ استلمت طلبك، جارٍ التنفيذ… سأرسل النتيجة عند الانتهاء."
+        "chatId": "={{ $('Build Work Dispatch').first().json.meta.chatId }}",
+        "message": "={{ '⏳ استلمت طلبك (' + $('Parse Classification').first().json.role + ')، جارٍ التنفيذ… سأرسل النتيجة عند الانتهاء.' }}"
       },
       "id": "ack",
       "name": "OpenWA: Ack",
       "type": "@rmyndharis/n8n-nodes-openwa.openWa",
       "typeVersion": 1,
-      "position": [1120, 300],
+      "position": [1960, 520],
       "credentials": {
         "openWaApi": { "id": "", "name": "OpenWA API" }
       }
@@ -78,8 +155,17 @@
   ],
   "connections": {
     "OpenWA Trigger": { "main": [[{ "node": "Filter & Authorize", "type": "main", "index": 0 }]] },
-    "Filter & Authorize": { "main": [[{ "node": "Route to RCCF", "type": "main", "index": 0 }]] },
-    "Route to RCCF": { "main": [[{ "node": "SOFI Gateway /dispatch", "type": "main", "index": 0 }]] },
+    "Filter & Authorize": { "main": [[{ "node": "Build Classify Request", "type": "main", "index": 0 }]] },
+    "Build Classify Request": { "main": [[{ "node": "Classify (haiku, sync)", "type": "main", "index": 0 }]] },
+    "Classify (haiku, sync)": { "main": [[{ "node": "Parse Classification", "type": "main", "index": 0 }]] },
+    "Parse Classification": { "main": [[{ "node": "IF Trivial?", "type": "main", "index": 0 }]] },
+    "IF Trivial?": {
+      "main": [
+        [{ "node": "OpenWA: Direct Reply (cheap path)", "type": "main", "index": 0 }],
+        [{ "node": "Build Work Dispatch", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Work Dispatch": { "main": [[{ "node": "SOFI Gateway /dispatch", "type": "main", "index": 0 }]] },
     "SOFI Gateway /dispatch": { "main": [[{ "node": "OpenWA: Ack", "type": "main", "index": 0 }]] }
   },
   "settings": { "executionOrder": "v1" },
