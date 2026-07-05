@@ -144,7 +144,8 @@
 .pcmd{
   border:1px solid var(--hair-2);border-radius:10px;padding:10px 11px;
   background:linear-gradient(135deg,var(--paper-2) 0%,var(--card) 100%);
-  transition:all .25s cubic-bezier(.25,.46,.45,.94);position:relative;overflow:hidden
+  transition:all .25s cubic-bezier(.25,.46,.45,.94);position:relative;overflow:hidden;
+  flex-shrink:0
 }
 .pcmd::after{
   content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,var(--accent-soft));
@@ -283,6 +284,7 @@
     <div class="t" data-tab="tasks">إدارة المهام <span class="c" id="c-task">0</span></div>
     <div class="t" data-tab="budgets">التخطيط والميزانية <span class="c" id="c-bud">0</span></div>
     <div class="t" data-tab="live">غرفة العمليات <span class="c" id="c-live">·</span></div>
+    <div class="t" data-tab="guide">تعليمات استخدام الفريق</div>
   </div>
 </div>
 
@@ -446,6 +448,65 @@
       </div>
     </div>
   </div>
+
+  <!-- GUIDE — team usage instructions -->
+  <div class="panel" id="tab-guide">
+    <div class="sec-h" style="margin-bottom:14px"><span class="kicker">تعليمات استخدام الفريق</span><h2>كيف تدير SOFI من هذه اللوحة</h2></div>
+    <div class="grid g2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-h"><span class="kicker">ما هو SOFI</span></div>
+        <div class="card-b" style="line-height:1.9">
+          <p>مؤسسةُ وكلاءٍ ذاتية: 30 وكيلاً (29 مختصّاً عبر 5 طبقات + رئيس تنفيذي واحد)، يديرون أي مشروع عبر دورة حياة من 9 بوّابات — من الفكرة حتى الإنتاج والمراقبة. كل تفويضٍ بين وكيلين هو كتلة RCCF (دور · سياق · أمر · تنسيق)، وكل بوّابة تُفتح فقط إذا اجتاز المُخرَج شريط تحقّقٍ فعلي — لا تقارير ذاتية.</p>
+          <p class="note">العقيدة: التصميم هو الحقيقة · أقلّ الرموز تفعل المطلوب · دماغٌ كبير وفمٌ صغير.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="kicker">سلّم التوجيه الاقتصادي</span></div>
+        <div class="card-b" style="line-height:1.9">
+          <p>اختر دائماً أرخص نموذجٍ يجتاز الشريط، بالترتيب: <b>🟢 Haiku</b> (80% من العمليات الروتينية) ← <b>🔵 Sonnet</b> (كتابة كودٍ واضحة) ← <b>🔮 Fable</b> (بوّابات الحرّاسة الشاملة عبر الطبقات) ← <b>🟣 Opus</b> (ملاذٌ أخير، تنقيبٌ عميق فقط — ممنوع للكتابة الروتينية).</p>
+          <p class="note">التصعيد بالدليل فقط. سجّل مسار التوجيه في تفكير الوكيل قبل التنفيذ.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-h"><span class="kicker">دليل التبويبات</span></div>
+      <div class="card-b">
+        <table><thead><tr><th>التبويب</th><th>ماذا يُريك</th></tr></thead><tbody>
+          <tr><td class="mono">الرئيسية</td><td>لقطة المشروع النشط: البوّابة الحالية، آخر كوميت، عدد التقارير والمهام، وشريط دورة الحياة (9 بوّابات).</td></tr>
+          <tr><td class="mono">شبكة الدماغ</td><td>الهيكل الهرمي الحيّ لكل الوكلاء الثلاثين (رئيس تنفيذي ← 5 مستشاري طبقات ← المختصّون)؛ انقر أي عقدة لتفاصيل الوكيل ومسار التفويض إليه.</td></tr>
+          <tr><td class="mono">المرصد الحي</td><td>نبض المشروع: إشارات التأمّل، الوكلاء النشطون مؤخّراً، درجة الجاهزية، وسجلّ العمل الحقيقي المسحوب مباشرة من STATE.md/HANDOFFS.md — لا بيانات مُختلقة.</td></tr>
+          <tr><td class="mono">إدارة المهام</td><td>كل التذاكر المستخرجة من HANDOFFS.md مربوطة بالوكيل المسؤول وحالتها (مفتوحة/منجزة/محظورة) ومصدرها بالسطر.</td></tr>
+          <tr><td class="mono">التخطيط والميزانية</td><td>قواعد الاستقلالية المحدودة (السقف الصلب، حدّ السياق)، تدرّج الجهد لكل نمط تفويض، ومظاريف الميزانية الحقيقية لكل دور من routing.yaml.</td></tr>
+          <tr><td class="mono">غرفة العمليات</td><td>مساحة عملٍ واحدة: دردشة حيّة مع Claude Code، لوحة أوامر SOFI الجاهزة (/sofi-*) بتشغيلٍ مباشر، وكونسول ناتجٍ حيّ لكل أمر.</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-h"><span class="kicker">العمود الفقري — التسلسل المعتاد</span></div>
+        <div class="card-b" style="line-height:1.9">
+          <p><b>1.</b> ابدأ دائماً بـ <span class="mono">/sofi-boot</span> — لا انطلاق أعمى؛ يزامن Git ويقرأ STATE/HANDOFFS/CONTEXT.</p>
+          <p><b>2.</b> افحص أو أمّن الطبقة المستهدفة: <span class="mono">/sofi-audit</span> أو <span class="mono">/sofi-secure</span>.</p>
+          <p><b>3.</b> حوّل النتائج إلى إصلاحاتٍ فعلية: <span class="mono">/sofi-fix</span> (يوجّه كل نتيجة لأرخص مختصٍّ يجتاز الشريط).</p>
+          <p><b>4.</b> وثّق بدليل: <span class="mono">/sofi-report</span>.</p>
+          <p><b>5.</b> تحقّق من شريط البوّابة وتقدّم: <span class="mono">/sofi-gate</span>.</p>
+          <p><b>6.</b> أغلق العمل بانضباط: <span class="mono">/sofi-handoff</span> (كوميت + تحديث الدماغ + تذكرة تالية).</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="kicker">أدوات القوة (مرنة، وفيرة التوكنز)</span></div>
+        <div class="card-b" style="line-height:1.9">
+          <p><span class="mono">/sofi-feature "&lt;اسم الميزة&gt;"</span> — الحلقة الكاملة على ميزةٍ واحدة: فحص ← مراجعة ← إصلاح ← تحقّق ← تقرير ← بوّابة ← تسليم.</p>
+          <p><span class="mono">/sofi-spec-review "&lt;ميزة&gt;"</span> — مراجعة معماريّة بأربعة أعمدة (بيانات ومنطق · إدارة وتشغيل · واجهة وذوق · حالات حافّة).</p>
+          <p><span class="mono">/sofi-delegate</span> — يبني كتلة RCCF جاهزة للّصق لأي وكيل، مع دبابيس دماغ المشروع.</p>
+          <p><span class="mono">/sofi-team</span> — يعرض التشكيلة الكاملة (30 وكيلاً) ويقترح الوكيل الأنسب لمهمّتك.</p>
+          <p class="note">شغّلها كلّها مباشرة من لوحة «أوامر مباشرة» في غرفة العمليات — الناتج الحقيقي يتدفّق حيّاً في الكونسول.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -556,7 +617,7 @@ function renderObservatory(o){
   const p=o.pulse||{};const gate=(String(p.gate||'').match(/\d+/)||['—'])[0];
   $('#o-gate').textContent=gate;$('#o-ready').textContent=p.readiness?p.readiness+'%':'—';$('#o-agents').textContent=(p.active_agents||[]).length;
   const wl=o.worklog||[];
-  $('#worklog').innerHTML=wl.length?wl.map(w=>`<div class="wrow ${w.marker}"><span class="mk"></span><div class="body"><div class="meta">${(w.agents||[]).map(a=>`<span class="agtag">${a}</span>`).join('')}${w.commit?`<span class="badge">${w.commit}</span>`:''}${w.date?`<span class="sub" style="font-size:.72rem">${w.date}</span>`:''}</div><div class="sum">${w.summary}</div></div></div>`).join(''):'<div class="sub">لا سجلّ عمل بعد.</div>';
+  $('#worklog').innerHTML=wl.length?wl.map(w=>`<div class="wrow ${w.marker}"><span class="mk"></span><div class="body"><div class="meta">${(w.agents||[]).map(a=>`<span class="agtag">${a}</span>`).join('')}${w.commit?`<span class="badge">${w.commit}</span>`:''}${w.date?`<span class="sub" style="font-size:.72rem">${w.date}</span>`:''}</div><div class="sum" dir="auto">${w.summary}</div></div></div>`).join(''):'<div class="sub">لا سجلّ عمل بعد.</div>';
   const rp=o.reports||[];
   $('#reportsBox').innerHTML=rp.length?rp.slice(0,8).map(r=>`<div class="kv"><span class="k mono" style="font-size:.74rem">${r.name.slice(0,34)}</span><span class="pill" style="font-size:.66rem">${r.kind}</span></div>`).join(''):'<div class="sub">لا تقارير.</div>';
   if(o.gates)renderGates(o.gates);
@@ -569,7 +630,7 @@ function renderReflection(r){const c=r.candidates||[];$('#o-refl').textContent=c
 function renderTasks(t){const rows=t.tickets||[];$('#c-task').textContent=rows.length;$('#t-total').textContent=rows.length;$('#t-done').textContent=t.done||rows.filter(r=>r.marker==='done').length;$('#t-open').textContent=t.open||rows.filter(r=>['open','info'].includes(r.marker)).length;$('#t-block').textContent=t.blocked||rows.filter(r=>r.marker==='warn').length;
   if(t.error){$('#taskTbl').innerHTML=`<div class="err">${t.error}</div>`;return;}
   if(!rows.length){$('#taskTbl').innerHTML='<div class="sub">لا مهام في HANDOFFS.md.</div>';return;}
-  $('#taskTbl').innerHTML=`<table><thead><tr><th>الحالة</th><th>الوكيل</th><th>المهمة</th><th>المصدر</th></tr></thead><tbody>${rows.map(r=>{const cls=r.marker==='done'?'ok':r.marker==='warn'?'danger':'warn';const lab=r.marker==='done'?'منجزة':r.marker==='warn'?'محظورة':(r.status||'قيد العمل');return `<tr><td><span class="pill ${cls}" style="font-size:.66rem">${lab.slice(0,14)}</span></td><td class="mono" style="color:var(--ink-blue);font-size:.76rem">${(r.agent||'—').slice(0,22)}</td><td>${(r.title||'').slice(0,72)}</td><td class="sub mono" style="font-size:.68rem">${(r.source||'').replace('HANDOFFS.md','H')}</td></tr>`;}).join('')}</tbody></table>`;}
+  $('#taskTbl').innerHTML=`<table><thead><tr><th>الحالة</th><th>الوكيل</th><th>المهمة</th><th>المصدر</th></tr></thead><tbody>${rows.map(r=>{const cls=r.marker==='done'?'ok':r.marker==='warn'?'danger':'warn';const lab=r.marker==='done'?'منجزة':r.marker==='warn'?'محظورة':(r.status||'قيد العمل');return `<tr><td><span class="pill ${cls}" style="font-size:.66rem">${lab.slice(0,14)}</span></td><td class="mono" style="color:var(--ink-blue);font-size:.76rem">${(r.agent||'—').slice(0,22)}</td><td dir="auto">${(r.title||'').slice(0,72)}</td><td class="sub mono" style="font-size:.68rem">${(r.source||'').replace('HANDOFFS.md','H')}</td></tr>`;}).join('')}</tbody></table>`;}
 
 /* BUDGETS */
 function renderBudgets(b){if(!b||b.error){$('#effBox').innerHTML='<div class="err">تعذّر تحميل routing.yaml</div>';return;}$('#c-bud').textContent=(b.routes||[]).length;const eff=b.effort_scaling||{};$('#effBox').innerHTML=Object.entries(eff).map(([k,v])=>`<div class="esc-row"><span class="cls">${k}</span><span style="flex:1"><b>توزّع ${v.spawn}</b> · فرعيون ${v.subagents} · ${v.budget_calls}<div class="note">${v.note||''}</div></span></div>`).join('');const au=b.budgeted_autonomy||{},A={rule:'القاعدة',hard_stop:'الحدّ الصلب',context_boundary:'حدّ السياق'};$('#autoBox').innerHTML=Object.entries(au).map(([k,v])=>`<div style="padding:8px 0;border-bottom:1px solid var(--hair)"><b>${A[k]||k}</b><div class="note">${v}</div></div>`).join('');
