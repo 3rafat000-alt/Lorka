@@ -12,7 +12,7 @@ Where the agent enterprise stands today. Doctrine intact: **Design is Truth · f
 | Upgrade | State | Where |
 |---|---|---|
 | 🧊 **FossFLOW** isometric diagrams | 🛠️ built | `…/principal-system-architect/fossflow_export.py` (Gate 3) |
-| 🎨 **Design taste** skill | ✅ implemented | `.claude/skills/sofi-design-taste/SKILL.md` |
+| 🎨 **Design taste** doctrine | ✅ live (skill removed) | taste doctrine via `engine/tooling/agents/uiux/uiux_pipeline.py` |
 | 🏢 **Escalation chain** | ✅ applied | `tickets.escalate()` + `sofi escalate` |
 | 🧩 **Parallel squads** | ✅ command | `sofi squad <PRJ> <gate>` (gates 3·4·5) |
 | 📇 **Power discovery** | ✅ command | `sofi powers` |

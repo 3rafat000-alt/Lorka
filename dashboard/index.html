@@ -478,7 +478,7 @@
           <tr><td class="mono">المرصد الحي</td><td>نبض المشروع: إشارات التأمّل، الوكلاء النشطون مؤخّراً، درجة الجاهزية، وسجلّ العمل الحقيقي المسحوب مباشرة من STATE.md/HANDOFFS.md — لا بيانات مُختلقة.</td></tr>
           <tr><td class="mono">إدارة المهام</td><td>كل التذاكر المستخرجة من HANDOFFS.md مربوطة بالوكيل المسؤول وحالتها (مفتوحة/منجزة/محظورة) ومصدرها بالسطر.</td></tr>
           <tr><td class="mono">التخطيط والميزانية</td><td>قواعد الاستقلالية المحدودة (السقف الصلب، حدّ السياق)، تدرّج الجهد لكل نمط تفويض، ومظاريف الميزانية الحقيقية لكل دور من routing.yaml.</td></tr>
-          <tr><td class="mono">غرفة العمليات</td><td>مساحة عملٍ واحدة: دردشة حيّة مع Claude Code، لوحة أوامر SOFI الجاهزة (/sofi-*) بتشغيلٍ مباشر، وكونسول ناتجٍ حيّ لكل أمر.</td></tr>
+          <tr><td class="mono">غرفة العمليات</td><td>مساحة عملٍ واحدة: دردشة حيّة مع Claude Code، وبنّاء تفويض RCCF جاهز للّصق، وكونسول ناتجٍ حيّ لكل تشغيل — الفريق يعمل مباشرة بلا شرطة مائلة.</td></tr>
         </tbody></table>
       </div>
     </div>
@@ -524,24 +524,24 @@
 
     <div class="grid g2">
       <div class="card">
-        <div class="card-h"><span class="kicker">العمود الفقري — التسلسل المعتاد</span></div>
+        <div class="card-h"><span class="kicker">العمود الفقري — الحلقة المباشرة</span></div>
         <div class="card-b" style="line-height:1.9">
-          <p><b>1.</b> ابدأ دائماً بـ <span class="mono">/sofi-boot</span> — لا انطلاق أعمى؛ يزامن Git ويقرأ STATE/HANDOFFS/CONTEXT.</p>
-          <p><b>2.</b> افحص أو أمّن الطبقة المستهدفة: <span class="mono">/sofi-audit</span> أو <span class="mono">/sofi-secure</span>.</p>
-          <p><b>3.</b> حوّل النتائج إلى إصلاحاتٍ فعلية: <span class="mono">/sofi-fix</span> (يوجّه كل نتيجة لأرخص مختصٍّ يجتاز الشريط).</p>
-          <p><b>4.</b> وثّق بدليل: <span class="mono">/sofi-report</span>.</p>
-          <p><b>5.</b> تحقّق من شريط البوّابة وتقدّم: <span class="mono">/sofi-gate</span>.</p>
-          <p><b>6.</b> أغلق العمل بانضباط: <span class="mono">/sofi-handoff</span> (كوميت + تحديث الدماغ + تذكرة تالية).</p>
+          <p><b>1. وجّه.</b> ابدأ دائماً بـ <span class="mono">sofi sync</span> واقرأ الدماغ (STATE/HANDOFFS/CONTEXT) — لا انطلاق أعمى.</p>
+          <p><b>2. امسح.</b> حدّد الطبقة المستهدفة بصفر توكن نموذج: <span class="mono">sofi_scan.py &lt;mode&gt;</span> (ui·blade·db·api·security·taint).</p>
+          <p><b>3. فوّض الأخصائيين.</b> ابنِ كتلة RCCF في السياق ثم عدّة استدعاءات <span class="mono">Agent()</span> في رسالة واحدة (سربٌ متوازٍ، قفزة واحدة) — كلٌّ يرجع ناتجه ولا يستدعي أحداً.</p>
+          <p><b>4. تحقّق.</b> النتيجة لا الإفادة الذاتية: <span class="mono">sofi_verify.py</span> (خروج 0 يبوّب الأنبوب)، ثم <span class="mono">sofi gate-check</span> للتقدّم بلا تخطٍّ.</p>
+          <p><b>5. احفظ.</b> <span class="mono">sofi checkpoint</span> لكل معلمٍ — كوميت + تحديث الدماغ (head_sha).</p>
+          <p><b>6. التذكرة التالية.</b> اكتب التسليم في HANDOFFS.md — غير المحفوظ خفيٌّ عن الجلسة التالية.</p>
         </div>
       </div>
       <div class="card">
         <div class="card-h"><span class="kicker">أدوات القوة (مرنة، وفيرة التوكنز)</span></div>
         <div class="card-b" style="line-height:1.9">
-          <p><span class="mono">/sofi-feature "&lt;اسم الميزة&gt;"</span> — الحلقة الكاملة على ميزةٍ واحدة: فحص ← مراجعة ← إصلاح ← تحقّق ← تقرير ← بوّابة ← تسليم.</p>
-          <p><span class="mono">/sofi-spec-review "&lt;ميزة&gt;"</span> — مراجعة معماريّة بأربعة أعمدة (بيانات ومنطق · إدارة وتشغيل · واجهة وذوق · حالات حافّة).</p>
-          <p><span class="mono">/sofi-delegate</span> — يبني كتلة RCCF جاهزة للّصق لأي وكيل، مع دبابيس دماغ المشروع.</p>
-          <p><span class="mono">/sofi-team</span> — يعرض التشكيلة الكاملة (30 وكيلاً) ويقترح الوكيل الأنسب لمهمّتك.</p>
-          <p class="note">شغّلها كلّها مباشرة من لوحة «أوامر مباشرة» في غرفة العمليات — الناتج الحقيقي يتدفّق حيّاً في الكونسول.</p>
+          <p><span class="mono">feature_scan.py</span> — الحلقة الكاملة على ميزةٍ واحدة: تحديد ← وسم ← إصلاح ← تحقّق ← تقرير ← بوّابة ← تسليم.</p>
+          <p><span class="mono">engine/protocols/spec-review.md</span> — مراجعة معماريّة بأربعة أعمدة (بيانات ومنطق · إدارة وتشغيل · واجهة وذوق · حالات حافّة)، 7 قواعد فولاذية.</p>
+          <p><span class="mono">engine/protocols/01-delegation-rccf.md</span> — بناء كتلة RCCF في السياق لأي وكيل ثم تفريخه، مع دبابيس دماغ المشروع.</p>
+          <p><span class="mono">engine/ROSTER.md</span> — التشكيلة الكاملة (30 وكيلاً) لاختيار الوكيل الأنسب لمهمّتك.</p>
+          <p class="note">لا شرطة مائلة — الجلسة الرئيسية تستدعي هذه الأدوات مباشرة، والناتج الحقيقي يتدفّق حيّاً في كونسول غرفة العمليات.</p>
         </div>
       </div>
     </div>
@@ -775,7 +775,7 @@ async function loadHistory(){
   box.innerHTML=r.runs.map(x=>{
     const t=new Date(x.t0*1000).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
     const ic=x.status==='done'?'✓':x.status==='running'?'⏳':x.status==='stopped'?'⏹':'✗';
-    return `<div class="rh" onclick="viewRun('${x.run}')"><span dir="ltr">/${x.cmd}${x.arg?' '+x.arg:''}</span><span><span class="st-${x.status}">${ic}</span> <span class="sub">${t}</span></span></div>`;
+    return `<div class="rh" onclick="viewRun('${x.run}')"><span dir="ltr">${x.cmd}${x.arg?' '+x.arg:''}</span><span><span class="st-${x.status}">${ic}</span> <span class="sub">${t}</span></span></div>`;
   }).join('');
 }
 async function viewRun(id){

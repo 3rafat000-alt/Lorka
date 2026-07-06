@@ -18,7 +18,7 @@ report.md ─▶ gemini_review (sanitize ▸ condense ▸ push ▸ capture ▸ p
 
 ## When to use it
 
-- After `/sofi-spec-review`, `/sofi-secure`, `/sofi-audit`, or any `/sofi-report` that yields a
+- After a spec-review, security sweep, static sweep, or any report that yields a
   findings document worth a second architectural opinion.
 - Before committing to a large refactor or migration plan — get the desk to stress-test it.
 - NOT for trivial changes, and NOT as a substitute for the Fable-5 hard gate (the desk advises; the

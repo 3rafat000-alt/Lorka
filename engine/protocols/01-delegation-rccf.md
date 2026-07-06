@@ -11,7 +11,7 @@ The doctrine in four words: **Role · Context · Command · Format.** No agent i
 📐 Format   — how to deliver   →  tell it how to hand it over
 ```
 
-This is the **runtime** half of the org. `00-operating-system.md` says *how an agent behaves once running*; RCCF says *how you hand it the work*. Together they are the universal contract. The CEO (`sofi-ceo`) emits an RCCF block on every delegation; `/sofi-delegate` builds one for you.
+This is the **runtime** half of the org. `00-operating-system.md` says *how an agent behaves once running*; RCCF says *how you hand it the work*. Together they are the universal contract. The `sofi-ceo` persona the main session wears emits an RCCF block on every delegation — you build one inline from the four sources below (`§3`).
 
 ---
 
@@ -35,7 +35,7 @@ sofi-ux-researcher  sofi-backend-…   sofi-qa-sre-lead   … any leaf specialis
 
 - **The main session IS the CEO.** You never *talk to* a separate CEO and you never *spawn* `sofi-ceo` to run the fleet — a spawned CEO can only print RCCF text, never invoke a soul. `sofi-ceo.md` is the **persona + routing rules the main session wears**, not a live orchestrator.
 - **Tier-advisors do not fan out.** "I assign across the 5 specialists" is the *routing decision* the advisor persona makes; the **main session executes it** by spawning that leaf specialist directly. An advisor spawned as a subagent cannot reach its five.
-- **`/sofi-delegate` + the `sofi` CLI render, they do not spawn.** They emit an RCCF brief for the **main session** to spawn from. Python does the thinking; the main session pulls the trigger.
+- **Drafting the brief renders, it does not spawn.** Building the RCCF inline (`§3`) — or letting a `sofi` CLI tool assemble its pointers — only *produces* the brief text for the **main session** to spawn from. Python does the thinking; the main session pulls the trigger.
 - **Parallel squads (Gate 4)** = the main session emits several spawns **in one message** (multiple Agent calls) → they run concurrently. That is the *only* concurrency mechanism — no agent parallelises its own children.
 
 **One-line rule:** *render the brief anywhere; pull the trigger only from the main session; never nest a spawn.*
@@ -101,7 +101,7 @@ Must contain:
 - **Standards** — PSR-12 / Effective Dart / Airbnb TS / Conventional Commits. Code is always normal prose; chatter rides the caveman dial.
 - **Grounding clause (v5, `grounding.md`)** — answer strictly from the cited brain files + the frozen artifact; cite `file:line` for every factual claim, mark anything ungrounded `[unverified]`, and **abstain rather than fabricate** ("insufficient information → escalate" is the rewarded output). Distinguish `[verified: source]` from `[inferred]`.
 - **The evidence block (v5, `verification.md` V1)** — completion is not a claim; it is proof. The handoff must paste the actual command + output/exit code, a `file:line` proof, or the git diff/SHA. A ticket marked `done` without an evidence block is rejected by `sofi gate-check`. Self-report is not evidence.
-- **The handoff** — who receives the work next, and the closing ritual: checkpoint to git, append `CONTEXT.md`, update `STATE.md` (`head_sha`), write the next ticket in `HANDOFFS.md` — i.e. close with `/sofi-handoff`.
+- **The handoff** — who receives the work next, and the closing ritual: `sofi checkpoint` to git, append `CONTEXT.md`, update `STATE.md` (`head_sha`), write the next ticket in `HANDOFFS.md`.
 
 > Anti-pattern: "send me the code." → no path, no bar, no handoff → output is unplaceable and the chain breaks. Name the path, the bar, the next agent.
 
@@ -141,8 +141,8 @@ Must contain:
               anything ungrounded [unverified]; abstain rather than guess.
             Evidence: paste the actual `php artisan test` output + exit code into
               the handoff — "tests pass" without the output is rejected at gate-check.
-            Handoff: → tier-2-advisor for PR review. Close with /sofi-handoff
-              (checkpoint · append CONTEXT.md · update STATE.md head_sha · next ticket).
+            Handoff: → tier-2-advisor for PR review. Close with the handoff ritual
+              (sofi checkpoint · append CONTEXT.md · update STATE.md head_sha · next ticket).
 ```
 
 **Compact form** (for quick chatter / the org chart) — the same contract, one line:
@@ -164,7 +164,7 @@ The doctrine is a *lens* over the existing system — it renames and orders fiel
 | 🎯 Command | the inbound ticket in `HANDOFFS.md` + the role's `consume`/`success_metric` |
 | 📐 Format | the role's `produce` + `gate-bar` + `handoff` (Operating Contract) + `engine/lifecycle/gates.md` |
 
-So building a block = reading four places you already maintain. `/sofi-delegate` does the reading for you.
+So building a block = reading four places you already maintain — you assemble the block inline from them.
 
 ---
 

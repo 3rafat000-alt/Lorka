@@ -43,10 +43,10 @@ agent_toolkits:
         purpose: "CEO console — delegate (RCCF+route+prompt-cache) · inspect/health (tree scan, secret leaks, structural gaps) · comply (guardrails gate)",
         gate: all }
     - { script: "agents/ceo/feature_scan.py",
-        purpose: "token-frugal feature locator + 4-pillar pre-flagger (static, 0 model tokens) — powers /sofi-spec-review and /sofi-feature; emits compact JSON/md file-set+preflags so the model reads a skeleton not the tree",
+        purpose: "token-frugal feature locator + 4-pillar pre-flagger (static, 0 model tokens) — backs the spec-review + feature-loop doctrine flows; emits compact JSON/md file-set+preflags so the model reads a skeleton not the tree",
         gate: all }
     - { script: "agents/ceo/sofi_scan.py",
-        purpose: "unified static analysis engine (0 model tokens) — modes search·feature·security·design·flow·wiring·all; backs /sofi-audit /sofi-secure /sofi-design-taste /sofi-feature; smart-find, OWASP pre-flags, taste/a11y/RTL, UserFlow (routes→views+orphans), interconnection. Reads never writes",
+        purpose: "unified static analysis engine (0 model tokens) — modes search·feature·security·design·flow·wiring·all; backs the audit/secure/design-taste/feature doctrine flows; smart-find, OWASP pre-flags, taste/a11y/RTL, UserFlow (routes→views+orphans), interconnection. Reads never writes",
         gate: all }
     - { script: "agents/ceo/gemini_bridge.py",
         purpose: "low-level bridge — pushes reports OUT of the chat into the pinned Gemini conversation via CDP-attached user browser (push/capture/status; file|stdin|inline; waits for reply w/ text-stability; capture=grab latest reply WITHOUT re-sending after a timeout; --out saves reply). External service — sanitized reports only, never secrets/PII",
@@ -55,7 +55,7 @@ agent_toolkits:
         purpose: "external-review desk (automation over gemini_bridge) — one call: sanitize-on-send (redact keys/secrets/.env) -> condense-if-long (weak-net safe) -> push -> resilient capture (re-capture not re-post on timeout) -> parse reply into sections+action_items -> ingest digest into project HANDOFFS. CLI review|capture|status; also `sofi gemini ...`. The team's standard push->receive->act channel",
         gate: all }
     - { script: "agents/ceo/reflection_engine.py",
-        purpose: "v5 reflection/dreaming engine — scan (0 model tokens) locates NEW learning signals in HANDOFFS history (escalations, circuit-breakers, recurring patterns), dedups vs LESSONS.md; write appends a distilled situation·what-failed·rule lesson to procedural memory. Backs /sofi-reflect. Scheduled/on-demand, never per-turn (per-turn memory updates degrade quality)",
+        purpose: "v5 reflection/dreaming engine — scan (0 model tokens) locates NEW learning signals in HANDOFFS history (escalations, circuit-breakers, recurring patterns), dedups vs LESSONS.md; write appends a distilled situation·what-failed·rule lesson to procedural memory. Backs the reflection doctrine flow. Scheduled/on-demand, never per-turn (per-turn memory updates degrade quality)",
         gate: all }
   tier-2-advisor:
     - { script: "agents/uiux/uiux_pipeline.py",
@@ -94,8 +94,8 @@ external_powers:
     source: "https://github.com/leonxlnx/taste-skill"
     power: "anti-generic-UI design skills; dials DESIGN_VARIANCE/MOTION_INTENSITY/VISUAL_DENSITY (1-10)"
     wielders: [ui-ux-designer, frontend-react-engineer, backend-blade-engineer, tier-2-advisor]
-    use: "Gate 2/4 — invoke the sofi-design-taste skill; set dials per brief; a11y still gated by WCAG 2.2 AA"
-    tool: ".claude/skills/sofi-design-taste/SKILL.md  (SOFI-native, no external dep)"
+    use: "Gate 2/4 — run the design-taste doctrine (via uiux_pipeline.py); set dials per brief; a11y still gated by WCAG 2.2 AA"
+    tool: "engine/tooling/agents/uiux/uiux_pipeline.py  (SOFI-native design console + taste doctrine, no external dep)"
     status: implemented
   agency-agents:
     source: "https://github.com/msitarzewski/agency-agents"

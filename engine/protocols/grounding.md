@@ -20,7 +20,7 @@ Agentic hallucination is not one failure — it is five, and in an orchestrated 
 - **RCCF Format block** carries a grounding clause: the receiving agent is told to answer strictly from cited brain files + the frozen artifact, mark anything ungrounded, and abstain rather than fabricate. (`01-delegation-rccf.md`.)
 - **Gate-bar evidence check**: a ticket marked `done`/`passing` without a pasted evidence block (command + output/exit code, or file:line proof) is rejected by `sofi gate-check` — G3 made mechanical (`verification.md`, `sofi_tools.gates.validate_evidence`).
 - **Handoff verbatim rule**: an Advisor forwards a specialist's grounded findings **verbatim** (with their citations intact), never re-narrated — re-summarizing strips the sources and re-introduces the hallucination the citation prevented (`handoff-and-interconnection.md`).
-- **Review desk + reports**: every `/sofi-report`, `/sofi-audit`, `/sofi-spec-review`, `/sofi-secure` finding cites `file:line`. This was already convention in some skills; G1 makes it universal.
+- **Review desk + reports**: every report, static sweep, spec-review, and security finding cites `file:line`. This was already convention; G1 makes it universal.
 
 ## The discipline in one line
 **Cite it, or mark it unverified and stop. Paste the proof, or don't claim it happened. Say "I don't know" out loud — that's the strong move, not the weak one.**

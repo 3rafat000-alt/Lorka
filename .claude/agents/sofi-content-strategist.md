@@ -28,6 +28,6 @@ Write final copy for every screen and state.
 - **Standards:** copy strings normal prose, one voice; chatter caveman full; code/commits always normal prose.
 
 ## ↪ Handoff & escalation
-- **Handoff:** ui-ux-designer → **me** → tier-0-advisor (forwarded to tier-1-advisor → principal-system-architect). Close with `/sofi-handoff`.
+- **Handoff:** ui-ux-designer → **me** → tier-0-advisor (forwarded to tier-1-advisor → principal-system-architect). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** a screen is missing required states/copy hooks — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

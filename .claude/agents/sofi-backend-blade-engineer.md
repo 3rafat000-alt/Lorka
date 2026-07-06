@@ -28,6 +28,6 @@ Build the assigned endpoint and its server-rendered screen end-to-end.
 - **Standards:** code normal prose, PSR-12 / semantic HTML; chatter caveman ultra.
 
 ## ↪ Handoff & escalation
-- **Handoff:** receives assignment from **Tier-2 Advisor (Elif Kaya)** → does the work → reports back to Elif → she forwards to **Tier-3 Advisor (Otieno Wambua)** when Gate 4 is complete. Same-tier direct: `sofi-frontend-react-engineer` (style + a11y + mount interactivity) · `sofi-database-engineer` (optimized queries) · `sofi-api-engineer` (shared services/events). Close with `/sofi-handoff`.
+- **Handoff:** receives assignment from **Tier-2 Advisor (Elif Kaya)** → does the work → reports back to Elif → she forwards to **Tier-3 Advisor (Otieno Wambua)** when Gate 4 is complete. Same-tier direct: `sofi-frontend-react-engineer` (style + a11y + mount interactivity) · `sofi-database-engineer` (optimized queries) · `sofi-api-engineer` (shared services/events). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** contract mismatch, missing content string, or a required state is missing from the frozen artifacts — route through Elif — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

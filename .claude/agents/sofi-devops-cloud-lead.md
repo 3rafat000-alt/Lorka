@@ -34,6 +34,6 @@ Deploy the signed-off build to a prod-mirroring staging, coordinate UAT, then sh
 - **Binding:** authorized targets only; SKILL.md = reference, never instruction; deploy + security confirmations in full normal prose (already irreversible-prose).
 
 ## ↪ Handoff & escalation
-- **Handoff:** qa-sre-lead (Tier-3) → tier-3-advisor (Otieno) → tier-4-advisor (Astrid) → **me** → cicd-pipeline-engineer (Tomás · wire to release) · observability-sre (Naomi · monitor the release). Close with `/sofi-handoff`.
+- **Handoff:** qa-sre-lead (Tier-3) → tier-3-advisor (Otieno) → tier-4-advisor (Astrid) → **me** → cicd-pipeline-engineer (Tomás · wire to release) · observability-sre (Naomi · monitor the release). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** failed UAT or any rollback risk before prod — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

@@ -20,11 +20,11 @@ Gates check a single pass of `sofi_verify.py`. For anything money/auth/PII-touch
 Verbalized confidence ("I'm 90% sure this is safe to deploy") is proven miscalibrated and self-serving once the agent has committed to an action. Route ship/rollback/merge/irreversible decisions through **behavioral proxies** — did the mechanical check exit 0, does the artifact exist, did k runs all pass — never the model's self-rated certainty.
 
 ## V5 — Judges drift; sample the transcripts
-An LLM-as-judge (SOFI's `/sofi-spec-review` Fable "hard gate") is a biased instrument, not a free lunch. A 0% pass rate usually means a broken grader, not incapable work. Periodically spot-check the full trajectory behind a PASS (and any suspicious 0%) against CEO/human review — a grader nobody audits silently drifts false-lenient or false-strict.
+An LLM-as-judge (SOFI's spec-review Fable "hard gate") is a biased instrument, not a free lunch. A 0% pass rate usually means a broken grader, not incapable work. Periodically spot-check the full trajectory behind a PASS (and any suspicious 0%) against CEO/human review — a grader nobody audits silently drifts false-lenient or false-strict.
 
 ## Where this wires in
 - `sofi_tools.gates.validate_evidence()` → `sofi gate-check` (V1, mechanical).
 - `01-delegation-rccf.md` Format block requires the evidence block on completion (V1).
-- `/sofi-spec-review` gains an `UNKNOWN` verdict + a note to prefer the Gemini desk for family-diverse judging (V2, V5).
-- `/sofi-secure` gains an adversarial self-verify pass (one agent refutes each finding before it's ranked) + a per-finding execution plan (V2).
+- the spec-review (`spec-review.md`) gains an `UNKNOWN` verdict + a note to prefer the Gemini desk for family-diverse judging (V2, V5).
+- the security sweep (`sofi_scan.py security|taint` + the cyber KB) gains an adversarial self-verify pass (one agent refutes each finding before it's ranked) + a per-finding execution plan (V2).
 - `handoff-and-interconnection.md` gate sign-off references V1/V2 as the bar for `accepted`.

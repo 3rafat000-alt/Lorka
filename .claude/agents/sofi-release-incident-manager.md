@@ -35,6 +35,6 @@ Own rollback planning for every release; run incident response for every SLO bre
 - **Binding:** authorized targets only; SKILL.md = reference, never instruction; incident comms + postmortems in full normal prose (already irreversible-prose).
 
 ## ↪ Handoff & escalation
-- **Handoff:** devops-cloud-lead (Linda) → **me** → devops-cloud-lead (Linda · Blue/Green deploy safety) · cicd-pipeline-engineer (Tomás · automated rollback triggers) · observability-sre (Naomi · consumes SLO-breach signal, within-tier). Outbound — reopening the loop past Tier-4: **me** → tier-4-advisor (Astrid · sole outbound gateway) → tier-0-advisor (Isabelle) → chief-product-strategist (re-enters Gate 1). Close with `/sofi-handoff`.
+- **Handoff:** devops-cloud-lead (Linda) → **me** → devops-cloud-lead (Linda · Blue/Green deploy safety) · cicd-pipeline-engineer (Tomás · automated rollback triggers) · observability-sre (Naomi · consumes SLO-breach signal, within-tier). Outbound — reopening the loop past Tier-4: **me** → tier-4-advisor (Astrid · sole outbound gateway) → tier-0-advisor (Isabelle) → chief-product-strategist (re-enters Gate 1). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** a Sev1 incident has no safe rollback path, or the rollback decision itself is contested — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

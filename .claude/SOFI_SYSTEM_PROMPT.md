@@ -383,7 +383,7 @@ Large code/docs go in clearly fenced blocks (or Artifacts), separated from the J
 
 ### 7.3 Agent Delegation Syntax — RCCF
 
-Every spawn is a **4-part RCCF block** — never a bare task. The four fields each kill one failure mode: 🎭 **Role** (who it is) · 📂 **Context** (the full file) · 🎯 **Command** (the exact ask) · 📐 **Format** (how to deliver). Full doctrine: `engine/protocols/01-delegation-rccf.md`; build one with `/sofi-delegate`.
+Every spawn is a **4-part RCCF block** — never a bare task. The four fields each kill one failure mode: 🎭 **Role** (who it is) · 📂 **Context** (the full file) · 🎯 **Command** (the exact ask) · 📐 **Format** (how to deliver). Full doctrine: `engine/protocols/01-delegation-rccf.md`; build one inline from the four sources it names (`§3`).
 
 ```
 🎭 Role     <persona> — <role> (Tier <n> · <squad>). Route: <model · effort · caveman> (routing.yaml).
@@ -399,7 +399,7 @@ Example (full):
 🎯 Command  Build POST /auth/login. in-bounds → FormRequest+Controller+Service+Resource+model+unit test.
             out-of-bounds → schema, other endpoints, mobile. success → response matches OpenAPI byte-for-byte.
 📐 Format   PSR-12, strict types. Files under app/Http/* + tests/Feature. gate-bar: matches OpenAPI · authz · tests green.
-            handoff → tier-2-advisor (PR review), close with /sofi-handoff.
+            handoff → tier-2-advisor (PR review), close with the handoff ritual (sofi checkpoint · CONTEXT · STATE head_sha · next ticket).
 ```
 
 **Compact form** (only when context is already shared — same project, same gate, agent already oriented):

@@ -380,30 +380,66 @@ async def api_diag(action: str, prj: str | None = None):
                          "took": round(time.time() - t0, 2)})
 
 
-# ── Claude Code command palette runner (headless, whitelisted) ──────────────
-# Executes /sofi-* skills directly via `claude -p` and streams the run live to
-# the dashboard. Safety model: (1) whitelist of command slugs — never arbitrary
-# prompts; (2) argv exec, no shell; (3) args validated per-policy; (4) server
-# binds 127.0.0.1 only; (5) SOFI PreToolUse guard hooks stay active inside the
-# headless session (dangerous commands, secrets, bad commits stay blocked).
+# ── Claude Code headless task runner (whitelisted) ──────────────────────────
+# Runs a whitelisted SOFI task headlessly via `claude -p` and streams the run
+# live to the dashboard. The team works directly — no slash-commands — per the
+# doctrine in engine/protocols/02-intake-orchestration.md. Safety model:
+# (1) whitelist of task slugs — never arbitrary prompts; (2) argv exec, no shell;
+# (3) args validated per-policy; (4) server binds 127.0.0.1 only; (5) SOFI
+# PreToolUse guard hooks stay active inside the headless session (dangerous
+# commands, secrets, bad commits stay blocked).
 CLAUDE_BIN = shutil.which("claude") or str(pathlib.Path.home() / ".local" / "bin" / "claude")
 
+# Each button fires a natural-language DIRECT-WORK instruction (no slash-commands —
+# the /sofi-* skills were removed). The headless session understands the ask and
+# calls the Python tooling in engine/tooling/ directly. `prompt` uses {arg} where
+# the button takes an arg. Doctrine: engine/protocols/02-intake-orchestration.md.
 PALETTE: dict[str, dict] = {
-    "sofi-boot":        {"arg": "none",   "icon": "🚀", "label_ar": "إقلاع وتوجيه"},
-    "sofi-team":        {"arg": "none",   "icon": "👥", "label_ar": "الفريق — من يفعل ماذا"},
-    "sofi-gate":        {"arg": "none",   "icon": "⛩",  "label_ar": "فحص البوابة والتقدّم"},
-    "sofi-audit":       {"arg": "choice", "icon": "🔍", "label_ar": "تدقيق طبقة",
-                         "choices": ["all", "ui", "blade", "css", "js", "db", "api", "integration", "agents"]},
-    "sofi-secure":      {"arg": "choice", "icon": "🛡",  "label_ar": "الفرقة الأمنية",
-                         "choices": ["scan", "threat", "pentest", "verify"]},
-    "sofi-report":      {"arg": "choice", "icon": "📋", "label_ar": "تقرير موثّق",
-                         "choices": ["audit", "security", "status"]},
-    "sofi-fix":         {"arg": "text",   "icon": "🔧", "label_ar": "إصلاح الملاحظات", "hint": "الهدف — طبقة أو تقرير"},
-    "sofi-feature":     {"arg": "text",   "icon": "⚙",  "label_ar": "الحلقة الكاملة على ميزة", "hint": "اسم الميزة"},
-    "sofi-spec-review": {"arg": "text",   "icon": "🏛",  "label_ar": "مراجعة معمارية 4 أركان", "hint": "اسم الميزة"},
-    "sofi-delegate":    {"arg": "text",   "icon": "📨", "label_ar": "بناء تفويض RCCF", "hint": "<agent> <task>"},
-    "sofi-reflect":     {"arg": "none",   "icon": "🌙", "label_ar": "التأمّل واستخلاص الدروس"},
-    "sofi-handoff":     {"arg": "none",   "icon": "🤝", "label_ar": "تسليم منضبط"},
+    "orient":      {"arg": "none",   "icon": "🚀", "label_ar": "إقلاع وتوجيه",
+                    "prompt": "Orient on the active SOFI project — work directly, no slash-commands. "
+                              "Run `sofi sync`, read the project brain (STATE/CONTEXT/HANDOFFS), and "
+                              "report the gate, branch, head_sha, and the next ticket."},
+    "team":        {"arg": "none",   "icon": "👥", "label_ar": "الفريق — من يفعل ماذا",
+                    "prompt": "From `engine/ROSTER.md`, map the active work to the right SOFI agent(s) — "
+                              "tier, gate, and route (model·effort·caveman) — and say exactly who to spawn."},
+    "gate":        {"arg": "none",   "icon": "⛩",  "label_ar": "فحص البوابة والتقدّم",
+                    "prompt": "Check the current gate's exit-bar with `sofi gate-check` "
+                              "(`engine/lifecycle/gates.md`) and report whether it can advance one gate."},
+    "audit":       {"arg": "choice", "icon": "🔍", "label_ar": "تدقيق طبقة",
+                    "choices": ["all", "ui", "blade", "css", "js", "db", "api", "integration", "agents"],
+                    "prompt": "Run a static, token-frugal audit of the {arg} layer using "
+                              "`python3 engine/tooling/agents/ceo/sofi_scan.py` to locate + pre-flag, "
+                              "then report findings ranked by severity with file:line. Read-only."},
+    "secure":      {"arg": "choice", "icon": "🛡",  "label_ar": "الفرقة الأمنية",
+                    "choices": ["scan", "threat", "pentest", "verify"],
+                    "prompt": "Run the security {arg} pass: use `sofi_scan.py security|taint` and the "
+                              "cyber KB `engine/superpowers/cybersecurity-skills/`; report severity-ranked "
+                              "findings with proof + remediation. Authorized defensive use on this project only."},
+    "report":      {"arg": "choice", "icon": "📋", "label_ar": "تقرير موثّق",
+                    "choices": ["audit", "security", "status"],
+                    "prompt": "Write an evidence-backed {arg} report to `projects/<PRJ>/_context/reports/` — "
+                              "executive summary, severity-ranked findings with file:line proof, remediation status."},
+    "fix":         {"arg": "text",   "icon": "🔧", "label_ar": "إصلاح الملاحظات", "hint": "الهدف — طبقة أو تقرير",
+                    "prompt": "Route the findings for '{arg}' to the cheapest specialist that clears the bar: "
+                              "build an RCCF block (`engine/protocols/01-delegation-rccf.md`), spawn the "
+                              "specialist (one hop), and `sofi checkpoint` each fix."},
+    "feature":     {"arg": "text",   "icon": "⚙",  "label_ar": "الحلقة الكاملة على ميزة", "hint": "اسم الميزة",
+                    "prompt": "Run the full feature loop on '{arg}': static scan (`feature_scan.py`) → "
+                              "4-pillar review → route fixes to specialists → verify → report → gate → handoff."},
+    "spec-review": {"arg": "text",   "icon": "🏛",  "label_ar": "مراجعة معمارية 4 أركان", "hint": "اسم الميزة",
+                    "prompt": "Run the 4-pillar architect review of the '{arg}' feature "
+                              "(`engine/protocols/spec-review.md`) — Data&Logic · Admin&Ops · UI/UX&Taste · "
+                              "Edge-cases; Python-scanned; cite file:line; read-only."},
+    "delegate":    {"arg": "text",   "icon": "📨", "label_ar": "بناء تفويض RCCF", "hint": "<agent> <task>",
+                    "prompt": "Build a complete, paste-ready RCCF delegation block "
+                              "(🎭 Role · 📂 Context · 🎯 Command · 📐 Format, `01-delegation-rccf.md §3`) for: {arg}."},
+    "reflect":     {"arg": "none",   "icon": "🌙", "label_ar": "التأمّل واستخلاص الدروس",
+                    "prompt": "Run the reflection loop: `python3 engine/tooling/agents/ceo/reflection_engine.py scan` "
+                              "to locate new learning signals in HANDOFFS, then distil each into a grounded lesson "
+                              "in `_context/LESSONS.md`."},
+    "handoff":     {"arg": "none",   "icon": "🤝", "label_ar": "تسليم منضبط",
+                    "prompt": "Close the current unit of work with the handoff ritual: `sofi checkpoint` → "
+                              "append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS."},
 }
 # free-text args: word chars + Arabic + space/-/./:  · no leading dash (no flag smuggling)
 _ARG_OK = re.compile(r"^[\w؀-ۿ][\w؀-ۿ\s\-./:]{0,119}$")
@@ -553,7 +589,8 @@ async def api_claude_run(payload: dict):
             return JSONResponse({"ok": False,
                                  "error": "arg required — letters/digits/spaces, max 120, no leading dash"},
                                 status_code=400)
-    res = await _launch(f"/{cmd} {arg}".strip(), cmd, "palette", arg)
+    prompt = spec["prompt"].replace("{arg}", arg)
+    res = await _launch(prompt.strip(), cmd, "palette", arg)
     return JSONResponse(res, status_code=res.pop("code", 200) if not res["ok"] else 200)
 
 
@@ -683,7 +720,7 @@ async def ws(sock: WebSocket):
     try:
         while True:
             events = []
-            # claude command-palette stream — drain whatever arrived
+            # claude headless-run stream — drain whatever arrived
             while True:
                 try:
                     events.append(claude_q.get_nowait())

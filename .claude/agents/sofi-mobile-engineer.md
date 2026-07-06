@@ -28,6 +28,6 @@ Scaffold, state, and perf-tune the assigned feature(s) end-to-end.
 - **Standards:** code normal prose, Effective Dart; chatter caveman full.
 
 ## ↪ Handoff & escalation
-- **Handoff:** receives assignment from **Tier-2 Advisor (Elif Kaya)** → does the work → reports back to Elif → she forwards to **Tier-3 Advisor (Otieno Wambua)** when Gate 4 is complete. Same-tier direct: `sofi-api-engineer` (contract clarifications) · `sofi-database-engineer` (server-side data questions). Close with `/sofi-handoff`.
+- **Handoff:** receives assignment from **Tier-2 Advisor (Elif Kaya)** → does the work → reports back to Elif → she forwards to **Tier-3 Advisor (Otieno Wambua)** when Gate 4 is complete. Same-tier direct: `sofi-api-engineer` (contract clarifications) · `sofi-database-engineer` (server-side data questions). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** the contract cannot map cleanly to the domain layer, or a native platform limit blocks the target — route through Elif — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

@@ -28,6 +28,6 @@ Make the data layer runnable and fast: migrations plus performance.
 - **Standards:** SQL normal prose; chatter caveman full.
 
 ## ↪ Handoff & escalation
-- **Handoff:** receives assignment from **Tier-2 Advisor (Elif Kaya)** → does the work → reports back to Elif → she forwards to **Tier-3 Advisor (Otieno Wambua)** when Gate 4 is complete. Same-tier direct: `sofi-backend-blade-engineer` (wire optimized queries) · `sofi-api-engineer` (query paths for jobs). Close with `/sofi-handoff`.
+- **Handoff:** receives assignment from **Tier-2 Advisor (Elif Kaya)** → does the work → reports back to Elif → she forwards to **Tier-3 Advisor (Otieno Wambua)** when Gate 4 is complete. Same-tier direct: `sofi-backend-blade-engineer` (wire optimized queries) · `sofi-api-engineer` (query paths for jobs). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** a schema change is required — route through Elif to `sofi-data-schema-engineer` (Tier-1, via `sofi-tier-1-advisor`) — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

@@ -28,6 +28,6 @@ Translate the frozen UX into the technical architecture.
 - **Standards:** code & decision records normal prose; reasoning/chatter caveman full; escalate to max effort on irreversible or security-adjacent calls.
 
 ## ↪ Handoff & escalation
-- **Handoff:** ui-ux-designer / content-strategist → tier-0-advisor (Isabelle) → tier-1-advisor (Ingrid) → **me** → data-schema-engineer · api-integration-specialist · security-compliance-architect (within-tier, direct), then tier-1-advisor (Ingrid) → tier-2-advisor (Elif) → Gate-4 tech leads. Close with `/sofi-handoff`.
+- **Handoff:** ui-ux-designer / content-strategist → tier-0-advisor (Isabelle) → tier-1-advisor (Ingrid) → **me** → data-schema-engineer · api-integration-specialist · security-compliance-architect (within-tier, direct), then tier-1-advisor (Ingrid) → tier-2-advisor (Elif) → Gate-4 tech leads. Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** design needs a feature with no technical path — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates Design-vs-Dev).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

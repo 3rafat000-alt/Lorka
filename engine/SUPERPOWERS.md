@@ -31,8 +31,8 @@ Portable Agent Skills (SKILL.md) that stop AI UIs looking like generic slop. Thr
 
 - **Wielded by:** `sofi-ui-ux-designer` (Dan), `sofi-frontend-react-engineer` (Grace), `sofi-backend-blade-engineer` (Aisha), `sofi-tier-2-advisor` (Elif).
 - **Apply (Gate 2 + 4):** load the `design-taste-frontend` skill; set dials per project brief (premium brand → variance 7 / motion 6 / density 4). Variants available: minimalist, brutalist, soft/premium, GPT-optimized.
-- **Install:** none — adapted into a SOFI-native skill: `.claude/skills/sofi-design-taste/SKILL.md` (invoke `sofi-design-taste`).
-- **Status:** ✅ implemented — SOFI-native skill live (dials, brand presets, Gate-4 audit checklist). A11y still gated by Grace (WCAG 2.2 AA) — taste never overrides accessibility.
+- **Install:** none — the taste doctrine now lives as the Tier-2 Advisor's SOFI-native design console `engine/tooling/agents/uiux/uiux_pipeline.py` (`scan·brief·gate·rtl`) + taste doctrine, not a skill.
+- **Status:** ✅ implemented — SOFI-native taste doctrine live (dials, brand presets, Gate-4 audit checklist). A11y still gated by Grace (WCAG 2.2 AA) — taste never overrides accessibility.
 
 ---
 

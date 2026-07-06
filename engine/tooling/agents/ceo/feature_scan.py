@@ -5,7 +5,7 @@ feature_scan — static, token-frugal feature locator + 4-pillar pre-flagger.
 Doctrine: *few token do trick*. The LLM should NOT read dozens of files to review a
 feature. This tool does the deterministic heavy lifting in pure Python (grep-first,
 zero model tokens), then emits ONE compact JSON the reviewer reads instead of the
-whole source tree — the token-saving engine behind /sofi-spec-review and /sofi-feature.
+whole source tree — the token-saving engine behind the 4-pillar spec-review + feature-loop flow.
 
 What it does
 ------------

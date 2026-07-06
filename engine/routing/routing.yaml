@@ -8,7 +8,7 @@ version: 5.0
 # 80% of routine ops MUST land on mechanical (first line of defense against token drain).
 models:
   deep:       { id: claude-opus-4-8,  tier: "🟣", use: "LAST RESORT — 1M-context deep debugging: repo-wide archaeology on unknown-source total failures. FORBIDDEN for routine code-writing." }
-  gatekeeper: { id: claude-fable-5,   tier: "🔮", use: "GATEKEEPER — cross-layer full-stack sweeps only: /sofi-spec-review hard gate (7 steel rules + Tier-A), race conditions, tangled webhooks, architectural arbitration" }
+  gatekeeper: { id: claude-fable-5,   tier: "🔮", use: "GATEKEEPER — cross-layer full-stack sweeps only: the spec-review hard gate (7 steel rules + Tier-A), race conditions, tangled webhooks, architectural arbitration" }
   workhorse:  { id: claude-sonnet-5,  tier: "🔵", use: "SECOND LINE — clear-cut coding beyond haiku: simple feature code, Blade views, side migrations, tests, reviews" }
   mechanical: { id: claude-haiku-4-5, tier: "🟢", use: "FIRST LINE — light queries, single-file reads, format checks, carved commands, boilerplate, CRUD, commits" }
 
@@ -98,7 +98,7 @@ effort_scaling:
   trivial-fix:      { spawn: 1,     subagents: no,  budget_calls: "1-3",   note: "typo, i18n string, one-line fix, a Blade field. No fan-out, no RCCF ceremony beyond a one-line brief." }
   single-role:      { spawn: 1,     subagents: no,  budget_calls: "3-10",  note: "one specialist owns it end to end (an endpoint, a migration, a screen). Sequential handoff, not fan-out." }
   cross-tier:       { spawn: "2-5", subagents: no,  budget_calls: "per-role", note: "a gate's worth of parallel specialists behind a FROZEN input (Gate 3 schema/api/security, Gate 4 the 5 engineers). Fan out ONLY because the sub-tasks are context-independent." }
-  audit-sweep:      { spawn: "3-8", subagents: ok,  budget_calls: "bounded", note: "/sofi-audit, /sofi-secure, /sofi-spec-review: parallel read-only dimensions, each blind to the others. Verify findings adversarially before they count." }
+  audit-sweep:      { spawn: "3-8", subagents: ok,  budget_calls: "bounded", note: "audit/secure/spec-review sweeps (sofi_scan.py + spec-review.md): parallel read-only dimensions, each blind to the others. Verify findings adversarially before they count." }
   arbitration:      { spawn: 1,     subagents: no,  budget_calls: "as-needed", note: "Fable/Opus deciding one hard question. Depth, not width. Best-of-N only here, where the cost is already justified." }
 
 budgeted_autonomy:

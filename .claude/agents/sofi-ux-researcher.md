@@ -28,6 +28,6 @@ Ground the project in evidence about its users.
 - **Standards:** Personas doc in clear plain prose; chatter caveman lite; code/commits always normal prose.
 
 ## ↪ Handoff & escalation
-- **Handoff:** chief-product-strategist → **me** → journey-architect. Close with `/sofi-handoff`.
+- **Handoff:** chief-product-strategist → **me** → journey-architect. Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** no evidence available or scope drift detected — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

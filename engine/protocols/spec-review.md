@@ -1,14 +1,16 @@
-# Protocol — /sofi-spec-review · Cross-Layer Deep Audit (Single Source of Truth)
+# Protocol — Spec-Review · Cross-Layer Deep Audit (Single Source of Truth)
 
 > **Status: binding doctrine (carved 2026-07-01).** The steel safety-valve for every
-> SAKK interface, wallet, and database surface. The runtime skill `.claude/skills/sofi-spec-review/`
-> executes this; this file is the durable reference that prevents agent drift across session resets.
+> SAKK interface, wallet, and database surface. The main session runs this review directly
+> (triggered by intent — "review the <feature> feature" — not a slash-command); this file is
+> the durable reference that prevents agent drift across session resets.
 > Doctrine: **Design is Truth · few token do trick · big brain small mouth.** 🪨
 
 ## What it is
 
-Cross-Layer Deep Audit. When `/sofi-spec-review "<feature>"` fires, the agent enters
-**Lead Solution Architect + UX Principal** mode. Read-only. It inspects backend + mobile +
+Cross-Layer Deep Audit. When a spec-review is triggered on a `<feature>` (by intent, not a
+slash-command), the main session enters **Lead Solution Architect + UX Principal** mode.
+Read-only. It inspects backend + mobile +
 contract + tests as ONE interlocked block inside the unified root — no partial or surface code.
 
 **HARD ORDERING GATE:** emit the **SEV report FIRST**. No code, no fixes, no engineering
@@ -62,7 +64,7 @@ Route map: `spec-review-scan` / `spec-review-gate` in `engine/routing/routing.ya
 
 ## Procedure (token-frugal — Python locates, model judges)
 
-1. **Orient** — `/sofi-boot` (git sync + brain). Resolve `<FEATURE_NAME>`.
+1. **Orient** — `sofi sync <PRJ>` + read STATE/CONTEXT/HANDOFFS. Resolve `<FEATURE_NAME>`.
 2. **Locate + scan** — `python3 engine/tooling/agents/ceo/feature_scan.py "<FEATURE>" --prj <PRJ> --md`
    then `python3 engine/tooling/agents/ceo/sofi_automator.py <project_dir>` — the 7-steel-rules scanner
    (checks: 422-JSON · Flutter swallows · admin gates · unique/race · financial logic · contracts · Tier-A coverage; `--rule N` isolates one, `--json` for machine output)
@@ -73,7 +75,7 @@ Route map: `spec-review-scan` / `spec-review-gate` in `engine/routing/routing.ya
 5. **SEV report FIRST** — 4-pillar matrix. Each finding: `SEV · file:line · defect → fix`.
    Severity 🔴 breaks/security · 🟠 correctness · 🟡 quality/taste. Normal prose, never compressed.
 6. **Verdict** — per pillar (sound / at-risk / broken / **UNKNOWN**) + Tier-A/B classification + the single biggest risk. **UNKNOWN is a valid, first-class verdict** (`verification.md` V2): when the evidence can't decide a pillar, say so and route it to `sofi escalate` — never force a pass/fail. A forced binary makes an LLM-judge fabricate justification for whichever side reads more fluently.
-7. **Handoff** — fixes → `/sofi-fix`; security-shaped → `/sofi-secure`; durable record → `/sofi-report audit`.
+7. **Handoff** — fixes → route each finding to the cheapest specialist (RCCF spawn) and `sofi checkpoint` each; security-shaped → the security sweep (`sofi_scan.py security|taint` + the cyber KB `engine/superpowers/cybersecurity-skills/`); durable record → write the evidence-backed report to `projects/<PRJ>/_context/reports/`.
 
 > **Judge-bias guard (v5, `verification.md` V2/V5):** Fable 5 grading work produced by other Claude-family agents carries **self-enhancement bias** (the largest, most consistent LLM-judge bias). For high-stakes / money / auth / PII verdicts, prefer a **family-diverse** judge — route the finding through the **Gemini review desk** (`external-review-desk.md`) as the second opinion rather than trusting a single same-family verdict. And periodically spot-check the trajectory behind a PASS (and any suspicious 0-finding pillar) against CEO/human review — an unaudited grader silently drifts.
 

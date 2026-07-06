@@ -1,9 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Edit(/.claude/skills/sofi-reflect/**)",
-      "Edit(/.claude/skills/sofi-secure/**)"
-    ]
+    "allow": []
   },
   "skillOverrides": {
     "seo": "off",

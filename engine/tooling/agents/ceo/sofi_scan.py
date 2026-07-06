@@ -6,16 +6,16 @@ Doctrine: *few token do trick* · *big brain, small mouth*. Every command and ev
 leans on THIS Python engine to do the heavy, deterministic thinking — locate, pre-flag,
 map — so the model spends its (expensive) tokens only on judgment, never on reading the tree.
 
-One engine, many modes (each backs one `/sofi-*` command):
+One engine, many modes (each backs a doctrine flow):
 
-    search    → ranked code locator (backs /sofi-audit, general "where is X")
-    feature   → feature file-set + 4-pillar pre-flags (backs /sofi-spec-review, /sofi-feature)
-    design    → UI/UX & taste static audit: tokens, motion, density, a11y, RTL (backs /sofi-design-taste)
-    flow      → UserFlow map: routes → views, orphan/dead-end views (UX journey, backs /sofi-audit ui)
-    security  → OWASP static pre-flags: XSS, SQLi, mass-assign, secrets, IDOR (backs /sofi-secure scan)
-    wiring    → interconnection: route↔controller↔view, env/config reads, dead includes (backs /sofi-audit integration)
-    taint     → source→sink taint trace: user input reaching a sink unsanitized (backs /sofi-secure, deeper than 'security')
-    taste     → value↔token cross-check: literal that duplicates an existing :root design token (backs /sofi-design-taste)
+    search    → ranked code locator (backs the audit flow, general "where is X")
+    feature   → feature file-set + 4-pillar pre-flags (backs the spec-review + feature flow)
+    design    → UI/UX & taste static audit: tokens, motion, density, a11y, RTL (backs the design flow)
+    flow      → UserFlow map: routes → views, orphan/dead-end views (UX journey, backs the audit-ui flow)
+    security  → OWASP static pre-flags: XSS, SQLi, mass-assign, secrets, IDOR (backs the security flow)
+    wiring    → interconnection: route↔controller↔view, env/config reads, dead includes (backs the audit-integration flow)
+    taint     → source→sink taint trace: user input reaching a sink unsanitized (backs the security flow, deeper than 'security')
+    taste     → value↔token cross-check: literal that duplicates an existing :root design token (backs the design flow)
     all       → run the analytical modes and merge
 
 Shares one file-walker (skips vendor/node_modules/.git/build/storage). Pure stdlib.

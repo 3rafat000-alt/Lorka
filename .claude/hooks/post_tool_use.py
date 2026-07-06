@@ -65,7 +65,7 @@ def main() -> None:
             msg = (
                 f"⛏️ {count} uncommitted changes in the tree. Doctrine: checkpoint "
                 f"early/often — uncommitted work is invisible to the next session. "
-                f"Run `sofi checkpoint {pid} \"<type>(<scope>): <subject>\"` (or /sofi-handoff) "
+                f"Run `sofi checkpoint {pid} \"<type>(<scope>): <subject>\"` "
                 f"at the next natural milestone."
             )
             print(json.dumps({

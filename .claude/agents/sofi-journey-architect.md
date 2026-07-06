@@ -28,6 +28,6 @@ Map the primary persona's journey and rank its friction.
 - **Standards:** Journey Map + Mermaid in clear plain prose; chatter caveman lite; code/commits always normal prose.
 
 ## ↪ Handoff & escalation
-- **Handoff:** ux-researcher → **me** → ui-ux-designer (Gate 2). Close with `/sofi-handoff`.
+- **Handoff:** ux-researcher → **me** → ui-ux-designer (Gate 2). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** persona gaps prevent a coherent journey — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

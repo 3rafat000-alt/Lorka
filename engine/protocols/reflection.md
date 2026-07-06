@@ -5,11 +5,11 @@
 An org that files the same escalation twice has a memory problem, not a skill problem. Reflection is how SOFI turns raw episodic history (`HANDOFFS.md`) into durable procedural lessons (`LESSONS.md`) that change future behavior — Reflexion's episodic-buffer idea (arXiv:2303.11366), git-native.
 
 ## The three hard rules (from the research, not opinion)
-1. **Scheduled, never per-turn.** Continuous "update memory after every interaction" measurably *degrades* memory quality (arXiv:2605.12978). Reflection runs at **gate-close** or **on demand** (`/sofi-reflect`), never inside a working turn. Specialists do not self-reflect mid-task — the CEO runs the loop over closed work.
+1. **Scheduled, never per-turn.** Continuous "update memory after every interaction" measurably *degrades* memory quality (arXiv:2605.12978). Reflection runs at **gate-close** or **on demand** (the reflection loop below), never inside a working turn. Specialists do not self-reflect mid-task — the CEO runs the loop over closed work.
 2. **Retain by default, consolidate deliberately.** Never overwrite or delete a raw episode to "tidy up." The engine only *adds* distilled lessons for signals it hasn't already distilled (dedup by signature). Raw HANDOFFS history stays intact.
 3. **Distil to a lesson, not a re-summary.** A lesson is `situation · what-failed · rule` in one or two lines — the durable rule that prevents recurrence — not a paragraph re-narrating the ticket. Logs don't compound; rules do.
 
-## The loop (`/sofi-reflect`, run by the CEO)
+## The loop (`reflection_engine.py scan` → distil, run by the CEO)
 1. **Locate (0 model tokens)** — `python3 engine/tooling/agents/ceo/reflection_engine.py scan --prj <PRJ>` mechanically finds NEW learning candidates: every escalation / circuit-breaker / rejected ticket, and any ticket-type that recurred ≥3× against the same target (a candidate for a reusable template). It excludes anything already in `LESSONS.md`.
 2. **Distil (model judgment)** — for each candidate, the CEO writes ONE grounded lesson: what the situation was, what actually failed, and the rule that would prevent it. Cite the ticket (G1, `grounding.md`).
 3. **Write** — `reflection_engine.py write --prj <PRJ> --sig <sig> --situation ... --failed ... --rule ... --source <TKT> --date <YYYY-MM-DD>` appends it to `_context/LESSONS.md`. Idempotent on `--sig`.

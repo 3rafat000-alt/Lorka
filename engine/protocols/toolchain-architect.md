@@ -42,11 +42,15 @@ All engines live in `engine/tooling/agents/ceo/` and emit compact JSON or `--md`
 - **Exit code GATES the loop**: `0` all pass · `1` a check failed · `2` nothing to run (soft, exits 0).
   Auto-skips any check whose toolchain is absent → runs anywhere.
 
-## 3. Commander interface — single-command loops (already wired as skills)
-The brief's shortcuts map 1:1 to real `.claude/skills/`:
-`/sofi-boot` `/sofi-spec-review` `/sofi-feature` `/sofi-fix` `/sofi-secure` `/sofi-report` `/sofi-handoff`
-`/sofi-audit` `/sofi-gate` `/sofi-team` `/sofi-delegate` `/sofi-design-taste`.
-Loop: **boot → scan/verify → fix → report → gate → handoff**.
+## 3. Commander interface — the direct-work flow (no slash-commands)
+The team works these engines **directly**: the main session wears the CEO → tier-advisor personas
+and drives the tools itself, spawning leaf specialists one hop deep (canonical doctrine:
+`engine/protocols/02-intake-orchestration.md`). There is no slash-command layer — intent maps
+straight onto the engines above (`sofi_scan.py`, `feature_scan.py`, `sofi_verify.py`,
+`uiux_pipeline.py`, `reflection_engine.py`) and the kept `sofi` CLI (`sync`, `checkpoint`,
+`gate-check`, `handoff`, `gemini`, `dispatch`, …). RCCF briefs (`01-delegation-rccf.md §3`) are
+built inline and spawned only from the main session.
+Loop: **orient → scan → delegate specialists → verify → checkpoint → next ticket**.
 
 ## 4. Execution protocol (Understand · Verify · Commit)
 1. **Understand intent** — map command → engine mode. No fluff.

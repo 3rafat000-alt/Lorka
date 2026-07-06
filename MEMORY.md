@@ -24,12 +24,12 @@
 ## Org & lifecycle
 | Question | Source |
 |---|---|
-| Who is on the team / who does X | `engine/ROSTER.md` · `/sofi-team` |
+| Who is on the team / who does X | `engine/ROSTER.md` |
 | Agent role spec (persona · contract) | `engine/agents/**` |
 | Spawnable subagent definitions | `.claude/agents/sofi-*.md` |
 | Gate order + exit bars | `engine/lifecycle/gates.md` |
 | Model routing + costs | `engine/routing/routing.yaml` |
-| How to delegate (RCCF) | `engine/protocols/01-delegation-rccf.md` · `/sofi-delegate` |
+| How to delegate (RCCF) | `engine/protocols/01-delegation-rccf.md` |
 | How to drive a project end-to-end | `engine/RUNBOOK.md` |
 | Git law | `engine/protocols/git-discipline.md` |
 

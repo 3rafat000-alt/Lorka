@@ -28,6 +28,6 @@ Load-test the hot paths, audit CWV, and rule each against the budget.
 - **Standards:** scripts normal prose; chatter caveman full.
 
 ## ↪ Handoff & escalation
-- **Handoff:** `sofi-qa-sre-lead` → **me** → `sofi-qa-sre-lead` (data-layer root causes route via `sofi-tier-3-advisor` (Otieno) → `sofi-tier-2-advisor` (Elif) → `sofi-database-engineer`). Close with `/sofi-handoff`.
+- **Handoff:** `sofi-qa-sre-lead` → **me** → `sofi-qa-sre-lead` (data-layer root causes route via `sofi-tier-3-advisor` (Otieno) → `sofi-tier-2-advisor` (Elif) → `sofi-database-engineer`). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** a budget breach with no app-level fix → `sofi-database-engineer` / `sofi-principal-system-architect` — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

@@ -181,7 +181,7 @@ footer{padding:44px 0 60px;border-top:1px solid var(--hair);color:var(--ink-3);f
       <a href="#org">الفريق</a>
       <a href="#gates">البوابات</a>
       <a href="#doctrine">العقيدة</a>
-      <a href="#cmd">الأوامر</a>
+      <a href="#flow">آلية العمل</a>
     </nav>
     <a class="cta" href="http://127.0.0.1:8787">افتح الداشبورد الحي ←</a>
   </div>
@@ -222,7 +222,7 @@ footer{padding:44px 0 60px;border-top:1px solid var(--hair);color:var(--ink-3);f
     </div>
     <div class="v5grid rev">
       <div class="v5card"><span class="code">C1</span><h3>التأريض — استشهد أو اصمت<span class="en">Grounding</span></h3><p>خمس قواعد ملزمة لكل وكيل في كل دورة: استشهد بـ ملف:سطر أو ملف الدماغ أو كوميت — وإلا اكتب «غير مؤكَّد» وتوقّف؛ الامتناع مكافأة لا فشل؛ لا تدّعِ تنفيذاً لم تشاهده؛ افصل «تحقّقت» عن «استنتجت»؛ أظهِر التعارض بدل حسمه بصمت.</p></div>
-      <div class="v5card"><span class="code">C2</span><h3>الانعكاس — منظومة تحلم بتاريخها<span class="en">Reflection · "dreaming"</span></h3><p>محرّك مجدول (لا لكل دورة) يقرأ تاريخ HANDOFFS ويقطّره إلى دروس إجرائية دائمة في LESSONS.md عبر <span class="mono">/sofi-reflect</span>. كل درس سطر: الموقف · ما فشل · القاعدة. الاحتفاظ افتراضي — لا يُمحى تاريخ خام.</p></div>
+      <div class="v5card"><span class="code">C2</span><h3>الانعكاس — منظومة تحلم بتاريخها<span class="en">Reflection · "dreaming"</span></h3><p>محرّك مجدول (لا لكل دورة) يقرأ تاريخ HANDOFFS ويقطّره إلى دروس إجرائية دائمة في LESSONS.md عبر <span class="mono">reflection_engine.py scan</span>. كل درس سطر: الموقف · ما فشل · القاعدة. الاحتفاظ افتراضي — لا يُمحى تاريخ خام.</p></div>
       <div class="v5card"><span class="code">C4</span><h3>التحقّق — النتيجة لا الإفادة الذاتية<span class="en">Verification</span></h3><p>تذكرة «منجزة» بلا كتلة دليل (أمر + مخرجات + كود خروج) يرفضها <span class="mono">gate-check</span> آلياً. وقبل تقدّم أي بوابة، وكيل مستقل بسياق جديد يراجع ضد معايير التذكرة الأصلية فقط — بأدوار ثابتة، و«غير معروف» حكم صالح دائماً.</p></div>
       <div class="v5card"><span class="code">C3</span><h3>عقل قابل للاستعلام<span class="en">Structured queryable brain</span></h3><p>حقول frontmatter خفيفة (<span class="mono">status·gate·type·mem·date</span>) تحوّل التذاكر والدروس إلى سجلات قابلة للفلترة حسب نوع الذاكرة — دلالي · حَدَثي · إجرائي — بلا قراءة الملف كاملاً كل مرة.</p></div>
       <div class="v5card"><span class="code">C5</span><h3>استقلالية محسوبة الميزانية<span class="en">Budgeted autonomy + effort-scaling</span></h3><p>جدول يربط فئة المهمة (تافهة · دور واحد · عابرة للطبقات · مسح · تحكيم) بعرض التفريع وسقف النداءات — يمنع الإفراط والتفريط. كل تفويض يحمل تلميح جهد وشرط توقف آمن.</p></div>
@@ -361,32 +361,34 @@ footer{padding:44px 0 60px;border-top:1px solid var(--hair);color:var(--ink-3);f
 </section>
 
 <!-- COMMANDS + POWERS -->
-<section id="cmd">
+<section id="flow">
   <div class="wrap">
     <div class="sec-h rev">
-      <span class="kicker">لوحة الأوامر والقدرات</span>
-      <h2>لوحة أوامر واحدة تُحرّك مؤسسة كاملة.<span class="en">One command palette. One whole enterprise.</span></h2>
-      <p>ثلاثة عشر أمراً فقط — لا فوضى. كل أمر مرن، يقبل وسيطاً، وينشر فريقاً كاملاً عند الحاجة. ثلاثة تُوجّه، والبقية تُنفّذ.</p>
+      <span class="kicker">آلية العمل والقدرات</span>
+      <h2>لا قائمة أوامر — الفريق يفهم ويعمل مباشرة.<span class="en">No command menu — the team understands and acts.</span></h2>
+      <p>لا شرطة مائلة تتوسّط العمل. الجلسة الرئيسية تفهم الطلب، ترتدي قناع الرئيس التنفيذي ثم مستشاري الطبقات بالتتابع، وتفرّخ الأخصائيين على مسافة قفزة واحدة — تستدعي أدوات Python مباشرةً للعمل الثقيل الحتمي. الأقنعة تُلبَس بالتتابع، والأوراق تُفرَّخ متوازية، والعمق يُزيَّف بالجولات لا بالتعشيش.</p>
     </div>
     <div class="cmds rev">
       <div class="cmdcol">
-        <h3>العمود الفقري <span class="tag">العقد الشامل</span></h3>
-        <div class="cmd"><code>/sofi-boot</code><span class="d">مزامنة git + تحميل الدماغ الحي — لا بداية عمياء.</span></div>
-        <div class="cmd"><code>/sofi-team</code><span class="d">يطابق المهمة بالوكيل الصحيح: الطبقة، البوابة، المسار.</span></div>
-        <div class="cmd"><code>/sofi-delegate</code><span class="d">يبني موجز RCCF جاهزاً للّصق قبل كل استدعاء.</span></div>
-        <div class="cmd"><code>/sofi-gate</code><span class="d">يفحص شرط خروج البوابة ويتقدّم واحدة فقط.</span></div>
-        <div class="cmd"><code>/sofi-handoff</code><span class="d">دليل ← commit ← تحديث الدماغ ← التذكرة التالية.</span></div>
-        <div class="cmd"><code>/sofi-reflect</code><span class="d">v5 · «الحلم» — يستخلص دروساً دائمة من التاريخ.</span></div>
+        <h3>المسار المباشر <span class="tag">أقنعة بالتتابع · قفزة واحدة</span></h3>
+        <div class="cmd"><code>mask 1 · reception</code><span class="d">تمريرة تفكير أولى: تعيد صياغة الهدف، تفكّك الطلبات المتشابكة، تصنّف (نوع·بوابة·مشروع)، وتوضّح قبل الالتزام. صفر تفريخ.</span></div>
+        <div class="cmd"><code>mask 2 · CEO</code><span class="d">قناع الرئيس التنفيذي: يقرّر البوابة الفعّالة والطبقات المعنيّة وسلّم المسار، ويحكّم التصميم ضد التطوير. صفر تفريخ.</span></div>
+        <div class="cmd"><code>mask 3 · advisor</code><span class="d">قناع مستشار الطبقة بالتتابع: يقرأ الأثر المجمّد، يبحث الويب، يحدّد المواقع بـ Python، ثم يختار أخصائيّيه ومسارهم. صفر تفريخ.</span></div>
+        <div class="cmd"><code>spawn · leaves</code><span class="d">حدّ التفريخ الوحيد: كتلة RCCF لكل أخصائي، ثم عدّة استدعاءات Agent() في رسالة واحدة = السرب المتوازي. قفزة واحدة، بلا تعشيش.</span></div>
+        <div class="cmd"><code>verify + git</code><span class="d">النتيجة لا الإفادة الذاتية: sofi_verify.py يبوّب الأنبوب (خروج 0)، ثم sofi checkpoint، head_sha، والتذكرة التالية.</span></div>
+        <div class="cmd"><code>next round</code><span class="d">احتجت مستوى آخر كشفته العائدات؟ ارجع لقناع ٢/٣ وفرّخ جولة جديدة من القمة — لا من داخل ورقة أبداً.</span></div>
       </div>
       <div class="cmdcol">
-        <h3>أدوات القوة <span class="tag">غربلة أولاً · الأرخص</span></h3>
-        <div class="cmd"><code>/sofi-audit</code><span class="d">فحص شامل لطبقة — استشهاد file:line، قراءة فقط.</span></div>
-        <div class="cmd"><code>/sofi-spec-review</code><span class="d">مراجعة معمارية عبر مصفوفة رباعية ثابتة.</span></div>
-        <div class="cmd"><code>/sofi-feature</code><span class="d">الأكبر — دورة كاملة على ميزة: فحص←إصلاح←تحقّق←تسليم.</span></div>
-        <div class="cmd"><code>/sofi-secure</code><span class="d">فريق الأمن — OWASP + قاعدة معرفة سيبرانية.</span></div>
-        <div class="cmd"><code>/sofi-fix</code><span class="d">يوجّه كل ملاحظة لأرخص أخصائي + commit لكلٍّ.</span></div>
-        <div class="cmd"><code>/sofi-report</code><span class="d">تقرير موثّق بالأدلة إلى الدماغ، ثنائي اللغة.</span></div>
-        <div class="cmd"><code>/sofi-design-taste</code><span class="d">يقتل واجهات الـAI الرتيبة — 3 مقابض، a11y تفوز.</span></div>
+        <h3>أدوات يستدعيها الفريق مباشرة <span class="tag">لا شرطة مائلة · الأرخص أولاً</span></h3>
+        <div class="cmd"><code>sofi sync</code><span class="d">توجيه git وقراءة الدماغ الحي (STATE·CONTEXT·HANDOFFS) — لا بداية عمياء.</span></div>
+        <div class="cmd"><code>ROSTER.md</code><span class="d">اختيار الوكيل من التشكيلة — الطبقة والبوابة والمسار.</span></div>
+        <div class="cmd"><code>01-delegation-rccf.md</code><span class="d">بناء كتلة RCCF في السياق ثم تفريخ الأخصائي — تفويض منضبط.</span></div>
+        <div class="cmd"><code>sofi_scan.py</code><span class="d">مسح ثابت لأي طبقة (ui·blade·db·api·security·taint) بصفر توكن نموذج.</span></div>
+        <div class="cmd"><code>feature_scan.py</code><span class="d">الحلقة الكاملة على ميزة: تحديد ← وسم ← إصلاح ← تحقّق ← تسليم.</span></div>
+        <div class="cmd"><code>spec-review.md</code><span class="d">مراجعة معمارية رباعية الأركان — 7 قواعد فولاذية.</span></div>
+        <div class="cmd"><code>sofi gate-check</code><span class="d">فحص شرط خروج البوابة والتقدّم — بلا تخطٍّ.</span></div>
+        <div class="cmd"><code>reflection_engine.py</code><span class="d">استخلاص الدروس من تاريخ HANDOFFS ← LESSONS.md.</span></div>
+        <div class="cmd"><code>uiux_pipeline.py</code><span class="d">عقيدة الذوق التصميمي — تقتل واجهات الـAI الرتيبة، وa11y تفوز.</span></div>
       </div>
     </div>
     <div class="powers rev">

@@ -28,6 +28,6 @@ Turn the raw idea into a charter and pin the scope.
 - **Standards:** Blueprint in clear plain prose; chatter caveman lite; code/commits always normal prose.
 
 ## ↪ Handoff & escalation
-- **Handoff:** user / CEO → **me** → ux-researcher (Gate 1). Close with `/sofi-handoff`.
+- **Handoff:** user / CEO → **me** → ux-researcher (Gate 1). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** idea is infeasible or scope conflicts with constraints — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

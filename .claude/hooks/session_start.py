@@ -74,13 +74,16 @@ def main() -> None:
             lines.append(
                 "- **contract:** read STATE/CONTEXT/HANDOFFS before acting · "
                 "checkpoint every milestone · record `head_sha` on handoff.\n"
-                "- **palette** (`engine/protocols/command-palette.md`): spine "
-                "`/sofi-boot` `/sofi-team` `/sofi-delegate` `/sofi-gate` `/sofi-handoff` · "
-                "power tools `/sofi-audit <layer>` `/sofi-spec-review \"<feature>\"` "
-                "`/sofi-feature \"<feature>\"` (big one — full loop) "
-                "`/sofi-secure <mode>` `/sofi-fix <target>` "
-                "`/sofi-report <kind>` `/sofi-design-taste`. Loop: "
-                "boot → audit/secure → fix → report → gate → handoff."
+                "- **how the team works** (no slash-commands — direct & flexible, "
+                "`engine/protocols/02-intake-orchestration.md`): the main session reformulates "
+                "the ask, wears CEO → tier-advisor personas in sequence (researches the web), "
+                "then spawns leaf specialists one hop deep, in parallel. Depth = new rounds, "
+                "never nesting.\n"
+                "- **Python tools it calls directly** (token-frugal substrate, "
+                "`engine/tooling/`): `sofi sync|checkpoint|brain-query|gate-check|gemini|"
+                "domain|tunnel` · `python3 engine/tooling/agents/ceo/sofi_scan.py <mode> "
+                "\"<q>\" --prj <PRJ> --md` (0-token locate) · `sofi_verify.py` (verify gate). "
+                "Loop: orient → scan → delegate → verify → checkpoint → next ticket."
             )
         else:
             lines.append(

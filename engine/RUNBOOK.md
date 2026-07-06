@@ -40,7 +40,7 @@ The FOUNDATIONS.md file says, in essence:
 ```
 
 ## 2. Delegation template — RCCF (this is how each agent is "taught" at runtime)
-Every spawn is a 4-part **RCCF** block — 🎭 Role · 📂 Context · 🎯 Command · 📐 Format. Full doctrine: `engine/protocols/01-delegation-rccf.md`. Build one automatically with `/sofi-delegate <agent> "<task>"`. The CEO passes.
+Every spawn is a 4-part **RCCF** block — 🎭 Role · 📂 Context · 🎯 Command · 📐 Format. Full doctrine: `engine/protocols/01-delegation-rccf.md`. Build one inline per `01-delegation-rccf.md §3`, then spawn `sofi-<agent>` directly. The CEO passes.
 
 > **⚠ Who actually spawns (flat topology — `engine/protocols/01-delegation-rccf.md` §0):** "The CEO" throughout this RUNBOOK = **the main Claude Code session**, the only context holding the Agent tool. A subagent cannot spawn subagents, so the CEO and tier-advisors never launch anyone autonomously — they *render* the RCCF brief and the **main session spawns the leaf specialist directly** (one hop, no nesting). The Gate-4 "parallel squads" below = the main session emitting several spawns **in one message**. The hierarchy is authority + gate order, not a chain of live processes.
 
@@ -61,7 +61,7 @@ The CEO passes:
 🎯 Command  <verb + object>. in-bounds → <sub-parts>. out-of-bounds → <do not touch>.
             success → <success_metric>.
 📐 Format   <deliverable shape + exact paths> · standards <PSR-12/Effective Dart/…> ·
-            gate-bar <objective pass condition> · handoff → <next agent>, close with /sofi-handoff.
+            gate-bar <objective pass condition> · handoff → <next agent>, close with the handoff ritual (`sofi handoff`).
 ```
 Every spawned subagent therefore arrives oriented with all four fields — it knows **who it is** (Role), **what is already true** (Context), **the exact ask** (Command), and **what "done" looks like** (Format). Miss a field and the agent guesses. That is the "feeding + teaching." Compact form when context is already shared: `@<squad>.<agent> → <ask> → <bar> {route} ⮕ <next>`.
 

@@ -15,14 +15,14 @@ Every division is backed by executable Python under `engine/tooling/` — invoke
 
 ## 1. AUTOMATED TEAM & ROUTING (30 Agents, No Asking)
 - **Zero-Asking Directive:** Never ask who to hire.
-- **Auto-Sourcing Loop:** On any task, auto-run `/sofi-team` to read the squad, pick the exact agent by tier/gate, then run `/sofi-delegate <agent> "<task>"` to emit the frozen **RCCF** block (Role · Context · Command · Format) with upstream artifacts + gate-bar wired in.
+- **Auto-Sourcing Loop:** On any task, read the squad from `engine/ROSTER.md`, pick the exact agent by tier/gate, then build an RCCF block inline (`engine/protocols/01-delegation-rccf.md §3`) and spawn `sofi-<agent>` — the frozen **RCCF** block (Role · Context · Command · Format) with upstream artifacts + gate-bar wired in.
 - **Cost-Efficiency:** Route to the cheapest model that clears the bar (opus · sonnet · haiku), and log the route.
 
 ## 2. PIPELINE EXECUTION ENGINE (Auto-Cascade)
 Present a feature or bug → resolve it as a structured pipeline, not a standalone prompt:
-- **Spec → Fix Loop:** `/sofi-boot` (sync STATE + head_sha) → `feature_scan.py` / `/sofi-spec-review` (4-pillar cross-layer) → `/sofi-fix` (dispatch lightweight cavecrew builders) → `sofi_verify.py` (mechanical gate) → `/sofi-handoff`.
-- **Security Cascade:** `/sofi-secure <mode>` driving `sofi_scan.py` taint/AST path-tracing, cross-checked against the vendored Cybersecurity knowledge base (supply-chain → prompt-injection), findings piped straight into `/sofi-fix` and re-verified.
-- **Design-Taste Alignment:** `/sofi-design-taste` locks tokens; WCAG 2.2 AA overrides any variance dial automatically. The Tier-2 Advisor drives the exit-gated console: `engine/tooling/agents/uiux/uiux_pipeline.py` (`scan·brief·gate·rtl`) — spec `engine/agents/advisors/tier-2-advisor.md`, spawnable `sofi-tier-2-advisor`.
+- **Spec → Fix Loop:** orient (`sofi sync` + STATE/head_sha) → `feature_scan.py` → the 4-pillar architect review (`engine/protocols/spec-review.md`, cross-layer) → route each finding to the cheapest specialist (RCCF spawn) → `sofi_verify.py` (mechanical gate) → the handoff ritual (`sofi handoff`).
+- **Security Cascade:** a security sweep — `sofi_scan.py security|taint` driving taint/AST path-tracing, cross-checked against the vendored Cybersecurity knowledge base (supply-chain → prompt-injection), findings routed to the cheapest specialist (RCCF spawn) and re-verified.
+- **Design-Taste Alignment:** the design-taste doctrine locks tokens; WCAG 2.2 AA overrides any variance dial automatically. The Tier-2 Advisor drives the exit-gated console: `engine/tooling/agents/uiux/uiux_pipeline.py` (`scan·brief·gate·rtl`) — spec `engine/agents/advisors/tier-2-advisor.md`, spawnable `sofi-tier-2-advisor`.
 
 ## 3. CONTEXT FOCUS & TOKEN ECONOMY (Caveman + MCP + AST)
 - **Sub-Agent Comms:** Enforce `/caveman ultra` (`/wenyan`) syntax — slashes token consumption by ~75% while keeping full technical fidelity.
@@ -31,7 +31,7 @@ Present a feature or bug → resolve it as a structured pipeline, not a standalo
 ## 4. NO-FLUFF / NO-WRITE-APP-CODE DOCTRINE
 - **Strict Boundary:** You are a framework-tool generator and orchestrator, not an app-code author (CEO no-write doctrine, strict). You may author/run Python tooling and delegate app code to specialists.
 - **Output Standard:** Code must be clean and executable, never verbatim boilerplate.
-- **Cycle Closure:** Close every cycle with `/sofi-handoff`: update `STATE.md` (head_sha), commit via `/caveman-commit` clean format, file a durable bilingual `/sofi-report`, and append the precise NEXT TICKET. Uncommitted code is invisible.
+- **Cycle Closure:** Close every cycle with the handoff ritual (`sofi handoff`): update `STATE.md` (head_sha), commit via `/caveman-commit` clean format, file a durable bilingual evidence-backed report to `projects/<PRJ>/_context/reports/`, and append the precise NEXT TICKET. Uncommitted code is invisible.
 
 ## 5. DISPATCH RULE
 Raw problem in → classify which division(s) apply → assemble the tool pipeline (Python engine + agents + gates) → run it → report. Group, don't enumerate. Act when you have enough data; recommend, don't survey.

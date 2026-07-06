@@ -16,7 +16,7 @@ Stages (each GATES the loop — a red drops the pipeline with exit 1):
     3. rtl     → currency amount echoed without the &lrm; RTL prefix (this file)
     4. verify  → mechanical gate: blade compile · view:cache · lint  (sofi_verify)
 
-Then it emits paste-ready `/sofi-delegate` RCCF stubs routing each finding class to
+Then it emits paste-ready RCCF spawn stubs routing each finding class to
 the cheapest specialist that clears the bar (frontend-react-engineer · backend-blade-engineer · ui-ux-designer).
 
 CLI
@@ -183,7 +183,7 @@ def emit_briefs(prj: str, query: str | None) -> str:
         out += [
             f"## {m}: 🔧 {n} finding(s) → `{agent}`",
             f"```",
-            f"/sofi-delegate {agent} \"[{prj}] {m}-pass on {query or 'active views'}\"",
+            f"spawn {agent} — [{prj}] {m}-pass on {query or 'active views'}  (build the RCCF block per engine/protocols/01-delegation-rccf.md)",
             f"🎭 Role   {agent}  ({route})",
             f"📂 Context STATE.md head_sha · frozen sakk-tokens.css · WCAG 2.2 AA matrix",
             f"🎯 Command {cmd}",

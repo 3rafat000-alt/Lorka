@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-sofi_automator — the 7-steel-rules static scanner for /sofi-spec-review.
+sofi_automator — the static 7-steel-rules scanner for the spec-review flow.
 
 Project-agnostic: walks any directory, dynamically handles .php / .dart / .sql /
 migrations. Each check_* returns a list of Finding dicts; run_all() aggregates a

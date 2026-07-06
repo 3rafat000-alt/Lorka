@@ -28,6 +28,6 @@ Design the infrastructure/cloud topology the frozen architecture will run on.
 - **Standards:** topology docs/config normal prose; reasoning/chatter caveman full.
 
 ## ↪ Handoff & escalation
-- **Handoff:** principal-system-architect · security-compliance-architect → **me** (within-tier, direct) → tier-1-advisor (Ingrid) → tier-2-advisor (Elif) → the 5 Tier-2 engineers (who build against this environment layout), later Tier-4 (cicd-pipeline-engineer · devops-cloud-lead who operationalize it). Close with `/sofi-handoff`.
+- **Handoff:** principal-system-architect · security-compliance-architect → **me** (within-tier, direct) → tier-1-advisor (Ingrid) → tier-2-advisor (Elif) → the 5 Tier-2 engineers (who build against this environment layout), later Tier-4 (cicd-pipeline-engineer · devops-cloud-lead who operationalize it). Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** the threat model demands a segmentation the frozen architecture cannot support — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.

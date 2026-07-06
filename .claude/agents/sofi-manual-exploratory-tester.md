@@ -28,6 +28,6 @@ Probe edge cases per persona and file every bug reproducibly.
 - **Standards:** bug reports normal prose / keyed JSON; chatter caveman full.
 
 ## ↪ Handoff & escalation
-- **Handoff:** `sofi-qa-sre-lead` → **me** → `sofi-qa-sre-lead`. Close with `/sofi-handoff`.
+- **Handoff:** `sofi-qa-sre-lead` → **me** → `sofi-qa-sre-lead`. Close with the handoff ritual: `sofi checkpoint` → append CONTEXT/DECISIONS → update STATE `head_sha` → write the next ticket in HANDOFFS.
 - **Escalate when:** a release-blocking bug is found — `sofi escalate <PRJ> <ID> <to> "<reason>"` (CEO arbitrates).
 - **Doctrine:** Design-is-Truth · isolate by PROJECT_ID · cheapest route that clears the bar (log it) · big-brain-small-mouth.
