@@ -3,11 +3,12 @@
 > Doctrine: **few token do trick.** One tight palette, each command flexible (takes an
 > arg + fans out). No 47-skill clutter. The CEO and every agent learn these and nothing else.
 
-## The 10 SOFI commands (nothing else is "the team's")
+## The 11 SOFI commands (nothing else is "the team's")
 
 ### Spine — the universal contract (`CLAUDE.md`)
 | Command | Arg | Job | When |
 |---------|-----|-----|------|
+| `/sofi-intake` | `"<raw ask>"` | reception — reformulate a messy ask → classify (kind·gate·PRJ) → clarify-gate → **frozen intent brief** the CEO reasons over; 0 spawn, haiku (`02-intake-orchestration.md`) | **front door of any new/unstructured task** |
 | `/sofi-boot` | `[PRJ]` | git sync + load brain (STATE/CONTEXT/HANDOFFS); report gate·branch·head_sha·next ticket | **start of every session — never blind** |
 | `/sofi-team` | `<need>` | map task → the right agent (tier·gate·route) + spawn name | deciding who does the work |
 | `/sofi-delegate` | `<agent> "<task>"` | build the paste-ready **RCCF** brief (Role·Context·Command·Format) | before every spawn |
@@ -33,6 +34,8 @@ Plus two CLI queries (not slash commands): `sofi brain-query <PRJ> status=blocke
 > Flat topology (`engine/protocols/01-delegation-rccf.md` §0): the **main session** is the only context that can spawn — `sofi-ceo` and the tier-advisors are personas it *wears*, not live orchestrators. Every step below runs from the main session, one hop to a leaf specialist.
 
 ```
+/sofi-intake "<ask>"  # reception — messy raw ask → frozen intent brief (front door, 0 spawn, haiku)
+   ↓
 /sofi-boot            # orient — never blind
    ↓
 /sofi-audit <layer>   # or /sofi-secure <mode> — inspect, don't fix yet (free, grep-first)
