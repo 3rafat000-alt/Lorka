@@ -40,6 +40,8 @@ sofi-ux-researcher  sofi-backend-…   sofi-qa-sre-lead   … any leaf specialis
 
 **One-line rule:** *render the brief anywhere; pull the trigger only from the main session; never nest a spawn.*
 
+**Re-delegating the same specialist** is still one hop from the main session — **continue** a still-alive agent via `SendMessage` (its round-1 context is intact, zero re-brief) when the frozen context still holds, or **re-spawn** the same `agentType` in a new round when the context changed or the agent closed (the main session carries the bridge). A leaf never re-delegates to itself or anyone. Rules: `04-coordination-registry.md §5`.
+
 ---
 
 ## 1. Why four fields (and not three, not five)
@@ -75,7 +77,7 @@ Everything the agent needs to know that it cannot see by default. The agent star
 Must contain:
 - **Project** — the `PRJ-ID`. Enforces isolation; the agent touches only `projects/<PRJ-ID>/`.
 - **Gate** — current lifecycle gate. Tells the agent which deliverables it may assume exist upstream.
-- **Brain pointers** — the agent reads, in order: `projects/<PRJ-ID>/_context/STATE.md` (where we are + `branch`/`head_sha`), `HANDOFFS.md` (its inbound ticket), `CONTEXT.md` (facts + decisions so far). Never paste the brain — point at it; it is the live source of truth.
+- **Distilled brain slice (v5, `04-coordination-registry.md §1`)** — the spawned agent is a **leaf**; it does **NOT** read STATE/CONTEXT/HANDOFFS. The brain is the brain layer's, and at 154 KB+ it is too big to re-read per spawn. The mask (which already holds the brain resident) lifts the ≤5 binding facts/decisions out of it and pastes them here. **Point at the frozen artifact** (stable work-context, below); **distill the brain** (huge coordination-context). This read/execute split is what kills the "every leaf re-reads a 240 KB brain" drain.
 - **The frozen upstream artifact** — the *specific* spec this work derives from, by path and section. e.g. `frozen: PRJ-sakk_OpenAPI.yaml §/auth/login`. "Design is Truth" lives here: if the artifact isn't frozen, the agent must reject upward, not improvise.
 - **Constraints that bind this task** — relevant `DECISIONS.md` lines, the stack, a security surface, a deadline/priority. Only what bears on *this* command.
 

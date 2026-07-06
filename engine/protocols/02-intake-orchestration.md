@@ -76,10 +76,13 @@ spawn leaves           Build one RCCF block per specialist (Role·Context·Comma
    │
    ▼  need more work the returns revealed? → GO BACK TO mask 2/3, spawn a NEW round.
    ▼  ── mask 4 · VERIFY + RECORD (Python + git) ─────────────────────────────
-verify + checkpoint    python3 engine/tooling/agents/ceo/sofi_verify.py --prj <PRJ> --md
+verify + checkpoint    VERIFY WITHOUT READING (04-coordination-registry.md §4):
+                       registry.py verify <path> (exists·bytes·words·sha, cross-check
+                       the leaf's ✳ RESULT header) → sofi_verify.py --prj <PRJ> --md
                        (exit 0 gates the pipeline) → sofi checkpoint <PRJ> "<type>: …"
-                       → append CONTEXT/DECISIONS · update STATE (head_sha) · next
-                       ticket in HANDOFFS. Uncommitted = invisible.
+                       → registry.py add "<the leaf's `registry:` line>" (index the
+                       artifact) → append CONTEXT/DECISIONS · update STATE (head_sha)
+                       · next ticket in HANDOFFS. Uncommitted = invisible.
 ```
 
 **Sequence vs parallel — the rule that keeps it cheap and correct:**
@@ -109,6 +112,10 @@ parsing** — and there is no slash-command overhead in between:
   only on evidence. The advisor mask picks the cheapest route that clears each specialist's bar.
 - **Round thrift.** Faking depth with rounds (not nesting) means no idle parent context is held open
   waiting on children — each round spawns, collects, and closes.
+- **Read-split thrift (the biggest save at scale).** Only the **brain layer** reads the (154 KB+)
+  brain; leaves get a distilled slice and never re-read STATE/CONTEXT/HANDOFFS. The **registry**
+  (`04-coordination-registry.md`) lets the brain layer see "what already exists" in one screen and
+  **verify deliverables without opening them** — instead of N leaves each re-billing a 240 KB brain.
 
 *few token do trick · big brain small mouth* — the front door normalizes, Python locates, the model
 only judges.

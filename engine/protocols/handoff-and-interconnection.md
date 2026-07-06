@@ -66,6 +66,7 @@ A ticket carries no live memory — the git history does. Every handoff records 
 - Producer: `sofi checkpoint <PRJ> "…"` before marking `done`, then write the SHA into `STATE.md.head_sha`.
 - Receiver: `sofi sync <PRJ>` + `git log --oneline` → sees every checkpoint with its `SOFI:` trailer (who·which ticket·gate). Never re-derives, never overwrites.
 - Uncommitted work is invisible to the next session and **will** be stepped on. Checkpoint or lose it.
+- The **registry** (`_context/REGISTRY.md`, `04-coordination-registry.md`) is the fast, 1-line-per-artifact index **over** these episodes — the brain layer scans it (`registry.py list|find`) to see what exists without re-reading this 150 KB+ file. HANDOFFS keeps the full episode; REGISTRY only indexes it. Leaves read neither — they get a distilled slice in the RCCF.
 
 ## Conflict resolution
 - Design-vs-Dev dispute → `Technical_Debt_Justification.md` → architect reviews → CEO arbitrates (`opus·max`), Design wins unless safety/cost forbids.

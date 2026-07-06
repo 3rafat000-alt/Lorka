@@ -12,14 +12,17 @@ projects/<PRJ-ID>/
 │   ├── CONTEXT.md           durable facts: stack, constraints, key decisions
 │   ├── DECISIONS.md         ADR log — one entry per irreversible choice
 │   ├── HANDOFFS.md          ticket queue: who→who, what, expected output
+│   ├── REGISTRY.md          v5: artifact index — 1 line/deliverable (brain-layer read only · 04-coordination-registry.md)
 │   └── LESSONS.md           v5: distilled procedural memory (reflection engine)
 ├── docs/                    blueprint, personas, journey, prototype, threat model
 ├── src/{backend,frontend,mobile}/
 └── shared -> ../../shared-packages  (symlink; reuse, never duplicate)
 ```
 
-## Read order (every agent, before acting)
-`STATE.md` → your inbound ticket in `HANDOFFS.md` → `CONTEXT.md` → `DECISIONS.md` → the specific upstream artifact you consume.
+## Read order — the brain layer only (the read/execute split · `04-coordination-registry.md §1`)
+This read order belongs to the **brain layer** — the main session while wearing the CEO or a tier-advisor mask. It reads the brain **once** (it stays resident across the masks) and hands each leaf a distilled slice:
+`REGISTRY.md` (what already exists) → `STATE.md` → your inbound ticket in `HANDOFFS.md` → `CONTEXT.md` → `DECISIONS.md` → the specific upstream artifact.
+**Leaf specialists do NOT read the brain.** They receive their frozen work-context inside the RCCF (`01-delegation-rccf.md §2`) and read only the one frozen artifact + the `file:line` the Python locator returned. This is what stops N leaves each re-reading a 240 KB brain (**context amnesia** + token drain). Full rules: `04-coordination-registry.md`.
 
 ## Write order (every agent, after acting)
 1. Artifact → `projects/<PRJ-ID>/docs/` or `src/`.

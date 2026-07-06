@@ -21,6 +21,12 @@ defaults:
   effort: medium
   caveman: full
 
+# ---- read/execute split (token discipline · engine/protocols/04-coordination-registry.md) ----
+# The BRAIN LAYER (ceo-sofi + the 5 tier-advisors below) reads the brain, decides, and delegates.
+# LEAF specialists get a distilled frozen slice in the RCCF and execute — they NEVER re-read the
+# (154 KB+) brain. The registry (_context/REGISTRY.md, via agents/ceo/registry.py) is the
+# 1-line-per-artifact index the brain layer scans instead of re-opening artifacts. Biggest token save.
+
 # ---- per-role routes ----
 routes:
   ceo-sofi:                    { model: deep,       effort: max,    caveman: full,  budget: "as-needed", gate: "all" }

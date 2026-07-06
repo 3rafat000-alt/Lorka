@@ -30,6 +30,8 @@
 | Gate order + exit bars | `engine/lifecycle/gates.md` |
 | Model routing + costs | `engine/routing/routing.yaml` |
 | How to delegate (RCCF) | `engine/protocols/01-delegation-rccf.md` |
+| Coordination / registry / read-execute split / re-delegation (anti-amnesia) | `engine/protocols/04-coordination-registry.md` |
+| Artifact registry tool (add·list·find·verify) | `engine/tooling/agents/ceo/registry.py` |
 | How to drive a project end-to-end | `engine/RUNBOOK.md` |
 | Git law | `engine/protocols/git-discipline.md` |
 
