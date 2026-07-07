@@ -183,6 +183,7 @@
     <div class="t" data-tab="observatory">المرصد الحي <span class="c" id="c-obs">0</span></div>
     <div class="t" data-tab="tasks">إدارة المهام <span class="c" id="c-task">0</span></div>
     <div class="t" data-tab="budgets">التخطيط والميزانية <span class="c" id="c-bud">0</span></div>
+    <div class="t" data-tab="fleet">الأسطول والخطة <span class="c" id="c-fleet">0</span></div>
     <div class="t" data-tab="commands">الأوامر المباشرة <span class="c" id="c-cmd">0</span></div>
     <div class="t" data-tab="chat">الدردشة المباشرة <span class="c" id="c-chat">·</span></div>
   </div>
@@ -295,6 +296,44 @@
     </div>
   </div>
 
+  <!-- FLEET & PLAN — v6.1 mechanization: live telemetry + the frozen DAG -->
+  <div class="panel" id="tab-fleet">
+    <div class="sec-h" style="margin-bottom:16px"><span class="kicker">طبقة الميكنة · v6.1</span><h2>الأسطول يبثّ، والخطة مجمّدة كـ DAG</h2></div>
+    <div class="grid g4" style="margin-bottom:18px">
+      <div class="card"><div class="card-b stat"><div class="n accent" id="f-total">0</div><div class="l">أحداث مسجّلة</div></div></div>
+      <div class="card"><div class="card-b stat"><div class="n" id="f-src">0</div><div class="l">مصادر (hooks)</div></div></div>
+      <div class="card"><div class="card-b stat"><div class="n" id="f-kind">0</div><div class="l">أنواع الأحداث</div></div></div>
+      <div class="card"><div class="card-b stat"><div class="n" id="f-agents">0</div><div class="l">فاعلون</div></div></div>
+    </div>
+    <div class="grid g3">
+      <div class="card"><div class="card-h"><span class="kicker">حسب المصدر · hook</span></div><div class="card-b"><div class="barlist" id="fBySource"><div class="sub">…</div></div></div></div>
+      <div class="card"><div class="card-h"><span class="kicker">حسب النوع</span></div><div class="card-b"><div class="barlist" id="fByKind"><div class="sub">…</div></div></div></div>
+      <div class="card"><div class="card-h"><span class="kicker">أكثر الفاعلين</span></div><div class="card-b"><div class="barlist" id="fByAgent"><div class="sub">…</div></div></div></div>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card" style="grid-column:span 2">
+        <div class="card-h"><span class="kicker">بثّ الأسطول · telemetry.py</span><span style="display:flex;gap:8px;align-items:center"><span class="sub" id="fSrcNote">.claude/memory/events.jsonl</span><button class="diagbtn" onclick="loadFleet()">↻</button></span></div>
+        <div class="card-b"><div class="stream" id="fFeed"><div class="sub">بانتظار أحداث الأسطول…</div></div></div>
+      </div>
+      <div class="card"><div class="card-h"><span class="kicker">القاطع + السقوف · budget.py</span></div><div class="card-b" id="fBudgetNote">
+        <div class="kv"><span class="k">القياس عن بُعد</span><span class="v" style="color:var(--ok);font-weight:600">حيّ ✓</span></div>
+        <div class="kv"><span class="k">القاطع</span><span class="v mono">٣ محاولات</span></div>
+        <div class="kv"><span class="k">مسار الكتابة</span><span class="v">بلا نموذج (حتمي)</span></div>
+        <div class="note">كل hook يبثّ حدثاً هنا؛ لا نختلق عدّاداً — هذا العدّ الحقيقي المُسجَّل (قاعدة الترسيخ). القاطع يوقف بعد ٣ محاولات ويكتب crash-dump في <span class="mono" style="font-size:.72rem">_circuit.jsonl</span>.</div>
+      </div></div>
+    </div>
+    <div class="sec" style="margin-top:26px">
+      <div class="sec-h"><span class="kicker">المجدول الحتمي · scheduler.py</span><h2 style="font-size:22px">الخطة كـ DAG — <span class="mono" style="font-size:16px">sofi plan → sofi run</span></h2></div>
+      <div class="card">
+        <div class="card-h"><span class="kicker" id="planHead">لا خطة مجمّدة للمشروع النشط</span><span class="sub" id="planNote">_context/PLAN.dag.json</span></div>
+        <div class="card-b">
+          <div class="grid g3" id="planCols"><div class="sub">لا PLAN.dag.json — يُنشأ بـ <span class="mono">sofi plan &lt;PRJ&gt; --file tasks.json</span>.</div></div>
+          <details id="planMermaidWrap" style="margin-top:14px;display:none"><summary class="sub" style="cursor:pointer">مصدر mermaid (نسخ)</summary><pre class="diagout" id="planMermaid" style="margin-top:10px;max-height:260px"></pre></details>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- COMMANDS — direct headless Claude execution -->
   <div class="panel" id="tab-commands">
     <div class="sec-h" style="margin-bottom:14px"><span class="kicker">تنفيذ مباشر · Claude Code</span><h2>اضغط الأمر — كلاود ينفّذ والناتج يتدفّق هنا حيّاً</h2></div>
@@ -370,13 +409,16 @@ async function boot(){
   state.prj=s.active_project;
   const sel=$('#projSel');sel.innerHTML='';(s.projects||[]).forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;if(p===s.active_project)o.selected=true;sel.appendChild(o);});
   sel.onchange=()=>loadProject(sel.value);
-  buildGraph(s.graph);renderBudgets(s.budgets);renderHome(s);renderProject(s);connectWS();loadPalette();initChats();
+  buildGraph(s.graph);renderBudgets(s.budgets);renderHome(s);renderProject(s);connectWS();loadPalette();initChats();loadFleet();
 }
+// fleet self-refresh: while the tab is visible, re-pull telemetry every 8s (hooks write between polls)
+setInterval(()=>{if(document.visibilityState==='visible'&&document.querySelector('#tab-fleet.active'))loadFleet();},8000);
 async function loadProject(prj){
   state.prj=prj;
   const [tasks,g,r,st,obs]=await Promise.all(['tasks','gates','reflection','state','observatory'].map(k=>fetch(`/api/${k}?prj=${prj}`).then(r=>r.json())));
   renderProject({tasks,gates:g,reflection:r,state:st,observatory:obs});
   renderHome({observatory:obs,state:st});
+  loadFleet();
 }
 function renderProject(s){if(s.tasks)renderTasks(s.tasks);if(s.gates)renderGates(s.gates);if(s.reflection)renderReflection(s.reflection);if(s.observatory)renderObservatory(s.observatory);}
 
@@ -708,8 +750,60 @@ function onChatEvent(m){
 function setLive(on){const d=$('#liveDot'),t=$('#liveTxt');if(on){d.className='dot live';t.textContent='مباشر';}else{d.className='dot off';t.textContent='غير متصل';}}
 function pushEvent(kind,who,msg){const s=$('#stream');if(s.querySelector('.sub'))s.innerHTML='';const t=new Date().toLocaleTimeString('en-GB',{hour12:false});const d=document.createElement('div');d.className='ev '+(kind==='sec'?'sec':'');d.innerHTML=`<span class="t">${t}</span><span class="who">${who}</span><span class="msg">${msg}</span>`;s.insertBefore(d,s.firstChild);while(s.children.length>100)s.removeChild(s.lastChild);$('#c-obs').textContent=s.children.length;}
 
+/* ── FLEET & PLAN (v6.1: telemetry.py + scheduler.py) ── */
+const KIND_LBL={edit:'تحرير',write:'كتابة',learn:'تعلّم','[LEARN]':'تعلّم',commit:'كوميت',gate:'بوابة',dispatch:'إرسال'};
+const SRC_LBL={post_tool_use:'PostToolUse',session_start:'SessionStart',stop:'Stop',user_prompt_submit:'UserPromptSubmit',cli:'CLI'};
+function bars(el,obj,map){const items=Object.entries(obj||{}).filter(([k])=>k&&k!=='unknown'&&k!=='null').sort((a,b)=>b[1]-a[1]).slice(0,12);const mx=Math.max(...items.map(i=>i[1]),1);el.innerHTML=items.length?items.map(([n,c])=>`<div class="brow"><span class="name">${(map&&map[n])||n}</span><span class="bar"><div class="meter"><span style="width:${Math.round(c/mx*100)}%"></span></div></span><span class="num">${c}</span></div>`).join(''):'<div class="sub">لا شيء بعد</div>';}
+async function loadFleet(){
+  const ev=await fetch('/api/events?n=200').then(r=>r.json()).catch(()=>null);
+  renderFleet(ev);
+  if(state.prj){const pl=await fetch('/api/plan?prj='+encodeURIComponent(state.prj)).then(r=>r.json()).catch(()=>null);renderPlan(pl);}
+  else renderPlan(null);
+}
+function renderFleet(d){
+  if(!d||d.error){$('#fFeed').innerHTML=`<div class="err">${(d&&d.error)||'تعذّر تحميل الأسطول'}</div>`;return;}
+  const s=d.summary||{},ev=d.events||[];
+  $('#f-total').textContent=s.total||ev.length||0;
+  $('#f-src').textContent=Object.keys(s.by_source||{}).length;
+  $('#f-kind').textContent=Object.keys(s.by_kind||{}).length;
+  $('#f-agents').textContent=Object.keys(s.by_agent||{}).filter(k=>k&&k!=='unknown').length;
+  $('#c-fleet').textContent=s.total||ev.length||0;
+  bars($('#fBySource'),s.by_source,SRC_LBL);bars($('#fByKind'),s.by_kind,KIND_LBL);bars($('#fByAgent'),s.by_agent,null);
+  const feed=$('#fFeed');
+  if(!ev.length){feed.innerHTML='<div class="sub">لا أحداث بعد — الـhooks تبثّ عند أوّل تحرير/جلسة.</div>';return;}
+  feed.innerHTML=ev.slice(-60).reverse().map(e=>{
+    const t=(e.ts||'').slice(11,19)||'--:--:--';
+    const who=e.agent&&e.agent!=='unknown'?e.agent:(SRC_LBL[e.source]||e.source||'النظام');
+    const kind=KIND_LBL[e.kind]||e.kind||'';
+    const isLearn=(e.kind||'').includes('LEARN')||e.kind==='learn';
+    return `<div class="ev${isLearn?' sec':''}"><span class="t">${t}</span><span class="who">${who}</span><span class="msg">${kind}${e.prj?' · '+e.prj:''}</span></div>`;
+  }).join('');
+}
+function renderPlan(d){
+  const cols=$('#planCols');
+  if(!d||!d.dag||!d.dag.nodes||!Object.keys(d.dag.nodes).length){
+    $('#planHead').textContent='لا خطة مجمّدة للمشروع النشط';
+    $('#planNote').textContent=(d&&d.note)||'_context/PLAN.dag.json';
+    $('#planMermaidWrap').style.display='none';
+    cols.innerHTML='<div class="sub">لا PLAN.dag.json — يُنشأ بـ <span class="mono">sofi plan &lt;PRJ&gt; --file tasks.json</span> ثم يُدار بـ <span class="mono">sofi run</span>.</div>';
+    return;
+  }
+  const nodes=d.dag.nodes,ids=Object.keys(nodes);
+  const done=new Set(ids.filter(i=>nodes[i].status==='done'));
+  const ready=ids.filter(i=>nodes[i].status!=='done'&&(nodes[i].deps||[]).every(x=>done.has(x)));
+  const rset=new Set(ready);
+  const queued=ids.filter(i=>nodes[i].status!=='done'&&!rset.has(i));
+  $('#planHead').textContent=`${ids.length} عقدة · ${done.size} منجزة · ${ready.length} جاهزة`;
+  $('#planNote').textContent='PLAN.dag.json';
+  const card=(i,mk)=>{const n=nodes[i];const deps=(n.deps||[]).map(x=>`<span class="agtag">${x}</span>`).join(' ');
+    return `<div class="wrow ${mk}"><span class="mk"></span><div class="body"><div class="meta"><span class="agtag" style="color:var(--ink);background:var(--sunk)">${i}</span>${n.agent?`<span class="agtag">${n.agent}</span>`:''}${n.gate!=null?`<span class="badge">G${n.gate}</span>`:''}</div><div class="sum">${(n.task||'').slice(0,90)}</div>${deps?`<div class="note">يعتمد على: ${deps}</div>`:''}</div></div>`;};
+  const col=(title,arr,mk)=>`<div><div class="kicker" style="margin-bottom:8px">${title} · ${arr.length}</div>${arr.length?arr.map(i=>card(i,mk)).join(''):'<div class="sub">—</div>'}</div>`;
+  cols.innerHTML=col('منجزة',[...done],'done')+col('جاهزة الآن',ready,'open')+col('بالطابور',queued,'info');
+  if(d.mermaid){$('#planMermaid').textContent=d.mermaid;$('#planMermaidWrap').style.display='';}
+}
+
 /* nav */
-function go(tab){document.querySelectorAll('.nav .t').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));$('#tab-'+tab).classList.add('active');if(tab==='network'&&state.cy)setTimeout(()=>{state.cy.resize();state.cy.fit(null,70);},60);}
+function go(tab){document.querySelectorAll('.nav .t').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));$('#tab-'+tab).classList.add('active');if(tab==='network'&&state.cy)setTimeout(()=>{state.cy.resize();state.cy.fit(null,70);},60);if(tab==='fleet')loadFleet();}
 document.querySelectorAll('.nav .t').forEach(t=>t.onclick=()=>go(t.dataset.tab));
 boot();
 </script>
