@@ -111,3 +111,55 @@ budgeted_autonomy:
   rule: "every delegation carries a hard ceiling — a scope (which files/paths), a call/attempt budget, and a fail-safe STOP. On breach: stop and escalate, never 'keep trying'. Unbounded agents complete fewer tasks, not more (bounded-autonomy research)."
   hard_stop: "self-correction caps at 3 attempts; the 4th triggers the circuit breaker (00-operating-system.md). This is budgeted autonomy already — v5 names it and extends the ceiling to spawn-width + scope, not just retry-count."
   context_boundary: "spawn parallel specialists ONLY when their sub-tasks are context-INDEPENDENT. Never fan out sequential pipeline phases of the SAME work (plan->build->test of one ticket) — that pays the coordination tax with no parallelism payoff (Anthropic + LangChain)."
+
+# ── v5.1 Adaptive routing — automated TRIGGERS learned from the Claude OSS frontier ──
+# The blocks above price the model/effort/width AXES; routing across them was 100%
+# human-judged (CEO logs the route in <thinking>). The frontier audit (EVOLUTION.md
+# Round 2) surfaced three DETERMINISTIC or CHEAP triggers SOFI lacked — they don't
+# replace CEO judgment, they give it floors + a scoring pre-step so the cheapest-that-
+# clears-the-bar call isn't purely by feel. Sources (patterns, not stars): claude-code-
+# router (longContext threshold + difficulty triage), claude-task-master
+# (analyze_project_complexity → expansion depth), oh-my-claudecode (Ralph/UltraQA
+# persist-until-green). Grounding: a SIZING score (how hard/how wide) is NOT a
+# confidence-in-correctness score — the latter stays behavioral-proxy only (verification
+# V4 / grounding G4). These score task size, never "am I sure I'm right."
+adaptive_routing:
+
+  # (1) longContext auto-floor (claude-code-router). Deterministic + free. SOFI owns the
+  # 1M-ctx tiers (fable/opus) but escalated context-size by hand. A measured crossing now
+  # forces the floor UPWARD only — never caps, never down-routes a security surface.
+  long_context:
+    threshold_tokens: 60000            # measured LIVE context (ccr's default floor)
+    force_min_model: gatekeeper        # ≥ threshold → model may not sit below fable (1M ctx)
+    rule: "when live context ≥ threshold_tokens the resolved model is raised to at least force_min_model regardless of task class; it is a floor, never a ceiling, and never lowers a route the ladder already set higher."
+
+  # (2) Difficulty triage (claude-code-router dynamic router). Automates 'pick cheapest
+  # that clears the bar' with a haiku pre-step — ADVISORY, the CEO mask confirms. Never
+  # auto-applies a bump on a safety_overrides surface (that stays normal-prose confirmed).
+  difficulty_triage:
+    scorer_model: mechanical           # haiku scores; ~nil cost vs the judgment it front-loads
+    emits: "{difficulty: 0-1, proposed_tier, one_line_why}"
+    bind: "advisory only — the CEO/advisor mask confirms the proposed tier and still logs the final route in <thinking>. A proposed escalation onto a security/irreversible/PII surface is confirmed in normal prose, never silently auto-applied."
+
+  # (3) Complexity → spawn-width (claude-task-master analyze_project_complexity).
+  # effort_scaling is a STATIC class→width table; this computes a per-task size score that
+  # PICKS the row + whether to subdivide, instead of a fixed lookup. Sizing, not certainty.
+  complexity_score:
+    scorer_model: mechanical
+    scale: "0-1 ≈ files-touched × cross-tier-reach × unknowns"
+    bind: "score selects the effort_scaling row — ≤0.3 → trivial-fix/single-role · 0.3–0.6 → cross-tier · ≥0.6 → audit-sweep/arbitration. It may never exceed budgeted_autonomy ceilings; on ≥0.6 touching money/auth/PII, Deep-Audit (full 9 gates) still binds (00-operating-system.md)."
+
+  # (4) remediate — a NAME for the bounded delegate→verify loop (oh-my-claudecode
+  # Ralph/UltraQA). NOT a new unbounded 'keep trying': it reuses the existing 3-attempt
+  # circuit breaker as its hard stop and still routes each failure through the Gemini desk.
+  remediate:
+    loop: "delegate → sofi_verify.py --prj <PRJ> (exit 0 = green) → on exit≠0 distil the failure into the next RCCF + route it to the Gemini desk → re-delegate."
+    bound: "budgeted_autonomy.hard_stop — caps at 3 attempts; the 4th trips the circuit breaker → escalate (00-operating-system.md §Escalation). Bounded persistence, not a runaway loop."
+    use: "a gate whose verify is red and the fix is mechanical/known. UNKNOWN-source total failure uses the opus repo-wide debug path instead — remediate is for known-shape fixes."
+
+  # (5) model: inherit — a permitted leaf model value (VoltAgent subagents). A leaf that
+  # must TRACK the caller's tier (e.g. a review that has to match the implementer's model)
+  # may set `model: inherit` in its spec frontmatter instead of a hardcoded tier. Use
+  # sparingly — the per-role routes above stay the default; inherit is the deliberate
+  # exception, not a way to dodge the ladder.
+  model_inherit: "allowed frontmatter value for leaves that must match the caller's effort tier; default remains the fixed per-role route."
