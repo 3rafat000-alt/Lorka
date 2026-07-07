@@ -110,6 +110,14 @@ route: opus-4-8 · high · lite
 status: open
 EOF
 
+# REGISTRY — the 1-line-per-artifact index the brain layer scans instead of re-reading
+# the brain (read/execute split · engine/protocols/04-coordination-registry.md). Header MUST
+# match registry.py's so `registry.py add` appends cleanly.
+cat > "$DIR/_context/REGISTRY.md" <<EOF
+# REGISTRY — $ID   (artifact index · brain-layer read only · append via registry.py)
+# fmt: TKT | gate | agent | status | artifact-path | sha | Δbytes | headline
+EOF
+
 cat > "$DIR/README.md" <<EOF
 # $ID — $TITLE
 Priority: $PRIORITY.
@@ -141,7 +149,7 @@ fi
 
 echo "✅ Scaffolded $DIR"
 echo "   foundation: _context/FOUNDATIONS.md (6 teachings pinned to this project)"
-echo "   brain: _context/{STATE,CONTEXT,DECISIONS,HANDOFFS,LOCKS}.md"
+echo "   brain: _context/{STATE,CONTEXT,DECISIONS,HANDOFFS,REGISTRY,LOCKS}.md"
 echo "   domain: $SLUG.local  (sofi domain up $ID  →  open http://$SLUG.local)"
 echo "   doctrine: engine/DOCTRINE.md (read this before first task)"
 echo "   next:  sofi sync $ID  →  spawn sofi-chief-product-strategist on TKT-001"
