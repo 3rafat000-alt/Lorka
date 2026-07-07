@@ -87,7 +87,7 @@ Mine these before writing a new agent or skill (Rule 4):
 ---
 
 ## Adoption rules
-1. A power is **proposed → piloted → promoted**. Promote only after one PRJ proves it clears the doctrine check.
+1. A power is **proposed → piloted → promoted**. Promotion requires a **dogfood benchmark pass**, not a vibe: pilot the power on one real PRJ task against the incumbent way, and record the measured delta (tokens / wall-clock / defect-catch / quality — whichever the power claims to improve) in that project's `DECISIONS.md`. A capability claim with no passing measurement stays **piloted**, never promoted. (Frontier audit Round 2 — `EVOLUTION.md`: the curated ecosystem blocks "it's faster" without a benchmark harness; SOFI now does too.)
 2. On promotion: add a row in `engine/tooling/registry.yaml` (`external_powers`), wire the using role's toolkit, log in `DECISIONS.md`.
 3. Net access to install/fetch a power = only roles holding Web tools (see `protocols/tooling-matrix.md`). Devs pull via their lead.
 4. **Security & code are never compressed** — caveman applies to context and chatter, never to code, commits, or security warnings.

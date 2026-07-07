@@ -37,6 +37,7 @@ Catalog: `engine/SUPERPOWERS.md` · machine index: `engine/tooling/registry.yaml
   
   Never loop a 4th time. This prevents token drain, runaway automation, and silent failures. (Gemini architectural recommendation + Protocol 02 §8, 2026-07-02.)
 - **Task-sizing — two tracks, not always 9 gates** — before starting, size the task. **Fast-Track** (low-risk: UI copy, i18n, a Blade field, a non-money validation) collapses Gates 1–3 into one Blueprint check and goes to Prod on green automated tests. **Deep-Audit** (touches money/credentials/auth/PII — SAKK wallet, withdraw, cards, KYC, integrations) takes the full 9 gates, no exception. When unsure, Deep-Audit. Keeps the lifecycle from taxing trivial changes without weakening the money surfaces. (External-review-desk recommendation, 2026-07-02; see `engine/EVOLUTION.md`.)
+- **Context budget — checkpoint before you degrade** — a session's own context window is a cost surface too. Keep working context lean: `sofi checkpoint` + hand off (record `head_sha`) *before* the window fills, and `/compact` with an explicit hint at a natural seam rather than letting quality decay in a bloated context. The read/execute split already keeps leaves lean (they never open the 240 KB brain — `04-coordination-registry.md`); this rule keeps the *brain layer* lean too. Sensitive/money work runs with MORE headroom, not less. (Frontier audit Round 2 — `engine/EVOLUTION.md`.)
 
 ## The 8 protocols (read once, apply always)
 | File | Teaches |
@@ -46,6 +47,8 @@ Catalog: `engine/SUPERPOWERS.md` · machine index: `engine/tooling/registry.yaml
 | `verification.md` | **v5 BINDING:** outcome over self-report — fresh-context adversarial verify against original criteria; `done` needs pasted evidence |
 | `reflection.md` | **v5:** scheduled "dreaming" — distil HANDOFFS history into lessons, consolidate on cadence not per-turn |
 | `01-delegation-rccf.md` | RCCF — the 4-part spawn brief (Role · Context · Command · Format) |
+| `02-intake-orchestration.md` | how the team actually works — reception → CEO → tier-advisor masks → flat one-hop leaf spawns, depth faked by rounds not nesting |
+| `04-coordination-registry.md` | **BINDING:** read/execute split (brain layer reads the 240 KB brain, leaves get a frozen slice) + the artifact `REGISTRY.md` + re-delegation — kills context amnesia |
 | `02-autonomous-gemini-loop.md` | **BINDING:** Gemini is the decision engine; agents route ALL decisions/reports inline, execute autonomously, never ask user directly |
 | `external-review-desk.md` | how the Gemini desk works — sanitize, condense, parse, ingest |
 | `context-and-memory.md` | the shared brain, project isolation |
