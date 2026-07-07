@@ -49,7 +49,9 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
 |---|-------|------|--------|
 | 1 | Foundation + kill real dead weight (engine/, orphan worktree, runtime junk, ignores) | 🟢 | ✅ DONE — commits 5a567a3, 5c90557, 65895f5 |
 | 5a | CLAUDE.md honesty (hooks + CLI verbs) | 🟢 | ✅ DONE — commit ff233ba |
-| 5b | registry.yaml drift: tool-grant fixes (arc-infra-architect Write/Edit; gtw-router/conflict-resolver Bash), stale module list, verb list | 🟢 | ⏳ next |
+| 5b | registry.yaml drift: tool-grant fixes | 🟢 | ✅ DONE — arc-infra Write/Edit dropped to match spawnable (880da9d). gtw-router/conflict-resolver verified CONSISTENT (registry==spawnable==R/G/G), no change. |
+| 5d | skills referencing mock/demo scripts as production | 🟡 | 🔶 PARTIAL — removed mock spec_review_preflight.py from sofi-spec-review active procedure (2563ddb). Full script deletion → see Dead-Prototype Purge below. Reflection confidence-gate wiring still ⏳. |
+| DP | **Dead-Prototype Purge** (next big reduce): delete confirmed mock/zero-caller v5 scripts + de-reference | 🟡 | ⏳ — `spec_review_preflight.py` (mock, 18 doc sites) · `ceo_toolkit.py` (1110 lines, 0 callers) · `squad_orchestrator_v2.py` · `agent_output_guard.py`+`agent_wrapper.sh` · `handoff_validator.py` · `agent_preflight.py` (broken path) · `route.py`/`dispatch.py` (dup cli.py) · `notify-gemini-full-dump.sh` · `sofi-gemini-monitor.sh`. Each is documented as a room tool (registry/CHARTER/tools-README) → delete needs its 5–18 doc refs removed in lockstep. Do one script per commit, verify sofi CLI after each. |
 | 5c | gates.yaml state count 3→5; `sofi squad` hardcoded roster | 🟡 | 🔶 PARTIAL — state bar 3→5 done (8335a74); `sofi squad` reading gates.yaml still ⏳ (cli.py code fix) |
 | 5d | skills referencing mock/demo scripts as production (spec_review_preflight.py mock; reflection confidence gate) | 🟡 | ⏳ |
 | 4 | Purge v5 brain rot: `company/brain/org/{PERSONAS,TEAM_STATUS,HANDOFFS}.md` (30-agent/5-tier) | 🟢 | ✅ DONE — refreshed IN PLACE (architectural slots per BRAIN.md, NOT deleted → zero cascade), ~290 lines v5 rot removed, content now points to live sources; fc79731 |
