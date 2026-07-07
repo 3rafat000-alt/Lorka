@@ -34,9 +34,15 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
    code is fixed (env var, commit 5a567a3) but **the token MUST be revoked on GitHub by the owner** —
    the historical blob stays reachable until then. History scrub is optional and deferred (needs
    force-push, hook-blocked) — pointless once the token is rotated.
-2. **`sofi doctor` mutates the tree** — running it rewrites `tools:` frontmatter in ~85 spawnables
-   (YAML-map → inline) via agentlint. A diagnostic must be read-only. Do NOT use `doctor` to "verify"
-   until fixed; use a read-only parity count instead. Fix owner: tooling phase.
+2. **Spawnable `tools:` frontmatter is inconsistent + gets clobbered** — some of the 105 use a
+   YAML-map `tools:` block, ~20 omit it entirely (→ all-tools default), and a transient agent (an
+   audit subagent, and separately something around a `sofi doctor` run) rewrote ~85 of them mid-session
+   (normalize-to-inline, then remove-entirely). Reverted each time; NOT recurring (confirmed: no hook,
+   cron, git-filter, or settings file mutates agents — controlled test + code review of all 5 hooks +
+   agentlint, which skips `tools:`). v7 fix: deliberately normalize ALL 105 to ONE canonical `tools:`
+   form, reconciled against registry.yaml grants (Phase 6b). Until then, if `.claude/agents/*.md` show
+   as modified with no intentional edit, `git checkout HEAD -- .claude/agents/` to restore. Do NOT
+   commit a tools-block-removed state — it silently broadens tool grants.
 
 ## Phased plan & status
 | # | Phase | Risk | Status |
@@ -47,7 +53,7 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
 | 5c | gates.yaml: Gate-2 state count (3 vs 5); `sofi squad` hardcoded roster → read gates.yaml | 🟡 | ⏳ |
 | 5d | skills referencing mock/demo scripts as production (spec_review_preflight.py mock; reflection confidence gate) | 🟡 | ⏳ |
 | 4 | Purge v5 brain rot: `company/brain/org/{PERSONAS,TEAM_STATUS,HANDOFFS}.md` (30-agent/5-tier) | 🟢 | ⏳ |
-| 3 | OODA engine (broken store() signature) + autopilot ("v2 live" but never ran) — fix or retire + de-reference from CLAUDE.md | 🟡 | ⏳ |
+| 3 | OODA engine (broken store() signature) + autopilot ("v2 live" but never ran) — retire + de-reference | 🟡 | ✅ DONE — deleted both + v5 docs + 2 stale reports + orphan branch; de-ref'd CLAUDE/MEMORY/reflection; commit f1702c6 |
 | 6 | De-dup + dead functions (budget.py, event_server.py, runlog.py, lessons_cache/memdb write-halves; _gate_num, role_room wrappers; index.html vs identity.css tokens) | 🟡 | ⏳ |
 | 2 | Restructure `company/os/agents/` legacy tier naming → room-aligned tool layout (all scripts LIVE — dozens of cross-refs must move in lockstep) | 🔴 | ⏳ dedicated workflow |
 | 6b | Deliberate spawnable frontmatter unification (canonical format for all 105 + reconcile grants with registry) — also fixes the `sofi doctor` write bug | 🟡 | ⏳ |
