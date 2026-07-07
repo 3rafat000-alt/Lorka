@@ -1,7 +1,7 @@
-# SOFI v6 — Live Observability Dashboard
+# SOFI v6.1 — Live Observability Dashboard
 
 A flexible multi-tab web console for watching the Company of Rooms in real time. It reads
-the **real** v6 data sources (never fabricates) and streams live activity over a WebSocket.
+the **real** v6 / v6.1 data sources (never fabricates) and streams live activity over a WebSocket.
 
 ## Run
 ```bash
@@ -23,7 +23,7 @@ sudo systemctl reload caddy
 ```
 Until then, use `http://127.0.0.1:8787` directly (no sudo needed).
 
-## The four tabs
+## The tabs
 1. **🧠 Brain Network** — interactive Cytoscape org graph, **registry-driven** (no hardcoded
    roster — v5 debt #6 paid): 15 room boxes · 105 agents, each room colored, its Lead on top,
    members below; dashed council edges wire `brd-ceo` to every Room Lead. Drag / zoom / pan /
@@ -36,6 +36,13 @@ Until then, use `http://127.0.0.1:8787` directly (no sudo needed).
    status, colour-coded (open / done / blocked-escalated).
 4. **🎚️ Planning & Budgets** — effort-scaling fan-out table + budgeted-autonomy ceilings,
    per-agent token budget envelopes with danger gauges, and real per-agent activity bars.
+5. **🚀 Fleet & Plan** *(v6.1)* — live **fleet telemetry** from every hook (`/api/events`
+   → `telemetry.py`): total/source/kind/agent tiles, breakdown bars, and a self-refreshing
+   event feed reading the real `.claude/memory/events.jsonl`. Plus the frozen **plan DAG**
+   (`/api/plan` → `scheduler.py`): nodes grouped done / ready-now / queued with room·agent·gate·
+   deps, ready-set computed client-side to mirror `sofi run`, and the mermaid source.
+6. **⌨️ Direct Commands** — whitelisted, read-only-first headless `sofi` / Claude Code runs,
+   streamed live. **💬 Live Chat** — a persisted multi-session conversation inside the workspace.
 
 ## Data sources (all real, read-only)
 `company/nexus/registry.yaml` (rooms + 105 agents, via `/api/registry`) ·

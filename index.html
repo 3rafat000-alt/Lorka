@@ -178,6 +178,7 @@ footer{padding:44px 0 60px;border-top:1px solid var(--hair);color:var(--ink-3);f
     <div class="brand"><span class="s">SOFI</span><span class="t">الإصدار 6</span></div>
     <nav class="mnav">
       <a href="#v5">طبقة النزاهة</a>
+      <a href="#mech">الميكنة</a>
       <a href="#org">الغُرف</a>
       <a href="#gates">البوابات</a>
       <a href="#doctrine">العقيدة</a>
@@ -201,7 +202,7 @@ footer{padding:44px 0 60px;border-top:1px solid var(--hair);color:var(--ink-3);f
       <div class="r"><span class="k">الوكلاء</span><span class="v">١٠٥</span></div>
       <div class="r"><span class="k">الغُرف</span><span class="v">١٥</span></div>
       <div class="r"><span class="k">البوابات</span><span class="v">٩</span></div>
-      <div class="r"><span class="k">الإصدار</span><span class="v mono" style="font-size:14px">v6</span></div>
+      <div class="r"><span class="k">الإصدار</span><span class="v mono" style="font-size:14px">v6.1</span></div>
       <div class="r"><span class="k">الذاكرة</span><span class="v mono" style="font-size:14px">git-backed</span></div>
     </div>
   </div>
@@ -227,6 +228,28 @@ footer{padding:44px 0 60px;border-top:1px solid var(--hair);color:var(--ink-3);f
       <div class="v5card"><span class="code">C3</span><h3>عقل قابل للاستعلام<span class="en">Structured queryable brain</span></h3><p>حقول frontmatter خفيفة (<span class="mono">status·gate·type·mem·date</span>) تحوّل التذاكر والدروس إلى سجلات قابلة للفلترة حسب نوع الذاكرة — دلالي · حَدَثي · إجرائي — بلا قراءة الملف كاملاً كل مرة.</p></div>
       <div class="v5card"><span class="code">C5</span><h3>استقلالية محسوبة الميزانية<span class="en">Budgeted autonomy + effort-scaling</span></h3><p>جدول يربط فئة المهمة (تافهة · دور واحد · عابرة للغُرف · مسح · تحكيم) بعرض التفريع وسقف النداءات — يمنع الإفراط والتفريط. كل تفويض يحمل تلميح جهد وشرط توقف آمن.</p></div>
       <div class="v5card"><span class="code">C6</span><h3>أمر العمل RCCF<span class="en">RCCF Work Order</span></h3><p>كل استدعاء بلوك من أربعة: الدور · السياق · الأمر · الصيغة (<span class="mono">company/constitution/01-work-order.md</span>) — مع فرع أسئلة توضيحية قبل بريف ناقص، وتجميد البريف بعد اكتماله، وحقول صريحة للحدود وتلميح الجهد وبند التأريض.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MECHANIZATION v6.1 -->
+<section id="mech">
+  <div class="wrap">
+    <div class="sec-h rev">
+      <span class="kicker">طبقة الميكنة · v6.1</span>
+      <h2>الدوكترين لم يعد نصّاً يُوعَظ به — صار كوداً يَحجُب ويَفحَص ويُحاسِب.<span class="en">The doctrine is no longer prose to preach — it is code that blocks, lints, and budgets.</span></h2>
+      <p>بحثٌ بثلاثة عشر وكيلاً في مستودعات <span class="mono">claude</span> على GitHub خلص إلى أن مشاريع مستقلّة وصلت لنفس عقيدة سوفي — فالدلتا ليست عقيدةً جديدة بل <b>ميكنتها</b>. تسع وحدات Python حتمية (النموذج خارج مسار الكتابة) تُحوّل القوانين إلى آلات: <span class="mono">company/os/sofi_tools/</span>.</p>
+    </div>
+    <div class="v5grid rev">
+      <div class="v5card"><span class="code">scheduler</span><h3>المجدول الحتمي<span class="en">sofi plan → DAG → sofi run</span></h3><p>نداءٌ ذكيٌّ واحد يُفكّك الخطة إلى DAG مجمّد في الدماغ؛ ثم الإرسال والفحوص والدمج تجري بـ Python خالص — صفر توكن على التنسيق، أكبر رافعة على مستوى 105 وكلاء.</p></div>
+      <div class="v5card"><span class="code">transitions</span><h3>بوّابات fail-closed<span class="en">gate state machine</span></h3><p>آلة حالات على البوابات 0–8: تقدُّم / إعادة عمل / حلقة رجوع — وأيّ قفزة +2 = <span class="mono">ILLEGAL_SKIP</span>. خطّاف التوقّف يطلب دليلاً عند حدّ البوابة، fail-open ومحصور بالمشروع بسقف ضدّ الجمود.</p></div>
+      <div class="v5card"><span class="code">budget</span><h3>ميزانيات عند الاستدعاء<span class="en">spawner-level caps</span></h3><p>سقوف التزامن والجولات والتوكن والمهلة تُفرَض حيث يُولَد العمل، لا بانضباط الوكيل. نبضٌ لكل سرب، وقاطع دائرة بعد ٣ محاولات يكتب crash-dump مهيكلاً.</p></div>
+      <div class="v5card"><span class="code">memdb</span><h3>خط دماغ SQLite FTS5<span class="en">the harness remembers</span></h3><p>PostToolUse يلتقط، SessionStart يحقن ملخّصاً ≤1k توكن، والفهرسة على العناوين ببصمة SHA-256 لكشف الانحراف؛ البحث يُرجع فهرساً لا الملف كاملاً (~12k ← ~400 توكن). النموذج خارج مسار الكتابة.</p></div>
+      <div class="v5card"><span class="code">lessons_cache</span><h3>الدروس كذاكرة مُدارة<span class="en">managed cache, not a log</span></h3><p>درجات ثقة، سقف حقن (≤6 فوق 0.7)، ترقية بعتبة التكرار (5+ عبر مشروعين → عالمي)، تحلّل 5%/أسبوع، ولقاحٌ يُحقن الدرس المطابق في أمر العمل الوارد.</p></div>
+      <div class="v5card"><span class="code">acceptance</span><h3>موجّه قبول بصفر توكن<span class="en">zero-cost accept router</span></h3><p>يُجرّب الطبقة الرخيصة، يُقيّم المخرَج آلياً (رفض/بتر/فشل تحليل مقابل 0.80)، ويصعّد بدليل — «التصعيد بدليل فقط» صار ميكانيكياً؛ وقواعد تجاوز صلبة (أمن/مال/PII) تسبق المصنّف.</p></div>
+      <div class="v5card"><span class="code">resume</span><h3>استئناف بـ breadcrumb<span class="en">FRESH / DEGRADED</span></h3><p>لكل تذكرة <span class="mono">breadcrumb.json</span> يحمل head_sha؛ عند الاستئناف: FRESH إن طابق HEAD (استئناف حتمي) أو DEGRADED (إعادة بناء + تأكيد صريح) — لا استئناف صامت على حالة قديمة.</p></div>
+      <div class="v5card"><span class="code">agentlint</span><h3>فحص الإعدادات في CI<span class="en">config lint</span></h3><p>يتحقّق من كل <span class="mono">.claude/agents/*.md</span>: الترويسة، تطابق 105↔105، اتّساق السجل، وتثبيت SHA-256 ضدّ الانحراف — عبر <span class="mono">sofi lint</span> و GitHub Actions.</p></div>
+      <div class="v5card"><span class="code">telemetry</span><h3>قياس أسطول عن بُعد<span class="en">fleet telemetry</span></h3><p>كل خطّاف يبثّ حدثاً إلى سجل JSONL + خادم أحداث بمكتبة قياسية؛ الداشبورد يعرضه في تبويب «الأسطول والخطة» حيّاً. عند 105 وكلاء، الخطاطيف تبثّ كما تَحرُس.</p></div>
     </div>
   </div>
 </section>
@@ -528,13 +551,13 @@ footer{padding:44px 0 60px;border-top:1px solid var(--hair);color:var(--ink-3);f
 <!-- DASHBOARD CTA -->
 <section style="border-top:0">
   <div class="wrap"><div class="dashband rev">
-    <span class="kicker">الداشبورد الحي · v6</span>
+    <span class="kicker">الداشبورد الحي · v6.1</span>
     <h2>لا تكتفِ بالقراءة عن الشركة — شاهدها تعمل.</h2>
-    <p>داشبورد مراقبة حيّة بأربع تبويبات، يقرأ بيانات المشروع الحقيقية مباشرةً — لا يكتب للدماغ أبداً، ولا يختلق رقم تكلفة وهمياً.<span class="en" style="display:block;margin-top:6px">Watch 15 rooms, 105 agents, 9 gates, and a full lifecycle pulse in real time.</span></p>
+    <p>داشبورد مراقبة حيّة يقرأ بيانات المشروع الحقيقية مباشرةً — لا يكتب للدماغ أبداً، ولا يختلق رقم تكلفة وهمياً. ومنذ v6.1، تبويب «الأسطول والخطة» يبثّ القياس الحقيقي من الخطاطيف ويعرض خطة الـ DAG المجمّدة.<span class="en" style="display:block;margin-top:6px">Watch 15 rooms, 105 agents, 9 gates, live fleet telemetry, and the frozen plan DAG in real time.</span></p>
     <div class="dashfeatures">
       <div><b>🧠 شبكة الدماغ</b>رسم تفاعلي لـ 105 وكلاء في 15 غرفة</div>
       <div><b>🛰️ المرصد الحي</b>بثّ من سجل العمل الفعلي</div>
-      <div><b>📋 المهام</b>طابور HANDOFFS مربوط بالوكلاء</div>
+      <div><b>🚀 الأسطول والخطة</b>قياس حيّ + DAG المجدول <span class="en">v6.1</span></div>
       <div><b>🎚️ الميزانيات</b>سقوف الاستقلالية ومقاييس الخطر</div>
     </div>
     <a class="cta" href="http://127.0.0.1:8787">افتح الداشبورد الحي ←</a>
@@ -544,7 +567,7 @@ footer{padding:44px 0 60px;border-top:1px solid var(--hair);color:var(--ink-3);f
 
 <footer>
   <div class="wrap foot">
-    <div>SOFI · شركة الغُرف · الإصدار 6.0</div>
+    <div>SOFI · شركة الغُرف · الإصدار 6.1 — طبقة الميكنة</div>
     <div class="doc">Design is Truth · few token do trick · big brain small mouth 🪨</div>
   </div>
 </footer>
