@@ -28,12 +28,11 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
 - 🔴 ROT (concentrated): `engine/` (dead) · `company/os/toolkit/` legacy tier naming · OODA engine (broken) · autopilot (never ran) · `company/brain/org/` v5 files · doctrine drift in CLAUDE.md/registry/gates.
 - Findings JSON archived this session at scratchpad `v7_findings.json` (ephemeral — re-run the workflow to regenerate: script at `.../workflows/scripts/sofi-v7-audit-*.js`).
 
-## 🔴 OPEN — highest priority
-1. **GitHub PAT leak** — a `ghp_…` token was hardcoded in `company/os/toolkit/core/gemini-github-sync.py`
-   and committed to history; the repo has a public remote (`github.com/3rafat000-alt/Lorka`). Working
-   code is fixed (env var, commit 5a567a3) but **the token MUST be revoked on GitHub by the owner** —
-   the historical blob stays reachable until then. History scrub is optional and deferred (needs
-   force-push, hook-blocked) — pointless once the token is rotated.
+## ✅ RESOLVED — was highest priority
+1. **GitHub PAT leak** — ✅ **REVOKED by owner (2026-07-08)**. Working code fixed to env var (5a567a3);
+   the leaked `ghp_…` value is now dead, so the historical blob in commit 2ba6be6 is inert (no history
+   scrub needed). The 25 v7 commits are pushed to origin and GitHub Actions CI runs green. Any future
+   credential goes in GitHub Secrets, never the code.
 2. **Spawnable `tools:` frontmatter is inconsistent + gets clobbered** — some of the 105 use a
    YAML-map `tools:` block, ~20 omit it entirely (→ all-tools default), and a transient agent (an
    audit subagent, and separately something around a `sofi doctor` run) rewrote ~85 of them mid-session
@@ -62,11 +61,11 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
 | 2 | Restructure `os/agents`→`os/toolkit/` + flatten tier nesting into `toolkit/gate/` | 🔴 | ✅ DONE — rename 90279c4, flatten f52b454 (runtime-verified: cli, scan/oracle clusters, uiux, dashboard, sofi CLI; 0 broken refs). `toolkit/ceo`→`core` also done (cd67ec5). Final toolkit/: `core · gate · uiux · devops · _TEMPLATE` (was 8 dirs incl 6 nested tier/role dirs). server-plane KEPT (live remote-publish subsystem, feeds Phase 8). |
 | 6b | Deliberate spawnable frontmatter unification (canonical format for all 105 + reconcile grants with registry) — also fixes the `sofi doctor` write bug | 🟡 | ⏳ |
 | 7 | Build the named-but-unbuilt room tools (kill-criterion-linter, two-track-classifier, token-dup linter, …) | build | ⏳ |
-| 8 | ☁️ Cloud layer: remote/cloud agents · dashboard deploy · GitHub/CI · oracle strengthening | build | ⏳ |
+| 8 | ☁️ Cloud layer (Cloudflare + GitHub) | build | 🔶 PARTIAL — **GitHub CI ✅ live-green** (ca92820, pushed, runs on every push: YAML·imports·105-parity·secret-scan·junk). **Cloudflare dashboard ✅** (`dashboard/start.sh tunnel` via cloudflared, e8aeed4). Remaining: remote-agents = a Claude-Code harness capability, not framework code (needs concrete scope from owner) · oracle "strengthening" = vague (the desk already works) — pick a concrete improvement or close. Persistent Cloudflare named-tunnel/custom-domain needs owner's CF account token. |
 | 9 | Final restructure + regenerate CLAUDE.md/ORG.md + docs + cutover + tag v7.0 | 🟡 | ⏳ |
 
 ## Rules for this program
 - Every phase: commit (Conventional + Co-Authored-By trailer), then verify **read-only** (never `sofi doctor` until 5b/6b fixes it).
 - v6 files are not physically removed until the very end (Phase 9 cutover), after v7 is proven.
-- No push to the remote until the PAT (open item #1) is revoked.
+- PAT revoked + branch pushed to origin (2026-07-08); GitHub Actions CI now gates every push.
 - Update THIS file's status column at every phase close.
