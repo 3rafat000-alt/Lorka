@@ -1,0 +1,220 @@
+# SOFI v6 — Nexus Gates (the 9 gates, machine-readable)
+# Foundation: operationalizes Teaching II (Hierarchical Flow) + Teaching V (Continuous
+# Metamorphosis). Doctrine text: company/constitution/10-lifecycle-gates.md.
+# Consumers: sofi gate-check (validate_no_skip · validate_artifacts · validate_evidence ·
+#   validate_room_boundary — all fail-closed) · /sofi-gate · sofi squad · gates.GATE_ROLES
+#   is loaded from THIS file (v5 debt #5 paid: no hardcoded gate→role maps).
+# Advancement = TWO layers, always (Article 03 V1+V2):
+#   1. mechanical — sofi gate-check passes against this file (artifacts exist, evidence
+#      blocks present, no skips, no boundary violations);
+#   2. adversarial — gtw-gatekeeper fresh-context verdict against the ORIGINAL exit_bar
+#      below (sees only deliverable + criteria, never the implementer's reasoning;
+#      UNKNOWN is a valid verdict → sofi escalate). The oracle desk advises, never approves.
+# Then: sofi gate-tag <PRJ> <N> → <PRJ>-gate<N>-done (immutable restore point).
+# No skip: gate numbers move monotonically, never jump more than +1. Loop-backs are
+# legal and reported (5→4 bounce; 8→1 re-open). Artifact paths are relative to
+# projects/<PRJ>/ with <PRJ> substituted.
+version: 6.0
+
+accountability:   # the boardroom answers for the spans; sec holds the veto at every gate
+  brd-cpo: "0-2"
+  brd-cto: "3-4"
+  brd-cqo: "5"
+  brd-ceo: "all"
+  brd-cso: "veto everywhere (Article 07 §1)"
+
+tracks:
+  fast_track: "low-risk work (UI copy, i18n, a single field, non-money validation) collapses gates 1-3 into one Blueprint check → prod on green automated tests"
+  deep_audit: "anything touching money, credentials, auth, or PII takes ALL 9 gates, no exception. Unsure → deep_audit."
+
+gates:
+  - id: 0
+    name: Inception
+    trigger: "an idea worth a project; company/os/bin/new-project.sh scaffold run (brain + prj/<PRJ> branch + <slug>.local registered)"
+    owner_room: 01-strategy
+    agents: [str-lead, str-product-strategist, str-business-analyst, str-market-analyst,
+             str-roadmap-planner, str-risk-analyst, str-monetization-strategist]
+    entry:
+      - "projects/<PRJ>/_context/ exists (STATE, CONTEXT, DECISIONS, HANDOFFS scaffolded)"
+      - "prj/<PRJ> branch created; STATE.md carries branch + head_sha"
+    artifacts:
+      - "docs/<PRJ>_Blueprint.md"
+      - "docs/<PRJ>_Problem_Statement.md (incl. the 5 deep clarifying questions, answered)"
+      - "docs/<PRJ>_Risk_Register.md (kill criteria named)"
+    exit_bar:
+      - "project charter exists with scope boundary and business goals"
+      - "<slug>.local registered and listed in STATE.md (local_domain/local_port) — never a bare 127.0.0.1:PORT"
+      - "track declared: fast_track or deep_audit (str-roadmap-planner two-track sizing)"
+      - "str-lead sign-off ticket done WITH evidence block"
+    on_fail: "stays at gate 0 — str-lead files the blocker; an idea without a bounded problem statement is not a project"
+
+  - id: 1
+    name: Discovery
+    trigger: "gate 0 tagged (<PRJ>-gate0-done); problem statement frozen"
+    owner_room: 02-research
+    agents: [res-lead, res-ux-researcher, res-journey-architect, res-web-scout,
+             res-competitor-analyst, res-data-researcher, res-fact-checker]
+    entry:
+      - "docs/<PRJ>_Problem_Statement.md frozen (gate-0 tag exists)"
+    artifacts:
+      - "docs/<PRJ>_Personas.md (evidence-grounded, cited)"
+      - "docs/<PRJ>_Journey_Map.md (Mermaid + emotional arc + friction log — THE Design Truth)"
+      - "docs/<PRJ>_Competitor_Teardown.md (when market-facing)"
+    exit_bar:
+      - "answers WHAT the user wants and WHAT blocks them — every claim cited (source URL + fetch date, or brain file) per Article 02"
+      - "res-fact-checker adversarial pass done — G1-G5 enforced on every research output; UNKNOWN claims flagged, not shipped"
+      - "every persona traces to evidence; every journey stage has an emotional state + friction entry"
+    on_fail: "rejected upward to 01-strategy (problem statement too thin) or re-researched; unverifiable claims are dropped, never kept"
+
+  - id: 2
+    name: Solution Design
+    trigger: "gate 1 tagged; Journey_Map frozen"
+    owner_room: 03-design
+    agents: [dsn-lead, dsn-ui-designer, dsn-ux-architect, dsn-design-system,
+             dsn-content-strategist, dsn-brand-designer, dsn-motion-designer, dsn-a11y-specialist]
+    entry:
+      - "docs/<PRJ>_Journey_Map.md frozen (gate-1 tag exists)"
+    artifacts:
+      - "docs/<PRJ>_Prototype_Spec.md (textual hi-fi, 1:1 journey-stage mapping, all component states)"
+      - "docs/<PRJ>_Content_Strings.json (keyed UX copy + microcopy, one tone of voice, actionable errors)"
+      - "docs/<PRJ>_Design_Tokens.md (+ taste dials: DESIGN_VARIANCE · MOTION_INTENSITY · VISUAL_DENSITY)"
+      - "docs/<PRJ>_A11y_Matrix.md (WCAG 2.2 AA)"
+    exit_bar:
+      - "WCAG 2.2 AA matrix passes — accessibility wins over any taste dial (/sofi-design-taste)"
+      - "every screen traces 1:1 to a Journey Map stage; every state (empty/loading/error) specified"
+      - "all UI strings live in Content_Strings.json — none invented downstream"
+      - "THE FREEZE: dsn-lead signs — after this ticket, the prototype IS truth for everything downstream (Teaching I)"
+    on_fail: "bounced inside the room until AA passes; a screen with no journey stage is deleted, not argued for"
+
+  - id: 3
+    name: Architecture
+    trigger: "gate 2 tagged; prototype frozen"
+    owner_room: 04-architecture
+    squad_rooms: [04-architecture, 08-data, 09-security]   # parallel behind the frozen prototype
+    agents: [arc-lead, arc-system-architect, arc-data-architect, arc-api-architect,
+             arc-integration-architect, arc-infra-architect, arc-review-architect,
+             dat-lead, dat-db-engineer, dat-privacy-officer,
+             sec-lead, sec-threat-modeler, sec-authn-engineer]
+    entry:
+      - "docs/<PRJ>_Prototype_Spec.md + Content_Strings.json frozen (gate-2 tag exists)"
+      - "squads fanned out via sofi squad <PRJ> 3 (effort class: cross-room)"
+    artifacts:
+      - "docs/<PRJ>_Tech_Stack.md (+ FossFLOW component diagram JSON)"
+      - "docs/<PRJ>_Schema.sql + ERD + reversible-migrations design"
+      - "docs/<PRJ>_OpenAPI.yaml (frozen contract, webhook payload shapes)"
+      - "docs/<PRJ>_Threat_Model.md (STRIDE, signed by sec-lead)"
+      - "docs/<PRJ>_Integration_Plans.md (official specs fetched, never guessed)"
+      - "docs/<PRJ>_PII_Map.md (classification + retention + encryption-at-rest — when personal data is touched)"
+    exit_bar:
+      - "schema ↔ screens traceability matrix complete (arc-system-architect) — a journey-less feature is REJECTED here → Backlog (Teaching I)"
+      - "every migration design reversible — no rollback = rejected (Teaching VI)"
+      - "threat model signed by sec-lead; PII classified by dat-privacy-officer"
+      - "arc-lead assembles the frozen Gate-3 bundle (contract + schema + threat model + infra) — the single truth gate 4 builds against"
+    on_fail: "the un-traceable feature goes to Backlog; a contract gap bounces to the owning architect; security refusal = CSO veto path (bus/escalation.md §4)"
+
+  - id: 4
+    name: Build
+    trigger: "gate 3 tagged; arc-lead's bundle frozen"
+    owner_room: 05-backend
+    squad_rooms: [05-backend, 06-frontend, 07-mobile]      # parallel worktrees behind the frozen bundle
+    support_rooms: [08-data]                               # migrations/cache/etl execute here under dat-lead
+    agents: [bck-lead, bck-api-engineer, bck-domain-engineer, bck-blade-engineer,
+             bck-queue-engineer, bck-integration-engineer, bck-refactoring-surgeon, bck-code-reviewer,
+             fnt-lead, fnt-vue-engineer, fnt-react-engineer, fnt-css-artisan,
+             fnt-interaction-engineer, fnt-a11y-engineer, fnt-performance-engineer, fnt-code-reviewer,
+             mob-lead, mob-flutter-engineer, mob-state-engineer, mob-platform-engineer,
+             mob-perf-profiler, mob-release-engineer,
+             dat-lead, dat-db-engineer, dat-cache-engineer, dat-etl-engineer]
+    entry:
+      - "frozen Gate-3 bundle exists (Tech_Stack + Schema + OpenAPI + Threat_Model)"
+      - "worktrees created per squad: sofi worktree (worktrees/<PRJ>-gate4-<squad>)"
+      - "shared paths claimed first: sofi claim → _context/LOCKS.md"
+    artifacts:
+      - "src/backend/** + tests (Form Requests, 422-JSON-never-302, API Resources)"
+      - "src/frontend/** + tests (typed components per OpenAPI, taste dials applied)"
+      - "src/mobile/** + tests (typed ApiException on every network catch, no silent swallow)"
+      - "database migrations WITH tested down() (dat-db-engineer)"
+    exit_bar:
+      - "OpenAPI + Journey Map = the single truth — request/response byte-parity with the contract; no null-accessor client code"
+      - "ALL states built: empty / loading / error, per the frozen prototype"
+      - "every diff passed its room's fresh-context code reviewer (bck/fnt-code-reviewer, V2) before leaving the room"
+      - "leads gate-merge worktrees at close (sofi gate-merge --no-ff) — never before"
+    on_fail: "contract drift → reject upward to 04-architecture (the contract is frozen, the code moves, not the spec); failed review → back to the engineer, attempt-counted toward the circuit breaker"
+
+  - id: 5
+    name: Quality
+    trigger: "gate 4 tagged; build merged to prj/<PRJ>"
+    owner_room: 10-quality
+    squad_rooms: [10-quality, 09-security]                 # QA dimensions + pentest behind the merged build
+    agents: [qa-lead, qa-test-architect, qa-automation-engineer, qa-manual-explorer,
+             qa-perf-analyst, qa-regression-warden, qa-design-auditor,
+             sec-lead, sec-appsec-engineer, sec-pentester, sec-authn-engineer]
+    entry:
+      - "prj/<PRJ> integration branch carries the full gate-4 merge"
+      - "qa-test-architect's strategy exists incl. the pass^k plan for Tier-A (money/auth/PII) surfaces"
+    artifacts:
+      - "docs/<PRJ>_Test_Report.md (unit/integration/E2E + coverage figures, pasted output)"
+      - "docs/<PRJ>_Design_Audit.md (built vs frozen prototype fidelity — qa-design-auditor)"
+      - "docs/<PRJ>_Pentest_Report.md (reproductions + severity, normal prose — sec-pentester)"
+      - "docs/<PRJ>_Perf_Report.md (k6/Lighthouse, CWV, TTI)"
+    exit_bar:
+      - "ONE unambiguous PASS/BLOCK verdict from qa-lead — aggregated, never fragmented"
+      - "all critical/high findings fixed with evidence; coverage > 90% or the build FAILS (coverage_gate.py)"
+      - "perf pass: TTI < 2s (perf_budget.py); CWV within budget"
+      - "pass^k green on money/auth/PII paths — flaky correctness BLOCKS (Article 03 V3)"
+      - "design audit: built matches the frozen prototype, deviations ticketed or reverted"
+    on_fail: "BLOCK → tickets back to the gate-4 rooms (legal loop-back, reported by validate_no_skip); security findings ride the veto path and outrank schedule"
+
+  - id: 6
+    name: Staging / UAT
+    trigger: "gate 5 tagged with qa-lead PASS; ops-lead confirms the PASS before any deploy"
+    owner_room: 11-devops
+    agents: [ops-lead, ops-cicd-engineer, ops-cloud-engineer, ops-domain-warden, ops-migration-runner]
+    entry:
+      - "qa-lead PASS verdict ticket done with evidence"
+      - "pipeline green: lint → test → build → scan → deploy (secrets from vault, never inline)"
+    artifacts:
+      - "staging URL (recorded in STATE.md)"
+      - "docs/<PRJ>_UAT_Log.md"
+      - "migration rehearsal log incl. rollback rehearsal (ops-migration-runner)"
+    exit_bar:
+      - "UAT pass recorded with evidence"
+      - "pass^k re-run green on critical paths in the staging environment (Article 03 V3)"
+      - "migrations rehearsed WITH rollback on staging data — no rollback = no deploy"
+    on_fail: "UAT failure → tickets to the owning build room via its lead; environment failure stays in 11-devops; nothing proceeds to gate 7"
+
+  - id: 7
+    name: Production
+    trigger: "gate 6 tagged; UAT signed"
+    owner_room: 11-devops
+    agents: [ops-lead, ops-release-manager, ops-cicd-engineer, ops-migration-runner, ops-cost-optimizer]
+    entry:
+      - "UAT sign-off ticket done; ops-release-manager owns the release"
+    artifacts:
+      - "prod deployment confirmation (health checks pasted)"
+      - "TESTED rollback script + rehearsal evidence (ops-release-manager owns the way back)"
+      - "docs/<PRJ>_Release_Notes.md"
+    exit_bar:
+      - "Blue/Green healthy — both colors verified, cutover clean"
+      - "rollback REHEARSED, not just written — an untested rollback script fails this gate (Teaching VI, Article 03 V4: behavioral proxies only, never verbalized confidence)"
+      - "monitoring hooks live before cutover (no telemetry → no deployment, Teaching V)"
+    on_fail: "rollback executed by ops-release-manager (obs-incident-commander decides in-incident); Incident_Report written; post-mortem action items become gate-1 tickets"
+
+  - id: 8
+    name: Observe
+    trigger: "gate 7 tagged; prod live"
+    owner_room: 12-observability
+    agents: [obs-lead, obs-sre, obs-monitoring-engineer, obs-alerting-engineer,
+             obs-incident-commander, obs-insights-analyst]
+    entry:
+      - "SLI/SLO definitions + error budgets exist (obs-sre)"
+      - "metrics/logs/traces instrumented (Prometheus/Grafana/Sentry); every alert has a runbook"
+    artifacts:
+      - "docs/<PRJ>_SLO_Report.md (perf + error-budget status)"
+      - "docs/<PRJ>_Insights.md (journey drop-off tracking vs the Journey Map)"
+      - "backlog entries for the next cycle"
+    exit_bar:
+      - "SLOs measured against live traffic; error budget accounted"
+      - "journey drop-offs mapped to Journey Map stages (Teaching I closes its own loop)"
+      - "every SLO breach auto-filed as an issue — none silently absorbed"
+    on_fail: "AN SLO BREACH OR JOURNEY DROP-OFF RE-OPENS GATE 1 — obs-insights-analyst files the formal re-open (obs-lead carries it as a Gate-1 ticket into 02-research); an incident runs rollback-first, then a blameless post-mortem into DECISIONS.md whose action items become gate-1 tickets. The loop is the company (Teaching V)."

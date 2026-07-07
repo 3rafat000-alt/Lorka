@@ -228,7 +228,7 @@ def parse_reply(reply: str) -> dict:
 # ── brain integration ──────────────────────────────────────────────────────
 def _sofi_paths():
     try:
-        tooling = _HERE.parents[1]  # engine/tooling
+        tooling = _HERE.parents[1]  # company/os
         if str(tooling) not in sys.path:
             sys.path.insert(0, str(tooling))
         from sofi_tools import paths as _p  # type: ignore

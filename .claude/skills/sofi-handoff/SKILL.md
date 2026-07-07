@@ -6,8 +6,9 @@ description: Close a unit of SOFI work the disciplined way — write the artifac
 # /sofi-handoff — record work so the next session can see it
 
 > **Uncommitted session = invisible to the next one.** This skill is the
-> "after acting" half of the universal contract (`CLAUDE.md`). Run it at every
-> milestone, not just session end.
+> "after acting" half of the universal contract (`company/constitution/00-operating-system.md`)
+> and the handoff law (`company/constitution/08-handoff-law.md`). Run it at every
+> milestone, not just session end. نقطة after نقطة — checkpoint early, checkpoint often.
 
 ## Steps (in order)
 
@@ -17,22 +18,26 @@ description: Close a unit of SOFI work the disciplined way — write the artifac
 
 2. **Checkpoint to git** — commit early/often with a compliant, traceable message:
    ```bash
-   engine/tooling/bin/sofi checkpoint <PRJ> "<type>(<scope>): <subject>"
+   sofi checkpoint <PRJ> "<type>(<scope>): <subject>"
    ```
    `<type>` ∈ feat|fix|chore|docs|refactor|test|perf|ci|build|style|revert. The
-   pre-commit hook hard-blocks non-conforming subjects and forbidden paths
-   (secrets, `_scratch/`). Never `reset --hard` / `--force` (hook-blocked).
+   pre-commit hook hard-blocks non-conforming subjects, a missing `SOFI:` trailer,
+   and forbidden paths (secrets, `_scratch/`). Never `reset --hard` / `--force`
+   (hook-blocked · Teaching VI · Reversibility).
 
 3. **Append `CONTEXT.md`** (append-only durable facts) — what changed and why,
    in one tight entry. Add a row to **`DECISIONS.md`** only if the choice is
-   irreversible (use `engine/templates/adr.template.md`).
+   irreversible (use `company/templates/adr.template.md`; ADR log kept by `knw-historian`).
 
 4. **Update `STATE.md`** — set `head_sha` to the new commit, refresh `gate`,
    `active`, `status`, `blockers`, `updated_by`. The recorded `head_sha` is the
    spine the next session orients on.
 
 5. **Write the next ticket in `HANDOFFS.md`** — the single next action for whoever
-   picks this up (often a named agent). Be specific: inputs, expected output, route.
+   picks this up (an agent id like `bck-blade-engineer`). Be specific: inputs,
+   expected output, route. Follow the bus schema `company/nexus/bus/ticket-schema.md`.
+   Room Isolation Law (Article 08): a cross-room ticket travels
+   `specialist → own Lead → target Lead → target specialist` — Leads forward VERBATIM.
 
 ## Report
 
@@ -40,13 +45,14 @@ description: Close a unit of SOFI work the disciplined way — write the artifac
 HANDOFF <PRJ>
 artifact: <path>
 commit: <sha> <type>(<scope>): <subject>
-STATE: gate <N> · head_sha <sha> · active <role> · blockers <none|...>
-NEXT TICKET → <role>: <action>
+STATE: gate <N> · head_sha <sha> · active <id> · blockers <none|...>
+NEXT TICKET → <agent id>: <action>
 ```
 
 ## Rules
-- Commit message must pass git discipline (`engine/protocols/git-discipline.md`).
-  Code, commits, and security warnings are written in **normal prose, never caveman**.
+- Commit message must pass git discipline (`company/constitution/06-git-discipline.md`) —
+  conventional type + `SOFI:` trailer. Code, commits, and security warnings are written
+  in **normal prose, never caveman** (Article 05).
 - Project work on `prj/<ID>` (parallel squads in worktrees); doctrine on `main`.
-- No secrets and no `_scratch/` in history.
+- No secrets and no `_scratch/` in history (Article 07 · Security Law).
 - Mirror of `/sofi-boot` — that opens a session the same way this closes one.

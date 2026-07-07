@@ -24,7 +24,7 @@ Configuration (first hit wins)
 ------------------------------
   --chat <url|id>            explicit conversation
   $SOFI_GEMINI_CHAT          env var (url or bare conversation id)
-  ~/.engine/gemini_bridge.json {"chat": "...", "cdp_port": 9222}
+  ~/.sofi/gemini_bridge.json {"chat": "...", "cdp_port": 9222}
 
 CLI
 ---

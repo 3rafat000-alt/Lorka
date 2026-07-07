@@ -6,11 +6,12 @@ description: Synthesize a professional, evidence-backed report from audit, secur
 # /sofi-report — turn a run into a durable, professional record
 
 > A report lives in the project, not the chat. Findings/security text = normal prose,
-> never compressed (routing law). Structure over volume — big brain, small mouth.
+> never compressed (routing law · `company/constitution/05-token-economy.md`).
+> Structure over volume — *big brain, small mouth*.
 
 **Usage:** `/sofi-report [kind] [PRJ-ID]` — kind ∈ `audit · security · fix · status`.
 No kind → infer from the last run. Writes to `projects/<PRJ>/_context/reports/<kind>-<date>.md`
-(date passed in — no `Date.now()`).
+(date passed in by you — never `Date.now()`, never invented inside a tool · G-rules `company/constitution/02-grounding.md`).
 
 ## Report shape (fill only sections with content)
 
@@ -21,17 +22,20 @@ No kind → infer from the last run. Writes to `projects/<PRJ>/_context/reports/
 ## 3. Findings                 # table: SEV · file:line · defect · proof · fix · status
 ## 4. Remediation              # what was fixed (commit sha), what's deferred + why
 ## 5. Risk posture / gate      # is the quality/security bar met? gate advance? (/sofi-gate)
-## 6. Next actions             # ranked, each → owning agent
+## 6. Next actions             # ranked, each → owning agent id (via its Lead)
 ```
 
 ## Rules
 
-- **Every finding cites `file:line`** and a concrete fix — no vague filler.
+- **Every finding cites `file:line`** and a concrete fix — no vague filler (Article 02 · ground or abstain).
 - **Severity legend** consistent with audit/secure: 🔴 🟠 🟡 ⚪.
-- **Secrets:** reference location, never print the value.
+- **Secrets:** reference location, never print the value (Article 07 · Security Law).
 - **Bilingual:** if the project is EN/AR ([[web-design-premium-bilingual]]), add an AR الملخص التنفيذي block.
-- **Traceability:** link the commit sha(s) from `/sofi-fix` and the `head_sha` in STATE.
-- **Review desk (standing):** push the report through the desk before handoff — `sofi gemini review --prj <PRJ> --json --text "<report body + ask>"` (inline, no extra `.md`) → analyze + EXECUTE the reply, loop till done, don't ask. `engine/protocols/external-review-desk.md`.
+- **Traceability:** link the commit sha(s) from `/sofi-fix` and the `head_sha` in STATE (Article 06).
+- **Oracle desk (standing):** push the report through the desk before handoff —
+  `sofi oracle review --prj <PRJ> --json --text "<report body + ask>"` (inline, no extra `.md`) → analyze +
+  EXECUTE the reply, loop till done, don't ask (Teaching VII; operator `gtw-external-reviewer`;
+  `company/os/oracle/GEMINI_LOOP_ARCHITECTURE.md`).
 - **Close the loop:** write the file → `sofi checkpoint <PRJ> "docs(report): <kind>"` → note it in `CONTEXT.md` → `/sofi-handoff`.
 
 **Bar:** a reader who wasn't in the session can act from this report alone. No conclusions without evidence.

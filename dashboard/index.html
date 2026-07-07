@@ -170,7 +170,7 @@
 <body>
 <div class="masthead">
   <div class="mast-top">
-    <div class="wordmark"><span class="s">SOFI</span><span class="tag">مؤسسة الوكلاء الذاتية · الإصدار 5</span></div>
+    <div class="wordmark"><span class="s">SOFI</span><span class="tag">مؤسسة الوكلاء الذاتية · الإصدار 6</span></div>
     <div class="mast-right">
       <select class="sel" id="projSel" title="المشروع"></select>
       <span class="verdict" id="verdict">…</span>
@@ -179,7 +179,7 @@
   </div>
   <div class="nav" id="nav">
     <div class="t active" data-tab="home">الرئيسية</div>
-    <div class="t" data-tab="network">شبكة الدماغ <span class="c" id="c-net">30</span></div>
+    <div class="t" data-tab="network">شبكة الدماغ <span class="c" id="c-net">105</span></div>
     <div class="t" data-tab="observatory">المرصد الحي <span class="c" id="c-obs">0</span></div>
     <div class="t" data-tab="tasks">إدارة المهام <span class="c" id="c-task">0</span></div>
     <div class="t" data-tab="budgets">التخطيط والميزانية <span class="c" id="c-bud">0</span></div>
@@ -194,8 +194,8 @@
     <div class="hero">
       <div>
         <span class="kicker">المرصد الحي</span>
-        <h1 style="margin-top:14px">ثلاثون وكيلاً يبنون البرمجيات<br><em>ويُراقَبون من هنا.</em></h1>
-        <p class="lede">مؤسسةُ وكلاءٍ ذاتية: خمسة تيرات، تسع بوّابات، دماغٌ مربوطٌ بالإصدارات. v5 يُضيف طبقة النزاهة — كل وكيلٍ <b>يُؤصِّل</b> ادّعاءه، ولا يُبلِّغ عن نجاحٍ دون دليل، والمنظومةُ <b>تتعلّم</b> من تاريخها.</p>
+        <h1 style="margin-top:14px">مئةٌ وخمسةُ وكلاء يبنون البرمجيات<br><em>ويُراقَبون من هنا.</em></h1>
+        <p class="lede">شركةُ الغُرف: خمس عشرة غرفةً مستقلّة، تسع بوّابات، دماغٌ مربوطٌ بالإصدارات. v6 يُبقي طبقة النزاهة كاملةً — كل وكيلٍ <b>يُؤصِّل</b> ادّعاءه، ولا يُبلِّغ عن نجاحٍ دون دليل، والمنظومةُ <b>تتعلّم</b> من تاريخها.</p>
         <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap">
           <button class="enter" onclick="go('network')">افتح شبكة الدماغ ←</button>
           <button class="enter" style="background:transparent;color:var(--ink);border:1px solid var(--hair-2)" onclick="go('observatory')">المرصد الحي</button>
@@ -358,13 +358,12 @@
 
 <script>
 const $=s=>document.querySelector(s);
-const state={prj:null,cy:null,edges:[],hot:new Map(),hidden:new Set(),evCount:0,secCount:0};
-const TIER_C={ceo:'#ff9d3c',advisor:'#e0a53a','0':'#22d3ee','1':'#38bdf8','2':'#818cf8','3':'#c084fc','4':'#f472b6'};
-const TIER_AR={ceo:'تنفيذي',advisor:'المستشارون','0':'ت0 · الاستراتيجية','1':'ت1 · المعمارية','2':'ت2 · التطوير','3':'ت3 · الجودة','4':'ت4 · البنية'};
-const AR_NAME={'ceo-sofi':'المنسّق التنفيذي','tier-0-advisor':'مستشار ت0','tier-1-advisor':'مستشار ت1','tier-2-advisor':'مستشار ت2','tier-3-advisor':'مستشار ت3','tier-4-advisor':'مستشار ت4','chief-product-strategist':'استراتيجي المنتج','ux-researcher':'باحث التجربة','journey-architect':'مهندس الرحلة','ui-ux-designer':'مصمّم الواجهة','content-strategist':'استراتيجي المحتوى','principal-system-architect':'كبير المعماريين','data-schema-engineer':'مهندس المخطّط','api-integration-specialist':'أخصائي التكامل','security-compliance-architect':'معماري الأمن','infrastructure-cloud-architect':'معماري البنية','database-engineer':'مهندس قواعد البيانات','api-engineer':'مهندس الواجهات البرمجية','backend-blade-engineer':'مهندس الخلفية','frontend-react-engineer':'مهندس الواجهة الأمامية','mobile-engineer':'مهندس الموبايل','qa-sre-lead':'قائد الجودة','automated-testing-engineer':'مهندس الاختبار الآلي','manual-exploratory-tester':'المختبِر الاستكشافي','performance-load-analyst':'محلّل الأداء','security-penetration-tester':'مختبِر الاختراق','devops-cloud-lead':'قائد العمليات','cicd-pipeline-engineer':'مهندس خطّ الإنتاج','observability-sre':'مهندس الرصد','release-incident-manager':'مدير الإصدار والحوادث'};
+const state={prj:null,cy:null,rooms:{},edges:[],hot:new Map(),hidden:new Set(),evCount:0,secCount:0};
+/* v6: no hardcoded roster — rooms, colors, leads, and all 105 agents arrive from
+   /api/graph (registry-driven, company/nexus/registry.yaml). */
 const GATE_AR=['التأسيس','الاكتشاف','التصميم','المعمارية','البناء','الجودة','التجهيز','الإنتاج','الرصد'];
-const TIER_EN={'0':'T0 · Strategy','1':'T1 · Architecture','2':'T2 · Development','3':'T3 · Quality','4':'T4 · Infrastructure'};
-const EN_NAME={'ceo-sofi':'CEO','tier-0-advisor':'T0 Advisor','tier-1-advisor':'T1 Advisor','tier-2-advisor':'T2 Advisor','tier-3-advisor':'T3 Advisor','tier-4-advisor':'T4 Advisor','chief-product-strategist':'Product Strategist','ux-researcher':'UX Researcher','journey-architect':'Journey Architect','ui-ux-designer':'UI/UX Designer','content-strategist':'Content Strategist','principal-system-architect':'System Architect','data-schema-engineer':'Schema Engineer','api-integration-specialist':'API Integration','security-compliance-architect':'Security Architect','infrastructure-cloud-architect':'Cloud Architect','database-engineer':'Database Eng','api-engineer':'API Engineer','backend-blade-engineer':'Backend / Blade','frontend-react-engineer':'Frontend / React','mobile-engineer':'Mobile Eng','qa-sre-lead':'QA & SRE Lead','automated-testing-engineer':'Test Automation','manual-exploratory-tester':'Exploratory QA','performance-load-analyst':'Perf & Load','security-penetration-tester':'Pentester','devops-cloud-lead':'DevOps Lead','cicd-pipeline-engineer':'CI/CD Engineer','observability-sre':'Observability','release-incident-manager':'Release / Incident'};
+const ROOM_AR={brd:'مجلس الإدارة',str:'الاستراتيجية',res:'البحث',dsn:'التصميم',arc:'المعمارية',bck:'الخلفية',fnt:'الواجهة',mob:'الموبايل',dat:'البيانات',sec:'الأمن',qa:'الجودة',ops:'العمليات',obs:'الرصد',knw:'المعرفة',gtw:'البوّابة'};
+const KIND_AR={ceo:'المنسّق التنفيذي',lead:'قائد الغرفة — بوّابتها الوحيدة',specialist:'متخصّص داخل غرفته'};
 
 async function boot(){
   const s=await fetch('/api/snapshot').then(r=>r.json()).catch(e=>({error:String(e)}));
@@ -393,49 +392,59 @@ function renderHome(s){
     <div class="row"><span class="k">الفرع</span><span class="v mono" style="font-size:14px">${p.branch||'—'}</span></div>
     <div class="row"><span class="k">آخر كوميت</span><span class="v mono" style="font-size:14px">${p.head_sha||'—'}</span></div>`;
   $('#statband').innerHTML=[
-    ['٣٠','وكيلاً · ٥ تيرات + مجلس'],['٩','بوّابات لا تُتخطّى'],
+    ['١٠٥','وكلاء · ١٥ غرفة'],['٩','بوّابات لا تُتخطّى'],
     [p.task_done!=null?`${p.task_done}/${p.task_total}`:'—','مهام منجزة'],
     [p.reports!=null?p.reports:'—','تقارير مسجّلة']
   ].map(([n,l])=>`<div class="cell stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
   $('#gatesFlow').innerHTML=GATE_AR.map((g,i)=>`<div class="gate-step${(+gate===i)?' on':''}"><div class="g">G${i}</div><div class="nm">${g}</div></div>`).join('');
 }
 
-/* NETWORK — light org chart: CEO on top, each advisor + its team as a SEPARATE box */
+/* NETWORK — the Company of Rooms: 15 room boxes, lead on top of each, members below.
+   Everything (rooms, colors, leads, 105 agents) comes registry-driven from /api/graph. */
 function buildGraph(g){
-  if(!g||!g.nodes)return;$('#c-net').textContent=g.nodes.length;
-  g.nodes.forEach(n=>{n.data.label=EN_NAME[n.data.slug]||n.data.label;});   // English names on the graph
-  const parents=['0','1','2','3','4'].map(t=>({data:{id:'team-'+t,label:TIER_EN[t],tier:t,kind:'team',color:TIER_C[t]}}));
-  const nodes=g.nodes.map(n=>{const d=Object.assign({},n.data);if(d.kind==='advisor'||d.kind==='specialist')d.parent='team-'+d.tier;return{data:d};});
+  if(!g||!g.nodes||!g.nodes.length){$('#c-net').textContent=0;return;}
+  $('#c-net').textContent=g.nodes.length;
+  state.rooms=g.rooms||{};
+  const codes=Object.keys(state.rooms);
+  const parents=codes.map(c=>{const r=state.rooms[c];return{data:{id:'room-'+c,label:`${r.emoji||''} ${r.name||c} · G${r.gates||'?'}`,room:c,kind:'room',color:r.color}};});
+  const nodes=g.nodes.map(n=>{const d=Object.assign({},n.data);d.parent='room-'+d.room;return{data:d};});
   const tree=g.edges.filter(e=>e.data.kind==='council'||e.data.kind==='assign').map(e=>({data:Object.assign({},e.data)}));
-  const GAP=300,pos={'ceo-sofi':{x:0,y:0}};
-  ['0','1','2','3','4'].forEach((t,i)=>{const bx=(i-2)*GAP;
-    const adv=g.nodes.find(n=>n.data.kind==='advisor'&&n.data.tier===t);if(adv)pos[adv.data.id]={x:bx,y:235};
-    const specs=g.nodes.filter(n=>n.data.kind==='specialist'&&n.data.tier===t);
-    specs.forEach((sp,j)=>{pos[sp.data.id]={x:bx+(j%2?70:-70),y:350+Math.floor(j/2)*84};});});
-  const cy=cytoscape({container:$('#cy'),elements:[...parents,...nodes,...tree],wheelSensitivity:.22,minZoom:.3,maxZoom:2.6,
+  // grid: boardroom centered on top, the other rooms in rows of 5 below
+  const GAP=340,ROWH=560,pos={};
+  const ordered=codes.slice().sort((a,b)=>(state.rooms[a].dir||'').localeCompare(state.rooms[b].dir||''));
+  const others=ordered.filter(c=>c!=='brd');
+  const boxAt={brd:{x:0,y:0}};
+  others.forEach((c,i)=>{const col=i%5,row=Math.floor(i/5);boxAt[c]={x:(col-2)*GAP,y:ROWH*(row+1)};});
+  ordered.forEach(c=>{const b=boxAt[c]||{x:0,y:0};const r=state.rooms[c];const lead=r.lead;
+    const members=g.nodes.filter(n=>n.data.room===c).map(n=>n.data.id);
+    pos[lead]={x:b.x,y:b.y};
+    members.filter(id=>id!==lead).forEach((id,j)=>{pos[id]={x:b.x+(j%2?78:-78),y:b.y+96+Math.floor(j/2)*82};});
+  });
+  const cy=cytoscape({container:$('#cy'),elements:[...parents,...nodes,...tree],wheelSensitivity:.22,minZoom:.14,maxZoom:2.6,
     style:[
-      {selector:'node[kind="team"]',style:{'label':'data(label)','shape':'round-rectangle','background-color':'#fbf7ef','background-opacity':.5,'border-width':1.5,'border-color':'data(color)','border-opacity':.55,'padding':'20px','text-valign':'top','text-halign':'center','text-margin-y':7,'font-family':"'IBM Plex Mono',monospace",'font-size':'9.5px','font-weight':600,'color':'data(color)'}},
-      {selector:'node[kind!="team"]',style:{'background-color':'#fffdf9','label':'data(label)','color':'#1b1712','font-family':"'IBM Plex Sans',sans-serif",'font-size':'10.5px','font-weight':600,'text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'106px','shape':'round-rectangle','width':'label','height':'label','padding':'8px','border-width':2,'border-color':'data(color)','transition-property':'background-color,border-color,border-width','transition-duration':'.2s'}},
+      {selector:'node[kind="room"]',style:{'label':'data(label)','shape':'round-rectangle','background-color':'#fbf7ef','background-opacity':.5,'border-width':1.5,'border-color':'data(color)','border-opacity':.55,'padding':'20px','text-valign':'top','text-halign':'center','text-margin-y':7,'font-family':"'IBM Plex Mono',monospace",'font-size':'10px','font-weight':600,'color':'data(color)'}},
+      {selector:'node[kind!="room"]',style:{'background-color':'#fffdf9','label':'data(label)','color':'#1b1712','font-family':"'IBM Plex Sans',sans-serif",'font-size':'10.5px','font-weight':600,'text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'106px','shape':'round-rectangle','width':'label','height':'label','padding':'8px','border-width':2,'border-color':'data(color)','transition-property':'background-color,border-color,border-width','transition-duration':'.2s'}},
       {selector:'node[kind="ceo"]',style:{'background-color':'#1b1712','color':'#ffcf6a','font-size':'14px','font-weight':700,'border-width':0,'padding':'14px','font-family':"'Fraunces',serif"}},
-      {selector:'node[kind="advisor"]',style:{'background-color':'#f6ecda','border-width':2.5,'font-weight':700}},
+      {selector:'node[kind="lead"]',style:{'background-color':'#f6ecda','border-width':2.5,'font-weight':700}},
       {selector:'edge',style:{'curve-style':'taxi','taxi-direction':'downward','taxi-turn':'26px','line-color':'#d3c9b6','width':1.4,'target-arrow-shape':'none'}},
-      {selector:'edge.flow',style:{'line-color':'#b4530b','width':3.5,'z-index':99}},
+      {selector:'edge[kind="council"]',style:{'line-style':'dashed','line-color':'#c9b691'}},
+      {selector:'edge.flow',style:{'line-color':'#b4530b','width':3.5,'z-index':99,'line-style':'solid'}},
       {selector:'node.hot',style:{'background-color':'#f6e6cf','border-color':'#b4530b','border-width':3.5}},
       {selector:'node.sel',style:{'border-color':'#1b1712','border-width':3}},
       {selector:'node.dim',style:{'opacity':.2}},{selector:'edge.dim',style:{'opacity':.1}}],
     layout:{name:'preset',positions:n=>pos[n.id()]||{x:0,y:0},fit:true,padding:44,animate:false}});
   state.cy=cy;
-  cy.on('mouseover','node[kind!="team"]',e=>{const n=e.target;cy.elements('node[kind!="team"],edge').addClass('dim');n.closedNeighborhood().removeClass('dim');n.connectedEdges().removeClass('dim');});
+  cy.on('mouseover','node[kind!="room"]',e=>{const n=e.target;cy.elements('node[kind!="room"],edge').addClass('dim');n.closedNeighborhood().removeClass('dim');n.connectedEdges().removeClass('dim');});
   cy.on('mouseout',()=>cy.elements().removeClass('dim'));
-  cy.on('tap','node[kind!="team"]',e=>{cy.nodes().removeClass('sel');e.target.addClass('sel');showDetail(e.target.data());});
+  cy.on('tap','node[kind!="room"]',e=>{cy.nodes().removeClass('sel');e.target.addClass('sel');showDetail(e.target.data());});
   cy.on('tap',e=>{if(e.target===cy){cy.nodes().removeClass('sel');$('#detail').innerHTML='<div class="empty">انقر أيّ عقدة لعرض تفاصيل الوكيل.</div>';}});
   const leg=$('#legend'),ctl=$('#netctl');leg.innerHTML='';ctl.innerHTML='';
-  Object.entries(TIER_AR).forEach(([k,label])=>{const c=TIER_C[k];leg.insertAdjacentHTML('beforeend',`<div class="row"><span class="sw" style="background:${c};color:${c}"></span>${label}</div>`);});
-  ['0','1','2','3','4'].forEach(k=>{const chip=document.createElement('span');chip.className='chip';chip.textContent=TIER_AR[k].split(' · ').pop();chip.onclick=()=>toggleTeam(k,chip);ctl.appendChild(chip);});
+  ordered.forEach(c=>{const r=state.rooms[c];leg.insertAdjacentHTML('beforeend',`<div class="row"><span class="sw" style="background:${r.color};color:${r.color}"></span>${r.emoji||''} ${ROOM_AR[c]||r.name} · ${r.count}</div>`);});
+  ordered.forEach(c=>{const chip=document.createElement('span');chip.className='chip';chip.textContent=ROOM_AR[c]||c;chip.title=state.rooms[c].name;chip.onclick=()=>toggleTeam(c,chip);ctl.appendChild(chip);});
   setTimeout(()=>{cy.resize();cy.fit(null,44);},130);
 }
-function toggleTeam(k,chip){const cy=state.cy,box=cy.getElementById('team-'+k);if(state.hidden.has(k)){state.hidden.delete(k);box.style('display','element');box.descendants().style('display','element');chip.classList.remove('off');}else{state.hidden.add(k);box.style('display','none');box.descendants().style('display','none');chip.classList.add('off');}cy.fit(null,44);}
-function showDetail(d){const roleTxt=d.kind==='advisor'?'بوّابة عبور التيرات':d.kind==='ceo'?'المنسّق':'متخصّص تيَر';const desc=d.kind==='advisor'?'القناة الوحيدة داخل/خارج تيَره — كل طلب عابر للتيرات يمرّ عبره.':d.kind==='ceo'?'يُنسّق المنظومة: يختار البوابة، يوجّه المهام، يحكّم.':'يعمل داخل تيَره؛ يُسلّم عبر الحدود عبر مستشار تيَره فقط.';$('#detail').innerHTML=`<div class="dt-head"><span class="dt-dot" style="background:${d.color}"></span><div><div class="dt-title">${d.label}</div><div class="dt-tier">${TIER_AR[d.kind==='advisor'?'advisor':d.tier]||''} · ${roleTxt}</div></div></div><div class="kv"><span class="k">المعرّف</span><span class="v mono">${d.slug}</span></div><div class="kv"><span class="k">النموذج</span><span class="v mono">${d.model||'—'}</span></div><div class="kv"><span class="k">الجهد</span><span class="v mono">${d.effort||'—'}</span></div><div class="kv"><span class="k">الاختصار</span><span class="v mono">${d.caveman||'—'}</span></div><div class="kv"><span class="k">البوابة</span><span class="v mono">${d.gate||'—'}</span></div><div class="kv"><span class="k">الميزانية</span><span class="v mono">${d.budget||'—'}</span></div><div style="margin-top:14px"><span class="pill">${roleTxt}</span></div><div class="note">${desc}</div>`;}
+function toggleTeam(k,chip){const cy=state.cy,box=cy.getElementById('room-'+k);if(state.hidden.has(k)){state.hidden.delete(k);box.style('display','element');box.descendants().style('display','element');chip.classList.remove('off');}else{state.hidden.add(k);box.style('display','none');box.descendants().style('display','none');chip.classList.add('off');}cy.fit(null,44);}
+function showDetail(d){const roleTxt=KIND_AR[d.kind]||KIND_AR.specialist;const desc=d.kind==='lead'?'القناة الوحيدة داخل/خارج غرفته — كل طلب عابر للغرف يمرّ عبره (قانون عزل الغرف).':d.kind==='ceo'?'يُنسّق المنظومة: يختار البوابة، يوجّه المهام، يحكّم — ولا يكتب كوداً أبداً.':'يعمل داخل غرفته؛ يُسلّم عبر الحدود عبر قائد غرفته فقط.';$('#detail').innerHTML=`<div class="dt-head"><span class="dt-dot" style="background:${d.color}"></span><div><div class="dt-title">${d.label}</div><div class="dt-tier">${d.roomLabel||ROOM_AR[d.room]||''} · ${roleTxt}</div></div></div><div class="kv"><span class="k">المعرّف</span><span class="v mono">${d.slug}</span></div>${d.title?`<div class="kv"><span class="k">الدور</span><span class="v" style="font-size:.78rem">${d.title}</span></div>`:''}<div class="kv"><span class="k">النموذج</span><span class="v mono">${d.model||'—'}</span></div><div class="kv"><span class="k">الجهد</span><span class="v mono">${d.effort||'—'}</span></div><div class="kv"><span class="k">الاختصار</span><span class="v mono">${d.caveman||'—'}</span></div><div class="kv"><span class="k">البوابة</span><span class="v mono">${d.gate||'—'}</span></div><div class="kv"><span class="k">الميزانية</span><span class="v mono">${d.budget||'—'}</span></div><div style="margin-top:14px"><span class="pill">${roleTxt}</span></div><div class="note">${desc}</div>`;}
 /* live: highlight the active node + light the delegation path from CEO down to it */
 function pulseAgent(slug){
   const cy=state.cy;if(!cy)return;const n=cy.getElementById(slug);if(!n||n.empty())return;
@@ -446,7 +455,7 @@ function pulseAgent(slug){
 }
 /* ── live flow strip: work moving through the team, professional + flexible ── */
 function seedFlow(o){const strip=$('#flowstrip');if(!strip)return;strip.innerHTML='<span class="lbl">التدفّق الحي</span>';const wl=(o&&o.worklog)||[],seen=[];wl.forEach(w=>(w.agents||[]).forEach(a=>{if(!seen.includes(a)&&seen.length<16){seen.push(a);addFlowChip(a,w.marker,false);}}));if(!seen.length)strip.insertAdjacentHTML('beforeend','<span class="sub" style="font-size:.74rem">بانتظار نشاط الفريق…</span>');}
-function addFlowChip(agent,marker,live){const strip=$('#flowstrip');if(!strip)return;const sub=strip.querySelector('.sub');if(sub)sub.remove();const c=document.createElement('span');c.className='flowchip'+(live?' live':'');const col=marker==='warn'?'var(--danger)':marker==='done'?'var(--ok)':'var(--ink-blue)';c.innerHTML=`<span class="d" style="background:${live?'var(--accent)':col}"></span>${EN_NAME[agent]||agent}`;const lbl=strip.querySelector('.lbl');strip.insertBefore(c,lbl?lbl.nextSibling:strip.firstChild);while(strip.querySelectorAll('.flowchip').length>18)strip.removeChild(strip.lastChild);}
+function addFlowChip(agent,marker,live){const strip=$('#flowstrip');if(!strip)return;const sub=strip.querySelector('.sub');if(sub)sub.remove();const c=document.createElement('span');c.className='flowchip'+(live?' live':'');const col=marker==='warn'?'var(--danger)':marker==='done'?'var(--ok)':'var(--ink-blue)';c.innerHTML=`<span class="d" style="background:${live?'var(--accent)':col}"></span>${agent}`;const lbl=strip.querySelector('.lbl');strip.insertBefore(c,lbl?lbl.nextSibling:strip.firstChild);while(strip.querySelectorAll('.flowchip').length>18)strip.removeChild(strip.lastChild);}
 
 /* OBSERVATORY */
 function renderObservatory(o){
@@ -470,7 +479,7 @@ function renderObservatory(o){
   if(o.gates)renderGates(o.gates);
   seedFlow(o);
 }
-function renderGates(g){if(g.error){$('#gatesBox').innerHTML=`<div class="err">${g.error}</div>`;return;}const rows=[['بدون تخطٍّ',g.no_skip],['المخرجات',g.artifacts],['حدود التيرات',g.tier_boundary],['الأدلّة v5',g.evidence]];let ok=true;$('#gatesBox').innerHTML=rows.map(([n,r])=>{const o=r&&r.ok;if(!o)ok=false;return `<div class="kv"><span class="k">${n}</span><span class="v" style="color:${o?'var(--ok)':'var(--danger)'};font-weight:600">${o?'✓ نظيف':'✗'}</span></div>`;}).join('');const v=ok?'ناجح':'فاشل';$('#verdict').textContent='فحص البوابات: '+v;$('#verdict').className='verdict '+(ok?'pass':'fail');}
+function renderGates(g){if(g.error){$('#gatesBox').innerHTML=`<div class="err">${g.error}</div>`;return;}const rows=[['بدون تخطٍّ',g.no_skip],['المخرجات',g.artifacts],['حدود الغرف',g.room_boundary||g.tier_boundary],['الأدلّة',g.evidence]];let ok=true;$('#gatesBox').innerHTML=rows.map(([n,r])=>{const o=r&&r.ok;if(!o)ok=false;return `<div class="kv"><span class="k">${n}</span><span class="v" style="color:${o?'var(--ok)':'var(--danger)'};font-weight:600">${o?'✓ نظيف':'✗'}</span></div>`;}).join('');const v=ok?'ناجح':'فاشل';$('#verdict').textContent='فحص البوابات: '+v;$('#verdict').className='verdict '+(ok?'pass':'fail');}
 function renderReflection(r){const c=r.candidates||[];$('#o-refl').textContent=c.length;if(r.error){$('#reflBox').innerHTML=`<div class="err">${r.error}</div>`;return;}if(!c.length){$('#reflBox').innerHTML='<div class="sub">لا إشارات تعلّم جديدة — استُخلص ما رُئي. (الاحتفاظ افتراضياً)</div>';return;}const K={escalation:'تصعيد','circuit-breaker':'قاطع دائرة','recurring-pattern':'نمط متكرّر'};$('#reflBox').innerHTML=c.map(x=>`<div style="padding:8px 0;border-bottom:1px solid var(--hair)"><span class="pill warn">${K[x.kind]||x.kind}</span> <span class="sub">${x.subject}</span><div class="note">${x.evidence}</div></div>`).join('');}
 
 /* TASKS */

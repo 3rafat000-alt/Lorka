@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SOFI v5 Observability Dashboard — start/stop the live server.
+# SOFI v6 Observability Dashboard — start/stop the live server.
 # Usage: dashboard/start.sh [start|stop|restart|status]  (default: start)
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

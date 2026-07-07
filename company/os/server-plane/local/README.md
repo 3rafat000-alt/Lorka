@@ -9,7 +9,7 @@ internet, never through Cloudflare. For private device-to-device mesh on your LA
 
 ## One command
 ```bash
-cd engine/server-plane/local
+cd company/os/server-plane/local
 bash bootstrap-local.sh          # generates config, starts containers + Caddy, verifies
 ```
 Then the two **root** steps it prints (an agent can't sudo; you run these):

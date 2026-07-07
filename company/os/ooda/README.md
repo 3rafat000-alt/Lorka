@@ -51,7 +51,7 @@ SOFI operates on an infinite OODA loop — not linear task execution. Every cycl
 | 3. Reasoning | `REASONING.md` | ReAct + Plan-Execute + Reflexion |
 | 4. Tools | `TOOLS.md` | Isolated sandbox + API gateway |
 | 5. Reflection | `REFLECTION.md` | Self-eval + pattern detection |
-| Engine | `engine/ooda/engine/main.py` | Python OODA loop runner (core: `engine/ooda/engine/core/agent.py`) |
+| Engine | `company/os/ooda/engine/main.py` | Python OODA loop runner (core: `company/os/ooda/engine/core/agent.py`) |
 | Agents | `agents/*.md` | Per-agent OODA configurations |
 
 ## Principles
@@ -67,10 +67,10 @@ SOFI operates on an infinite OODA loop — not linear task execution. Every cycl
 
 ```bash
 # Install Python dependencies
-pip install -r engine/ooda/engine/requirements.txt
+pip install -r company/os/ooda/engine/requirements.txt
 
 # Run the OODA loop
-python engine/ooda/engine/main.py --config engine/ooda/engine/config.yaml
+python company/os/ooda/engine/main.py --config company/os/ooda/engine/config.yaml
 ```
 
-See `engine/protocols/03-ooda-loop.md` for the operating protocol.
+See `company/brain/org/archive-v5/protocols/03-ooda-loop.md` for the operating protocol.

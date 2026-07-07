@@ -2,11 +2,14 @@
 cli — the `sofi` dispatcher every agent calls.
 
     sofi projects                 list project workspaces
+    sofi rooms                    list the 15 rooms (lead · members · gates)
+    sofi registry [query]         print/query the org index (nexus/registry.yaml)
+    sofi budget                   effort-scaling + budgeted-autonomy (nexus/routing.yaml)
     sofi brain   <PRJ>            show STATE + the next open ticket
-    sofi route   <role> [PRIO]    cheapest clearing route (model·effort·caveman)
-    sofi gate-check <PRJ>         validate gate order + expected artifacts
-    sofi dispatch <PRJ> [role]    render the delegation prompt for the open ticket
-    sofi squad <PRJ> <gate>      render parallel delegation for a gate's squad (3·4·5)
+    sofi route   <agent> [PRIO]   cheapest clearing route (model·effort·caveman)
+    sofi gate-check <PRJ>         validate gate order + artifacts + rooms + evidence
+    sofi dispatch <PRJ> [agent]   render the delegation prompt for the open ticket
+    sofi squad <PRJ> <gate>       render parallel delegation for a gate's squad (3·4·5)
     sofi powers                   list the team's superpowers (external_powers)
     sofi handoff <PRJ> close <ID> mark a ticket done
     sofi escalate <PRJ> <ID> <to> "<reason>"  funnel a blocked ticket up-chain
@@ -21,8 +24,9 @@ cli — the `sofi` dispatcher every agent calls.
     sofi git-check <PRJ>          verify git hygiene (clean·no leaks·traceable) — gates pipeline
     sofi domain <action> [PRJ]    local domain: init·register·up·down·list·rm·status (e.g. sakk.local)
     sofi tunnel <action> [PRJ]    public tunnel: up·down·list·status (share <slug>.local on the internet)
-    sofi tools                    list the registry (shared + per-role scripts)
-    sofi doctor                   self-check the library + governance
+    sofi oracle <op> ...          external review desk: review·capture·status (alias: sofi gemini)
+    sofi tools                    list the tooling registry (shared + per-role scripts)
+    sofi doctor                   self-check the library + governance (105↔105 agent parity)
 
 Exit 0 = ok, non-zero = a gate/governance check failed (CI can gate on it).
 """
@@ -32,25 +36,27 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import paths, brain, tickets, routing, gates, guard, runlog, gitops, domain, tunnel
+from . import (paths, brain, tickets, routing, gates, guard, runlog, gitops,
+               domain, tunnel, registry)
 
 _ROUTE_DELEGATION = """\
-You are sofi-{role}. Project: {prj}.
+You are {role}. Project: {prj}.
 BEFORE acting, read in order:
-  - engine/protocols/00-operating-system.md   (your contract)
-  - engine/protocols/git-discipline.md         (shared-repo rules — read once, obey always)
-  - projects/{prj}/_context/STATE.md         (where we are — note branch + head_sha)
-  - projects/{prj}/_context/HANDOFFS.md       (your ticket: {tkt})
-  - projects/{prj}/_context/CONTEXT.md        (facts so far)
+  - company/constitution/00-operating-system.md   (your contract)
+  - company/constitution/06-git-discipline.md     (shared-repo rules — read once, obey always)
+  - projects/{prj}/_context/STATE.md              (where we are — note branch + head_sha)
+  - projects/{prj}/_context/HANDOFFS.md           (your ticket: {tkt})
+  - projects/{prj}/_context/CONTEXT.md            (facts so far)
 Then ORIENT git — never start blind:
   sofi sync {prj}        # fetch + switch to prj/{prj} + show prior sessions' checkpoints
   git log --oneline -8   # who did what under which ticket (SOFI: trailers)
 Before editing a shared path: `sofi claim {prj} <path>` (check LOCKS.md first).
-Your spec + Operating Prompt: engine/agents/<path-for-{role}>.md
-Your route: {route} (routing.yaml).
+Your spec + Operating Prompt: {spec}
+Your route: {route} (company/nexus/routing.yaml).
 Ticket task: {task}
 Expected artifact: {expected}
-Do the work loop (thinking-and-work.md). Tools per tooling-matrix.md.
+Do the work loop (00-operating-system.md). Tools per your registry grant
+(company/nexus/registry.yaml) under company/os/GOVERNANCE.md.
 CHECKPOINT as you go — never hold >1 artifact uncommitted:
   sofi checkpoint {prj} "<type>(<scope>): <subject>"
 AFTER: write artifact, append CONTEXT.md, final `sofi checkpoint {prj} "..."`,
@@ -59,15 +65,96 @@ HANDOFFS.md, mark {tkt} done. An uncommitted session is invisible to the next on
 """
 
 
+def _spec_for(role: str) -> str:
+    return registry.spec_path(role) or f"company/rooms/<room>/agents/{role}.md (not in registry — check sofi registry)"
+
+
 def _need_project(prj: str) -> None:
     if not paths.project_exists(prj):
-        print(f"✗ no such project: {prj} (scaffold with engine/bin/new-project.sh)", file=sys.stderr)
+        print(f"✗ no such project: {prj} (scaffold with company/os/bin/new-project.sh)", file=sys.stderr)
         raise SystemExit(2)
 
 
 def cmd_projects(_a) -> int:
     pl = paths.list_projects()
     print("\n".join(pl) if pl else "(blank board — no projects)")
+    return 0
+
+
+def cmd_rooms(_a) -> int:
+    """List the 15 rooms (غرف) with lead + member count, straight from the registry."""
+    rooms = registry.rooms()
+    if not rooms:
+        print("✗ registry empty/unreadable: company/nexus/registry.yaml", file=sys.stderr)
+        return 2
+    total = 0
+    print(f"━━ rooms — {len(rooms)} ━━")
+    for code, r in rooms.items():
+        n = len(r.get("agents", []))
+        total += n
+        print(f"  {r.get('emoji', '')} {code:4} {r.get('dir', ''):17} "
+              f"lead {r.get('lead', '?'):22} {n:3} agents · gates {r.get('gates', '?')}")
+    print(f"  TOTAL    : {total} agents")
+    return 0
+
+
+def cmd_registry(a) -> int:
+    """Print/query the org index. No arg → per-room roster. With a query →
+    case-insensitive substring match on agent id/title."""
+    agents = registry.agents()
+    if not agents:
+        print("✗ registry empty/unreadable: company/nexus/registry.yaml", file=sys.stderr)
+        return 2
+    q = (a.query or "").lower()
+    if not q:
+        for code, r in registry.rooms().items():
+            print(f"{r.get('emoji', '')} {code} — {r.get('name', '')} (lead: {r.get('lead', '?')})")
+            for aid in r.get("agents", []):
+                ag = agents.get(aid, {})
+                mark = "★" if aid == r.get("lead") else "·"
+                print(f"  {mark} {aid:26} {ag.get('route', ''):28} {ag.get('title', '')[:52]}")
+        return 0
+    hits = [ag for aid, ag in agents.items()
+            if q in aid.lower() or q in ag.get("title", "").lower()]
+    if not hits:
+        print(f"(no agent matches '{a.query}')")
+        return 1
+    for ag in hits:
+        print(f"━━ {ag['id']} ━━")
+        print(f"  room     : {ag.get('room', '?')}" + ("  (Room Lead)" if registry.is_lead(ag["id"]) else ""))
+        print(f"  title    : {ag.get('title', '')}")
+        print(f"  route    : {ag.get('route', '')}  | budget {ag.get('budget', '')}")
+        print(f"  spec     : {ag.get('spec', '')}")
+        print(f"  spawnable: {ag.get('spawnable', '')}")
+        tools = ag.get("tools")
+        print(f"  tools    : {tools if isinstance(tools, str) else ', '.join(tools or [])}")
+    return 0
+
+
+def cmd_budget(_a) -> int:
+    """Surface the spawn-width grid + hard-ceiling doctrine from nexus/routing.yaml
+    (what gtw-budget-warden audits against)."""
+    data = routing._load()
+    eff = data.get("effort_scaling") or {}
+    auto = data.get("budgeted_autonomy") or {}
+    if not eff and not auto:
+        print("✗ effort_scaling/budgeted_autonomy not found in company/nexus/routing.yaml",
+              file=sys.stderr)
+        return 2
+    print("━━ effort_scaling (spawn-width axis) ━━")
+    for k, v in eff.items():
+        if isinstance(v, dict):
+            sub = v.get("subagents", "?")
+            sub = {True: "yes", False: "no"}.get(sub, str(sub))   # yaml no/ok/yes
+            print(f"  {k:12} spawn {str(v.get('spawn', '?')):4} · subagents {sub:3} "
+                  f"· calls {v.get('budget_calls', '?')}")
+            if v.get("note"):
+                print(f"               {v['note']}")
+        else:
+            print(f"  {k:12} {v}")
+    print("━━ budgeted_autonomy ━━")
+    for k, v in auto.items():
+        print(f"  {k}: {v}")
     return 0
 
 
@@ -87,7 +174,7 @@ def cmd_brain(a) -> int:
 
 
 def cmd_brain_query(a) -> int:
-    """v5 structured-brain query: `sofi brain-query PRJ status=blocked type=feature`.
+    """Structured-brain query: `sofi brain-query PRJ status=blocked type=feature`.
     Filters the ticket queue by any field (canonical or frontmatter) — case-insensitive
     substring match. Empty filters lists every ticket."""
     _need_project(a.prj)
@@ -121,7 +208,7 @@ def cmd_gate_check(a) -> int:
     _need_project(a.prj)
     order = gates.validate_no_skip(a.prj)
     arts = gates.validate_artifacts(a.prj)
-    tier = gates.validate_tier_boundary(a.prj)
+    room = gates.validate_room_boundary(a.prj)
     evid = gates.validate_evidence(a.prj)
     print(f"━━ gate-check {a.prj} ━━")
     print(f"  sequence : {' '.join(map(str, order['sequence']))}")
@@ -129,9 +216,9 @@ def cmd_gate_check(a) -> int:
     if order["loops"]:
         print(f"  loops    : {', '.join(order['loops'])}")
     print(f"  artifacts: {'✓ all ' + str(len(arts['checked'])) + ' present' if arts['ok'] else '✗ missing ' + '; '.join(arts['missing'])}")
-    print(f"  tiers    : {'✓ no boundary violations' if tier['ok'] else '✗ ' + '; '.join(tier['violations'])}")
+    print(f"  rooms    : {'✓ no boundary violations' if room['ok'] else '✗ ' + '; '.join(room['violations'])}")
     print(f"  evidence : {'✓ done-tickets carry proof' if evid['ok'] else '✗ ' + '; '.join(evid['unproven'])}")
-    ok = order["ok"] and arts["ok"] and tier["ok"] and evid["ok"]
+    ok = order["ok"] and arts["ok"] and room["ok"] and evid["ok"]
     print(f"  VERDICT  : {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 
@@ -146,9 +233,9 @@ def cmd_dispatch(a) -> int:
     try:
         route = routing.format_route(role)
     except KeyError:
-        route = "(set route per routing.yaml)"
+        route = "(set route per company/nexus/routing.yaml)"
     print(_ROUTE_DELEGATION.format(
-        role=role, prj=a.prj, tkt=t.id, route=route,
+        role=role, prj=a.prj, tkt=t.id, route=route, spec=_spec_for(role),
         task=t.task or "(see ticket)", expected=t.expected or "(see ticket)"))
     return 0
 
@@ -246,12 +333,14 @@ def cmd_tools(_a) -> int:
     return 0
 
 
+# Parallel squads per gate — v6 room specialists behind the frozen upstream input
+# (nexus/gates.yaml squad_rooms; effort class: cross-room).
 _SQUADS = {
-    "3": ["data-schema-engineer", "api-integration-specialist", "security-compliance-architect"],
-    "4": ["database-engineer", "api-engineer", "backend-blade-engineer",
-          "frontend-react-engineer", "mobile-engineer"],
-    "5": ["automated-testing-engineer", "manual-exploratory-tester",
-          "performance-load-analyst", "security-penetration-tester"],
+    "3": ["arc-data-architect", "arc-api-architect", "sec-threat-modeler"],
+    "4": ["dat-db-engineer", "bck-api-engineer", "bck-blade-engineer",
+          "fnt-vue-engineer", "mob-flutter-engineer"],
+    "5": ["qa-automation-engineer", "qa-manual-explorer",
+          "qa-perf-analyst", "sec-pentester"],
 }
 
 
@@ -270,16 +359,16 @@ def cmd_squad(a) -> int:
         try:
             route = routing.format_route(role)
         except KeyError:
-            route = "(set route per routing.yaml)"
+            route = "(set route per company/nexus/routing.yaml)"
         print("\n" + _ROUTE_DELEGATION.format(
-            role=role, prj=a.prj, tkt=tkt, route=route,
+            role=role, prj=a.prj, tkt=tkt, route=route, spec=_spec_for(role),
             task="your slice of this gate — see your ticket in HANDOFFS.md",
             expected="your gate artifact (no skipping)"))
     return 0
 
 
 def cmd_powers(a) -> int:
-    """Surface the team's superpowers (external_powers) from the registry."""
+    """Surface the team's superpowers (external_powers) from the tooling registry."""
     reg = paths.tooling_dir() / "registry.yaml"
     if not reg.exists():
         print("(no registry.yaml)")
@@ -292,13 +381,13 @@ def cmd_powers(a) -> int:
             break
         if grab:
             out.append(ln)
-    print("\n".join(out) if out else "(no external_powers — see engine/SUPERPOWERS.md)")
-    print("\nfull catalog: engine/SUPERPOWERS.md")
+    print("\n".join(out) if out else "(no external_powers — see company/superpowers/SUPERPOWERS.md)")
+    print("\nfull catalog: company/superpowers/SUPERPOWERS.md")
     return 0
 
 
 def cmd_doctor(_a) -> int:
-    import re as _re, glob as _glob, os as _os
+    import re as _re, glob as _glob
     print("━━ sofi doctor ━━")
     ok = True
     root = None
@@ -309,32 +398,43 @@ def cmd_doctor(_a) -> int:
         print(f"  workspace : ✗ {e}"); ok = False
     try:
         nroutes = len(routing.all_roles())
-        print(f"  routing   : ✓ {nroutes} roles")
+        print(f"  routing   : ✓ {nroutes} routes (company/nexus/routing.yaml)")
     except Exception as e:
         print(f"  routing   : ✗ {e}"); ok = False
-    print(f"  net-roles : {len(guard.NET_ALLOWED_ROLES)} roles may reach the web")
+    nreg = len(registry.agents())
+    nrooms = len(registry.rooms())
+    if nreg and nrooms:
+        print(f"  registry  : ✓ {nrooms} rooms · {nreg} agents (company/nexus/registry.yaml)")
+    else:
+        print("  registry  : ✗ company/nexus/registry.yaml empty or unreadable"); ok = False
+    print(f"  net-roles : {len(guard.NET_ALLOWED_ROLES)} agents may reach the web")
     print(f"  projects  : {len(paths.list_projects())}")
 
-    # ── agent wiring: subagents ↔ specs (must be equal, both 30) ──────────
+    # ── agent wiring: spawnables ↔ room specs (dual-file parity, 105 ↔ 105) ──
     if root:
-        subs = _glob.glob(str(root / ".claude/agents/sofi-*.md"))
-        specs = _glob.glob(str(root / "engine/agents/**/*.md"), recursive=True)
-        if len(subs) == len(specs):
-            print(f"  agents    : ✓ {len(subs)} subagents ↔ {len(specs)} specs")
+        subs = _glob.glob(str(root / ".claude/agents/*.md"))
+        specs = _glob.glob(str(root / "company/rooms/*/agents/*.md"))
+        if len(subs) == len(specs) == 105:
+            print(f"  agents    : ✓ {len(subs)} spawnables ↔ {len(specs)} room specs (105↔105)")
+        elif len(subs) == len(specs):
+            print(f"  agents    : ✗ parity holds at {len(subs)}↔{len(specs)} but the frozen "
+                  f"roster is 105 (BLUEPRINT.md §4)"); ok = False
         else:
-            print(f"  agents    : ✗ {len(subs)} subagents ≠ {len(specs)} specs"); ok = False
+            print(f"  agents    : ✗ {len(subs)} spawnables ≠ {len(specs)} room specs"); ok = False
 
     # ── registry claims: every cited .claude/skills path must exist ───────
-    # catches "status: implemented" for a skill whose SKILL.md is missing.
+    # catches a skill row whose SKILL.md is missing.
     if root:
-        reg = root / "engine/tooling/registry.yaml"
+        reg = root / "company/nexus/registry.yaml"
         broken = []
         if reg.exists():
-            for m in _re.findall(r'\.claude/skills/[A-Za-z0-9_./-]+', reg.read_text(encoding="utf-8", errors="ignore")):
+            for m in _re.findall(r'\.claude/skills/[A-Za-z0-9_./-]+',
+                                 reg.read_text(encoding="utf-8", errors="ignore")):
                 if not (root / m).exists():
                     broken.append(m)
         if broken:
-            print(f"  skills    : ✗ registry cites {len(broken)} missing path(s): {', '.join(sorted(set(broken)))}"); ok = False
+            print(f"  skills    : ✗ registry cites {len(broken)} missing path(s): "
+                  f"{', '.join(sorted(set(broken)))}"); ok = False
         else:
             print("  skills    : ✓ registry skill paths exist")
 
@@ -342,8 +442,9 @@ def cmd_doctor(_a) -> int:
     return 0 if ok else 1
 
 
-def cmd_gemini(a) -> int:
-    """External review desk: forward to gemini_review.py (push→receive→parse→act)."""
+def cmd_oracle(a) -> int:
+    """External review desk: forward to gemini_review.py (push→receive→parse→act).
+    `sofi oracle ...` is the v6 verb; `sofi gemini ...` stays as the muscle-memory alias."""
     import subprocess
     script = paths.tooling_dir() / "agents" / "ceo" / "gemini_review.py"
     if not script.exists():
@@ -358,9 +459,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("projects").set_defaults(fn=cmd_projects)
 
+    sub.add_parser("rooms", help="list the 15 rooms: lead · member count · gates").set_defaults(fn=cmd_rooms)
+
+    s = sub.add_parser("registry", help="print/query the org index (company/nexus/registry.yaml)")
+    s.add_argument("query", nargs="?", default=None); s.set_defaults(fn=cmd_registry)
+
+    sub.add_parser("budget", help="effort_scaling + budgeted_autonomy from nexus/routing.yaml").set_defaults(fn=cmd_budget)
+
     s = sub.add_parser("brain"); s.add_argument("prj"); s.set_defaults(fn=cmd_brain)
 
-    s = sub.add_parser("brain-query", help="v5: query the ticket queue by field, e.g. status=blocked type=feature")
+    s = sub.add_parser("brain-query", help="query the ticket queue by field, e.g. status=blocked type=feature")
     s.add_argument("prj"); s.add_argument("filters", nargs="*", default=[])
     s.set_defaults(fn=cmd_brain_query)
 
@@ -425,11 +533,12 @@ def build_parser() -> argparse.ArgumentParser:
                    help="cloudflared | localtunnel | auto (default: auto)")
     s.set_defaults(fn=cmd_tunnel)
 
-    s = sub.add_parser("gemini", help="external review desk: review|capture|status (push→receive→act via Gemini)")
-    s.add_argument("op", choices=["review", "capture", "status"])
-    s.add_argument("rest", nargs=argparse.REMAINDER,
-                   help="args passed through to gemini_review.py (e.g. --file --prj --out --ask)")
-    s.set_defaults(fn=cmd_gemini)
+    for verb in ("oracle", "gemini"):   # gemini = v5 muscle-memory alias
+        s = sub.add_parser(verb, help="external review desk: review|capture|status (push→receive→act)")
+        s.add_argument("op", choices=["review", "capture", "status"])
+        s.add_argument("rest", nargs=argparse.REMAINDER,
+                       help="args passed through to gemini_review.py (e.g. --file --prj --out --ask)")
+        s.set_defaults(fn=cmd_oracle)
 
     sub.add_parser("tools").set_defaults(fn=cmd_tools)
     sub.add_parser("doctor").set_defaults(fn=cmd_doctor)

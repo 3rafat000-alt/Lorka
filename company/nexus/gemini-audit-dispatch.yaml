@@ -4,7 +4,7 @@
 dispatch_rules:
   # Architecture findings → Principal Architect
   architecture:
-    agent: sofi-principal-system-architect
+    agent: arc-system-architect
     effort: high
     urgency: high
     handoff_template: |
@@ -12,12 +12,12 @@ dispatch_rules:
       **Recommendation:** {recommendation}
       **File:** {file}
 
-      Review architecture against CLAUDE.md + DOCTRINE.md.
+      Review architecture against CLAUDE.md + company/CONSTITUTION.md.
       Return: approved / needs-revision / escalate
 
   # Security findings → Security Architect
   security:
-    agent: sofi-security-compliance-architect
+    agent: sec-lead
     effort: high
     urgency: critical  # money-safety takes priority
     handoff_template: |
@@ -28,9 +28,9 @@ dispatch_rules:
       Threat model assessment required.
       Return: risk-level + remediation-steps
 
-  # PRJ-SAKK findings → Tier-2 Advisor (gateway; routes internally to Backend/Blade Engineer)
+  # Build findings → Backend room Lead (gateway; routes internally to bck-* specialists)
   PRJ-SAKK:
-    agent: sofi-tier-2-advisor
+    agent: bck-lead
     effort: medium
     urgency: high
     handoff_template: |
@@ -43,7 +43,7 @@ dispatch_rules:
 
   # Infrastructure findings → DevOps Lead
   infrastructure:
-    agent: sofi-devops-cloud-lead
+    agent: ops-lead
     effort: medium
     urgency: medium
     handoff_template: |
@@ -56,7 +56,7 @@ dispatch_rules:
 
   # Code patterns → QA Lead
   code:
-    agent: sofi-qa-sre-lead
+    agent: qa-lead
     effort: medium
     urgency: medium
     handoff_template: |
@@ -69,7 +69,7 @@ dispatch_rules:
 
   # Teaching VII → CEO
   Teaching VII:
-    agent: sofi-ceo
+    agent: brd-ceo
     effort: high
     urgency: high
     handoff_template: |
@@ -82,7 +82,7 @@ dispatch_rules:
 # Priority override: blockers go to CEO immediately
 severity_escalation:
   "🔴":
-    to_agent: sofi-ceo
+    to_agent: brd-ceo
     urgency: critical
     action: immediate-review-or-escalate
 

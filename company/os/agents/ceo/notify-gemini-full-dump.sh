@@ -57,7 +57,7 @@ You now have COMPLETE context:
 2. **Security Audit** — Full codebase scan (now feasible without context limits)
 3. **Gate 6 → 7 Decision** — Staging/UAT is ready; is prod deployment safe?
 4. **Fix Proposals** — With full codebase, can now propose diffs directly
-5. **Autonomous Loop** — Teaching VII implementation is in place (engine/protocols/02-autonomous-gemini-loop.md)
+5. **Autonomous Loop** — Teaching VII implementation is in place (company/os/oracle/GEMINI_LOOP_ARCHITECTURE.md; v5 protocol preserved at company/brain/org/archive-v5/protocols/02-autonomous-gemini-loop.md)
 
 ---
 

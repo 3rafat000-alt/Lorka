@@ -258,7 +258,7 @@ class _LLMWrapper:
         self.client = client
         self.models = {
             "haiku": config.get("fast", {}).get("model", "claude-haiku-4-5"),
-            "sonnet": config.get("reasoning", {}).get("model", "claude-sonnet-4-6"),
+            "sonnet": config.get("reasoning", {}).get("model", "claude-sonnet-5"),
             "opus": config.get("opus", {}).get("model", "claude-opus-4-8"),
         }
 

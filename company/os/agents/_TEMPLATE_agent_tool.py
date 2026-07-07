@@ -7,7 +7,7 @@ inputs:  <args this takes>
 outputs: <what it prints/writes>
 exit:    0 ok · 1 a real failure CI can block on · 2 bad input · 3 governance
 
-Copy this file to  engine/tooling/agents/<tier>/<role>/<name>.py , fill the header,
+Copy this file to  company/os/agents/<family>/<role>/<name>.py , fill the header,
 register the row in registry.yaml, and log the promotion in DECISIONS.md.
 Rules: GOVERNANCE.md. Writes are sandboxed via guard. No secrets. Deterministic.
 """

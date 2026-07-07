@@ -17,16 +17,37 @@ class GovernanceError(Exception):
     """A script tried to step outside the rules. Fail loud."""
 
 
-# ── Rule 2: network policy — only roles that hold Web tools may reach the net.
-# Mirrors engine/protocols/tooling-matrix.md (web column). Source of intent stays
-# the .claude/agents frontmatter; this is the machine-checkable shadow of it.
-NET_ALLOWED_ROLES = frozenset({
-    "ceo-sofi",
-    "chief-product-strategist", "ux-researcher", "journey-architect", "ui-ux-designer",
-    "principal-system-architect", "api-integration-specialist", "security-compliance-architect",
-    "backend-blade-engineer", "frontend-react-engineer", "mobile-engineer",
-    "performance-load-analyst", "devops-cloud-lead", "observability-sre",
+# ── Rule 2: network policy — only agents that hold Web tools may reach the net.
+# Loaded from company/nexus/registry.yaml: an agent is web-holding when its tools
+# list grants WebSearch/WebFetch, or it inherits the full session toolset
+# (boardroom + Room Leads). Source of intent stays the .claude/agents frontmatter;
+# the registry is the machine-checkable shadow of it. The literal set below is
+# the offline fallback for a broken/absent registry only.
+_NET_FALLBACK = frozenset({
+    "brd-ceo", "brd-cso",
+    "res-web-scout", "res-ux-researcher", "res-competitor-analyst",
+    "res-data-researcher", "res-fact-checker",
+    "str-product-strategist", "str-market-analyst", "str-monetization-strategist",
+    "dsn-ui-designer", "dsn-design-system",
+    "arc-system-architect", "arc-api-architect", "arc-integration-architect",
+    "arc-infra-architect",
+    "sec-threat-modeler", "sec-pentester", "sec-compliance-auditor",
+    "qa-perf-analyst", "ops-cloud-engineer", "obs-sre", "gtw-external-reviewer",
 })
+
+
+def _net_roles() -> frozenset:
+    try:
+        from . import registry
+        roles = registry.net_allowed_roles()
+        if roles:
+            return roles
+    except Exception:
+        pass
+    return _NET_FALLBACK
+
+
+NET_ALLOWED_ROLES = _net_roles()
 
 # Obvious hardcoded-secret patterns blocked at promotion (Rule 7).
 _SECRET_PATTERNS = (
@@ -62,11 +83,11 @@ def assert_within_repo(path: str | Path) -> Path:
 
 
 def assert_within_tooling(path: str | Path) -> Path:
-    """Shared-library dev writes only inside engine/tooling/."""
+    """Shared-library dev writes only inside company/os/."""
     target = _resolve(path)
     root = paths.tooling_dir().resolve()
     if root not in (target, *target.parents):
-        raise GovernanceError(f"scope violation: {target} is outside engine/tooling/ ({root}).")
+        raise GovernanceError(f"scope violation: {target} is outside company/os/ ({root}).")
     return target
 
 
@@ -78,8 +99,8 @@ def assert_net_allowed(role: str) -> None:
     """Rule 2: block network use by heads-down roles (devs, QA, content)."""
     if not net_allowed(role):
         raise GovernanceError(
-            f"net policy: role '{role}' has no web access. "
-            "Pull web findings through your lead (tooling-matrix.md)."
+            f"net policy: agent '{role}' has no web access. "
+            "Pull web findings through your Room Lead (company/nexus/registry.yaml tools grants)."
         )
 
 

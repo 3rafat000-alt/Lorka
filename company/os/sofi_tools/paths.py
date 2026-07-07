@@ -9,28 +9,38 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-# Sentinels that mark the workspace root (must all be present).
-_SENTINELS = ("CLAUDE.md", "engine")
+# Sentinels that mark the workspace root: CLAUDE.md plus the company/ layer
+# (v6). engine/ is accepted too so the resolver keeps working on a v5 checkout
+# or mid-migration tree (v5 debt #3 paid — the sentinel no longer pins engine/).
+_ANCHOR = "CLAUDE.md"
+_LAYER_DIRS = ("company", "engine")
 
 
 def repo_root(start: str | os.PathLike | None = None) -> Path:
     """Walk upward from `start` (or this file) until the workspace root is found."""
     here = Path(start or __file__).resolve()
     for d in (here, *here.parents):
-        if all((d / s).exists() for s in _SENTINELS):
+        if (d / _ANCHOR).exists() and any((d / l).is_dir() for l in _LAYER_DIRS):
             return d
     raise FileNotFoundError(
-        "SOFI AI workspace root not found (need CLAUDE.md + engine/). "
+        "SOFI AI workspace root not found (need CLAUDE.md + company/ or engine/). "
         f"Searched from {here}."
     )
 
 
 def sofi_dir() -> Path:
-    return repo_root() / "engine"
+    """The company layer root — law, nexus, rooms, brain, os."""
+    return repo_root() / "company"
 
 
 def tooling_dir() -> Path:
-    return sofi_dir() / "tooling"
+    """The executable OS layer — sofi_tools, bin/sofi, per-role toolkits."""
+    return sofi_dir() / "os"
+
+
+def nexus_dir() -> Path:
+    """The connecting layer — registry.yaml · routing.yaml · gates.yaml · bus/."""
+    return sofi_dir() / "nexus"
 
 
 def projects_dir() -> Path:

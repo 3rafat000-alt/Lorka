@@ -45,7 +45,7 @@ User: Reads status. Observes. No questions.
                            ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ LAYER 2: GEMINI ROUTING (Python tooling)                        │
-│ - engine/tooling/agents/ceo/gemini_review.py                      │
+│ - company/os/agents/ceo/gemini_review.py                      │
 │   ├─ Sanitize (redact secrets before send)                      │
 │   ├─ Condense (if >6k chars, drop code, keep signal)            │
 │   ├─ Push (send report + standing preamble to desk)             │
@@ -57,7 +57,7 @@ User: Reads status. Observes. No questions.
                            ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ LAYER 3: GEMINI BRIDGE (Playwright automation)                  │
-│ - engine/tooling/agents/ceo/gemini_bridge.py                      │
+│ - company/os/agents/ceo/gemini_bridge.py                      │
 │ - Attaches to browser (--remote-debugging-port=9222)            │
 │ - Navigates to pinned Gemini chat                               │
 │ - Sends message (push)                                          │
@@ -68,7 +68,7 @@ User: Reads status. Observes. No questions.
                            ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ LAYER 4: EXTERNAL ORACLE (Gemini AI)                            │
-│ - Pinned chat (config: ~/.engine/gemini_bridge.json)              │
+│ - Pinned chat (config: ~/.sofi/gemini_bridge.json)              │
 │ - Receives: [standing framing] + [agent finding] + [question]   │
 │ - Standing framing: "advising autonomous AI, not human"         │
 │   → Gemini knows to reply with steps, not prose                 │
@@ -268,7 +268,7 @@ Before launching a sprint:
 - [ ] `sofi gemini status` returns ✅
 - [ ] Test push succeeds: `echo "test" | sofi gemini review --prj <PRJ> --json`
 - [ ] HANDOFFS.md template exists and is tracked
-- [ ] Gemini bridge config in place: `~/.engine/gemini_bridge.json` or env var
+- [ ] Gemini bridge config in place: `~/.sofi/gemini_bridge.json` or env var
 - [ ] At least one prior decision loop has been executed (not just theory)
 - [ ] Team knows escalation path for "Gemini is unreachable"
 

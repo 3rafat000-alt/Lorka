@@ -15,40 +15,27 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from . import paths, guard
+from . import paths, guard, registry
 
 _HEAD = re.compile(r"^##\s*(TKT-\d+)\s*·?\s*gate\s*([0-9\-]+|\d+\s*→\s*gate\s*\d+)", re.I)
 _FIELD = re.compile(r"^([a-zA-Z_]+):\s*(.*)$")
 _ARROW = re.compile(r"\s*→\s*to:\s*", re.I)
 
-# Tier isolation (engine/protocols/handoff-and-interconnection.md "Tier isolation" section).
-# role slug -> tier id ("0".."4"). Advisors are their own bridge role, valid as a
-# to:/from: target from any adjacent tier — see ADVISOR_ROLES below.
-ROLE_TIER: dict[str, str] = {
-    "ceo-sofi": "ceo",
-    # Tier 0 — Strategy & Product Design
-    "chief-product-strategist": "0", "ux-researcher": "0", "journey-architect": "0",
-    "ui-ux-designer": "0", "content-strategist": "0",
-    # Tier 1 — System Engineering & Architecture
-    "principal-system-architect": "1", "data-schema-engineer": "1",
-    "api-integration-specialist": "1", "security-compliance-architect": "1",
-    "infrastructure-cloud-architect": "1",
-    # Tier 2 — Development Execution
-    "database-engineer": "2", "api-engineer": "2", "backend-blade-engineer": "2",
-    "frontend-react-engineer": "2", "mobile-engineer": "2",
-    # Tier 3 — Quality Assurance & Reliability
-    "qa-sre-lead": "3", "automated-testing-engineer": "3", "manual-exploratory-tester": "3",
-    "performance-load-analyst": "3", "security-penetration-tester": "3",
-    # Tier 4 — Infrastructure & Deployment
-    "devops-cloud-lead": "4", "cicd-pipeline-engineer": "4",
-    "observability-sre": "4", "release-incident-manager": "4",
-}
-# role slug -> tier it gates (Advisors are valid to:/from: targets for their own
-# tier AND for the two adjacent tiers, since they're the ones who forward across).
-ADVISOR_TIER: dict[str, str] = {
-    "tier-0-advisor": "0", "tier-1-advisor": "1", "tier-2-advisor": "2",
-    "tier-3-advisor": "3", "tier-4-advisor": "4",
-}
+
+# Room Isolation Law (company/nexus/NEXUS.md · constitution/08-handoff-law.md):
+# a ticket crosses a room boundary only via a Room Lead, the boardroom (brd-*),
+# or the gateway room (gtw-*). The agent→room map is NOT hardcoded here — it is
+# loaded lazily from company/nexus/registry.yaml (v5 debt #4 paid) and fails
+# OPEN on any slug the registry doesn't know: free-text ticket fields are common
+# and we never hard-block on what we can't identify.
+def role_room(slug: str) -> str:
+    """Agent id → room code ('' when unknown). Thin proxy over sofi_tools.registry."""
+    return registry.role_room(slug)
+
+
+def is_lead(slug: str) -> bool:
+    """True when the registry marks this agent as its room's Lead (gateway)."""
+    return registry.is_lead(slug)
 
 
 @dataclass
@@ -118,40 +105,47 @@ def parse(prj: str) -> list[Ticket]:
 
 
 def _slugify_ref(ref: str) -> str:
-    """A `from:`/`to:` field is free text, often `Tier2.Backend-Blade-Engineer (Aisha)`
-    or `@Tier2-Advisor (Elif)` — reduce to the bare role slug for the tier lookup."""
+    """A `from:`/`to:` field is free text, often `Backend.bck-api-engineer (Priya)`
+    or `@bck-lead (Elif)` — reduce to the bare agent id for the room lookup."""
     ref = ref.strip().lstrip("@")
     ref = re.split(r"[·(]", ref, 1)[0].strip()          # drop " (Persona)" / " · note"
-    ref = ref.rsplit(".", 1)[-1] if "." in ref else ref  # drop "Tier2." prefix
+    ref = ref.rsplit(".", 1)[-1] if "." in ref else ref  # drop "Room." prefix
     return re.sub(r"[\s_]+", "-", ref).strip("-").lower()
 
 
-def validate_tier_boundary(prj: str) -> list[str]:
-    """Tier isolation (handoff-and-interconnection.md "Tier isolation"): a ticket's
-    from:/to: may only cross a tier boundary via that tier's Advisor. Returns a list
-    of human-readable violation strings (empty = clean). Fails open on any slug this
-    module doesn't recognize — free-text ticket fields are common and not every
-    variant is worth hard-blocking on.
+def validate_room_boundary(prj: str) -> list[str]:
+    """Room Isolation Law (NEXUS.md §2): a ticket's from:/to: may cross a room
+    boundary only when at least one side is a Room Lead (the room's sole gateway),
+    or one side belongs to the boardroom (brd-*) / gateway room (gtw-*), which may
+    address any Lead. Same-room traffic is always legal. Returns human-readable
+    violation strings (empty = clean). Fails open on any slug the registry doesn't
+    recognize — free-text ticket fields are common and not every variant is worth
+    hard-blocking on.
     """
     violations: list[str] = []
     for t in parse(prj):
         if not t.frm or not t.to:
             continue
         frm_slug, to_slug = _slugify_ref(t.frm), _slugify_ref(t.to)
-        if frm_slug in ADVISOR_TIER or to_slug in ADVISOR_TIER:
-            continue  # an Advisor on either side is always a valid cross-tier hop
-        if frm_slug in ("ceo-sofi",) or to_slug in ("ceo-sofi",):
-            continue  # CEO may address anyone
-        frm_tier, to_tier = ROLE_TIER.get(frm_slug), ROLE_TIER.get(to_slug)
-        if frm_tier is None or to_tier is None:
+        if frm_slug.startswith(("brd-", "gtw-")) or to_slug.startswith(("brd-", "gtw-")):
+            continue  # boardroom + gateway room may address anyone (NEXUS.md §2)
+        frm_room, to_room = role_room(frm_slug), role_room(to_slug)
+        if not frm_room or not to_room:
             continue  # unrecognized slug — don't block on what we can't identify
-        if frm_tier != to_tier:
-            violations.append(
-                f"{t.id}: {t.frm} (tier {frm_tier}) → {t.to} (tier {to_tier}) skips "
-                f"both tiers' Advisors — must route via tier-{frm_tier}-advisor "
-                f"→ tier-{to_tier}-advisor."
-            )
+        if frm_room == to_room:
+            continue
+        if is_lead(frm_slug) or is_lead(to_slug):
+            continue  # a Lead on either side is a legal cross-room hop
+        violations.append(
+            f"{t.id}: {t.frm} (room {frm_room}) → {t.to} (room {to_room}) skips "
+            f"both rooms' Leads — must route via {registry.room_lead(frm_room) or frm_room + '-lead'} "
+            f"→ {registry.room_lead(to_room) or to_room + '-lead'} (Room Isolation Law)."
+        )
     return violations
+
+
+# Back-compat alias: v5 callers (and any not-yet-migrated script) keep working.
+validate_tier_boundary = validate_room_boundary
 
 
 def next_open(prj: str) -> Ticket | None:

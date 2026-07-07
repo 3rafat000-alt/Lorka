@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-uiux_pipeline — Tier-2 Advisor's UI/UX & Design Systems console.
+uiux_pipeline — the Design room's UI/UX & Design Systems console.
 
-The runtime engine behind `engine/agents/advisors/tier-2-advisor.md`. It turns a raw
+The runtime engine behind `company/rooms/03-design/agents/dsn-lead.md` (wielded at
+Gate 2 by the Design room and at Gate 4 by the Frontend room). It turns a raw
 "clean up this view / audit this design" request into a single Python-backed,
 token-frugal, GATED pipeline — the model spends its expensive tokens only on
 judgment, never on locating inline styles, hardcoded hex, or missing &lrm;.

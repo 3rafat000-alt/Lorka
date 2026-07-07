@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 """
-SOFI v5 — Live Observability Dashboard backend.
+SOFI v6 — Live Observability Dashboard backend.
 
-Reads the REAL v5 data sources (never fabricates) and serves them over HTTP + a
+Reads the REAL v6 data sources (never fabricates) and serves them over HTTP + a
 WebSocket live stream:
-  - node graph      : the 30-agent roster + tier-isolation edges (sofi_tools.tickets)
-  - budgets         : engine/routing/routing.yaml (routes · effort_scaling · budgeted_autonomy)
+  - org graph       : 15 rooms · 105 agents, registry-driven (company/nexus/registry.yaml —
+                      v5 debt #6 paid: no hardcoded roster), room-colored, lead edges
+  - budgets         : company/nexus/routing.yaml (routes · effort_scaling · budgeted_autonomy)
   - tasks           : the ticket queue per project (HANDOFFS.md via sofi_tools.tickets)
-  - gates           : sofi_tools.gates validators (no-skip · artifacts · tier · evidence)
-  - reflection      : reflection_engine.scan() (C2 dreaming candidates)
+  - gates           : sofi_tools.gates validators (no-skip · artifacts · rooms · evidence)
+  - reflection      : reflection_engine.scan() (dreaming candidates, Article 04)
   - live activity   : tails .claude/memory/sessions.jsonl + audit.jsonl + per-PRJ _runlog.md
 
-Grounding (C1): we surface configured budget ENVELOPES (real, from routing.yaml) and real
-activity EVENT COUNTS (from logs) — we do NOT invent a live token-cost meter the system
-does not actually measure. Anything derived is labelled `estimated`.
+Grounding (Article 02): we surface configured budget ENVELOPES (real, from routing.yaml)
+and real activity EVENT COUNTS (from logs) — we do NOT invent a live token-cost meter the
+system does not actually measure. Anything derived is labelled `estimated`.
 
 Run:  python3 dashboard/server.py [--port 8787]
 """
@@ -33,13 +34,13 @@ from collections import deque
 
 # ── wire in sofi_tools (the real data layer) ─────────────────────────────────
 _HERE = pathlib.Path(__file__).resolve().parent
-_ROOT = _HERE.parent                                   # /home/es3dlll/Desktop/Lorka
-_TOOLING = _ROOT / "engine" / "tooling"
+_ROOT = _HERE.parent                                   # .../Lorka
+_TOOLING = _ROOT / "company" / "os"
 sys.path.insert(0, str(_TOOLING))
-sys.path.insert(0, str(_ROOT / "engine" / "tooling" / "agents" / "ceo"))
+sys.path.insert(0, str(_ROOT / "company" / "os" / "agents" / "ceo"))
 
 try:
-    from sofi_tools import tickets, gates, brain, paths  # noqa: E402
+    from sofi_tools import tickets, gates, brain, paths, registry as sregistry  # noqa: E402
     _HAVE_TOOLS = True
 except Exception as e:  # degrade gracefully; the UI shows the error rather than lying
     print(f"[warn] sofi_tools import failed: {e}", file=sys.stderr)
@@ -64,23 +65,23 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect  # noqa: E402
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 
-ROUTING = _ROOT / "engine" / "routing" / "routing.yaml"
-ROSTER = _ROOT / "engine" / "ROSTER.md"
+ROUTING = _ROOT / "company" / "nexus" / "routing.yaml"
+REGISTRY = _ROOT / "company" / "nexus" / "registry.yaml"
+ORG = _ROOT / "company" / "ORG.md"
 MEM = _ROOT / ".claude" / "memory"
 SESSIONS = MEM / "sessions.jsonl"
 AUDIT = MEM / "audit.jsonl"
 
-# Human-readable tier labels for the graph.
-TIER_LABEL = {
-    "ceo": "Executive", "0": "Strategy", "1": "Architecture",
-    "2": "Development", "3": "Quality", "4": "Infrastructure",
+# One distinct color per room (15 — matches the landing-page accent spectrum).
+ROOM_COLOR = {
+    "brd": "#f472b6", "str": "#0e7490", "res": "#0891b2", "dsn": "#d97316",
+    "arc": "#1d4ed8", "bck": "#5b3fd8", "fnt": "#7c3aed", "mob": "#8b2fb8",
+    "dat": "#0d9488", "sec": "#b91c1c", "qa": "#15803d", "ops": "#b45309",
+    "obs": "#2563eb", "knw": "#6b7280", "gtw": "#b4530b",
 }
-TIER_COLOR = {  # matches index.html accent spectrum
-    "ceo": "#f472b6", "advisor": "#fbbf24", "0": "#07c4a7", "1": "#34d399",
-    "2": "#06b89d", "3": "#22d3ee", "4": "#a78bfa",
-}
+_FALLBACK_COLOR = "#07c4a7"
 
-app = FastAPI(title="SOFI v5 Observability")
+app = FastAPI(title="SOFI v6 Observability")
 
 
 # ── data builders ────────────────────────────────────────────────────────────
@@ -102,71 +103,91 @@ def _budget_range(b: str) -> tuple[int | None, int | None]:
     return (vals[0], vals[-1] if len(vals) > 1 else vals[0])
 
 
+def load_registry() -> dict:
+    """Parsed company/nexus/registry.yaml — via sofi_tools.registry when available,
+    else a direct yaml read. Never fabricated: empty maps when unreadable."""
+    if _HAVE_TOOLS:
+        try:
+            return {"rooms": sregistry.rooms(), "agents": sregistry.agents()}
+        except Exception:
+            pass
+    try:
+        data = yaml.safe_load(REGISTRY.read_text(encoding="utf-8")) or {}
+        rooms, agents = {}, {}
+        for room in data.get("rooms") or []:
+            code = room.get("code", "")
+            ids = [a.get("id", "") for a in room.get("agents") or []]
+            rooms[code] = {"code": code, "dir": room.get("dir", ""),
+                           "name": room.get("name", ""), "emoji": room.get("emoji", ""),
+                           "gates": str(room.get("gates", "")), "lead": room.get("lead", ""),
+                           "agents": ids}
+            for a in room.get("agents") or []:
+                agents[a.get("id", "")] = {**a, "room": code}
+        return {"rooms": rooms, "agents": agents}
+    except Exception as e:
+        return {"rooms": {}, "agents": {}, "_error": str(e)}
+
+
+def _short_label(slug: str) -> str:
+    """bck-api-engineer → 'api engineer' (the room box already names the room)."""
+    if slug == "brd-ceo":
+        return "CEO"
+    tail = slug.split("-", 1)[1] if "-" in slug else slug
+    return tail.replace("-", " ")
+
+
 def build_graph() -> dict:
-    """Nodes = 30 agents (tier·role·route·budget·gate). Edges = legal tier-isolation
-    handoff channels (intra-tier direct + specialist↔own-advisor + advisor↔advisor + CEO)."""
+    """Nodes = the 105 agents of the 15 rooms (registry-driven — v5 debt #6 paid).
+    Edges = the legal Room-Isolation channels: brd-ceo ↔ every Room Lead (council)
+    + Lead ↔ its room's members (assign). Room-colored; routes/budgets joined in
+    from nexus/routing.yaml."""
     rt = load_routing()
     routes = rt.get("routes", {})
     models = rt.get("models", {})
-    if not _HAVE_TOOLS:
-        return {"nodes": [], "edges": [], "error": "sofi_tools unavailable"}
+    reg = load_registry()
+    rooms, agents = reg.get("rooms", {}), reg.get("agents", {})
+    if not agents:
+        return {"nodes": [], "edges": [], "rooms": {},
+                "error": reg.get("_error", "registry unavailable (company/nexus/registry.yaml)")}
 
-    role_tier = tickets.ROLE_TIER            # slug -> "0".."4"/"ceo"
-    advisor_tier = tickets.ADVISOR_TIER      # advisor slug -> gated tier
-
-    nodes = []
-
-    def add(slug, kind, tier):
-        r = routes.get(slug, {})
-        lo, hi = _budget_range(r.get("budget", ""))
-        mdl = r.get("model", "")
-        nodes.append({
-            "data": {
-                "id": slug, "label": slug.replace("-", " "), "slug": slug,
-                "kind": kind, "tier": tier, "tierLabel": TIER_LABEL.get(tier, tier),
-                "color": TIER_COLOR.get("advisor" if kind == "advisor" else tier, "#07c4a7"),
-                "model": mdl, "modelId": models.get(mdl, {}).get("id", ""),
-                "effort": r.get("effort", ""), "caveman": r.get("caveman", ""),
-                "gate": str(r.get("gate", "")), "budget": r.get("budget", ""),
+    nodes, edges = [], []
+    room_meta = {}
+    for code, room in rooms.items():
+        color = ROOM_COLOR.get(code, _FALLBACK_COLOR)
+        room_meta[code] = {"code": code, "dir": room.get("dir", ""),
+                           "name": room.get("name", ""), "emoji": room.get("emoji", ""),
+                           "gates": room.get("gates", ""), "lead": room.get("lead", ""),
+                           "color": color, "count": len(room.get("agents", []))}
+        lead = room.get("lead", "")
+        for slug in room.get("agents", []):
+            r = routes.get(slug, {})
+            lo, hi = _budget_range(r.get("budget", ""))
+            mdl = r.get("model", "")
+            kind = "ceo" if slug == "brd-ceo" else ("lead" if slug == lead else "specialist")
+            nodes.append({"data": {
+                "id": slug, "label": _short_label(slug), "slug": slug,
+                "kind": kind, "room": code,
+                "roomLabel": f"{room.get('emoji', '')} {room.get('name', code)}".strip(),
+                "title": agents.get(slug, {}).get("title", ""),
+                "color": color,
+                "model": mdl, "modelId": (models.get(mdl) or {}).get("id", ""),
+                "effort": r.get("effort", ""), "caveman": str(r.get("caveman", "")),
+                "gate": str(r.get("gate", "")), "budget": str(r.get("budget", "")),
                 "budgetLo": lo, "budgetHi": hi,
-            }
-        })
-
-    add("ceo-sofi", "ceo", "ceo")
-    for slug, tier in advisor_tier.items():
-        add(slug, "advisor", tier)
-    for slug, tier in role_tier.items():
-        if slug == "ceo-sofi":
-            continue
-        add(slug, "specialist", tier)
-
-    # Edges: the LEGAL handoff channels the tier-isolation rule permits.
-    edges = []
-    specialists_by_tier: dict[str, list[str]] = {}
-    for slug, tier in role_tier.items():
-        if slug == "ceo-sofi":
-            continue
-        specialists_by_tier.setdefault(tier, []).append(slug)
-
-    adv_of = {tier: slug for slug, tier in advisor_tier.items()}
-
-    # CEO <-> every advisor (council)
-    for slug in advisor_tier:
-        edges.append({"data": {"id": f"ceo-{slug}", "source": "ceo-sofi",
-                                "target": slug, "kind": "council"}})
-    # advisor <-> advisor (cross-tier gateway chain, tier order 0..4)
-    order = [adv_of[t] for t in ["0", "1", "2", "3", "4"] if t in adv_of]
-    for a, b in zip(order, order[1:]):
-        edges.append({"data": {"id": f"{a}-{b}", "source": a, "target": b, "kind": "gateway"}})
-    # specialist <-> own tier advisor
-    for tier, specs in specialists_by_tier.items():
-        adv = adv_of.get(tier)
-        if not adv:
-            continue
-        for s in specs:
-            edges.append({"data": {"id": f"{adv}-{s}", "source": adv, "target": s, "kind": "assign"}})
-    return {"nodes": nodes, "edges": edges,
-            "tiers": TIER_LABEL, "colors": TIER_COLOR}
+            }})
+        # Lead ↔ members (assign)
+        for slug in room.get("agents", []):
+            if slug != lead and lead:
+                edges.append({"data": {"id": f"{lead}-{slug}", "source": lead,
+                                        "target": slug, "kind": "assign"}})
+    # brd-ceo ↔ every Room Lead (council — boardroom may address any Lead)
+    for code, room in rooms.items():
+        lead = room.get("lead", "")
+        if lead and lead != "brd-ceo":
+            edges.append({"data": {"id": f"ceo-{lead}", "source": "brd-ceo",
+                                    "target": lead, "kind": "council"}})
+    return {"nodes": nodes, "edges": edges, "rooms": room_meta,
+            "total_agents": len(nodes), "total_rooms": len(room_meta)}
 
 
 def build_budgets() -> dict:
@@ -237,10 +258,12 @@ def build_gates(prj: str) -> dict:
     if not _HAVE_TOOLS:
         return {"error": "sofi_tools unavailable"}
     try:
+        room = gates.validate_room_boundary(prj)
         return {
             "no_skip": gates.validate_no_skip(prj),
             "artifacts": gates.validate_artifacts(prj),
-            "tier_boundary": gates.validate_tier_boundary(prj),
+            "room_boundary": room,
+            "tier_boundary": room,   # legacy alias for older clients
             "evidence": gates.validate_evidence(prj),
             "gate_roles": gates.GATE_ROLES,
         }
@@ -294,6 +317,13 @@ def activity_counts() -> dict:
 @app.get("/api/graph")
 def api_graph():
     return JSONResponse(build_graph())
+
+
+@app.get("/api/registry")
+def api_registry():
+    """The parsed org index (company/nexus/registry.yaml) — rooms + agents, raw.
+    Client-side widgets that need more than the graph payload read this."""
+    return JSONResponse(load_registry())
 
 
 @app.get("/api/budgets")
@@ -562,7 +592,7 @@ _SESSION_OK = re.compile(r"^[0-9a-fA-F-]{8,64}$")
 PROMPT_BUILDER_WRAP = (
     "أنت مهندس برمبتات SOFI. مهمتك الوحيدة: ابنِ برمبت تفويض RCCF كامل واحترافي "
     "(🎭 Role · 📂 Context · 🎯 Command · 📐 Format) جاهز للنسخ واللصق، للمهمة التالية. "
-    "اختر الوكيل الأنسب من engine/ROSTER.md، واربط السياق بملفات المشروع الحقيقية. "
+    "اختر الوكيل الأنسب من company/ORG.md (15 غرفة · 105 وكلاء)، واربط السياق بملفات المشروع الحقيقية. "
     "أخرج البرمبت داخل كتلة كود واحدة ثم توقف — لا تنفّذ المهمة نفسها.\n\nالمهمة: {task}"
 )
 
@@ -634,8 +664,8 @@ def _tail_new(path: pathlib.Path, pos: int) -> tuple[list[str], int]:
 
 def _brain_sig() -> dict:
     """mtime signature of everything the UI renders — per-project brain files +
-    routing/roster. A change here → push a `refresh` event so tasks, observatory,
-    gates, and budgets re-render live without a page reload."""
+    routing/registry/org chart. A change here → push a `refresh` event so tasks,
+    observatory, gates, and budgets re-render live without a page reload."""
     sig: dict[str, float] = {}
     pd = _ROOT / "projects"
     if pd.exists():
@@ -648,7 +678,7 @@ def _brain_sig() -> dict:
                     sig[f"{p.name}:{f.name}"] = f.stat().st_mtime
                 except OSError:
                     pass
-    for f in (ROUTING, ROSTER):
+    for f in (ROUTING, REGISTRY, ORG):
         if f.exists():
             sig[f.name] = f.stat().st_mtime
     return sig
@@ -765,7 +795,7 @@ def main() -> int:
     ap.add_argument("--host", default="127.0.0.1")
     a = ap.parse_args()
     import uvicorn
-    print(f"SOFI v5 dashboard → http://{a.host}:{a.port}  "
+    print(f"SOFI v6 dashboard → http://{a.host}:{a.port}  "
           f"(tools={_HAVE_TOOLS} reflect={_HAVE_REFLECT})")
     uvicorn.run(app, host=a.host, port=a.port, log_level="warning")
     return 0

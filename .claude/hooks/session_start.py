@@ -74,7 +74,7 @@ def main() -> None:
             lines.append(
                 "- **contract:** read STATE/CONTEXT/HANDOFFS before acting · "
                 "checkpoint every milestone · record `head_sha` on handoff.\n"
-                "- **palette** (`engine/protocols/command-palette.md`): spine "
+                "- **palette** (`company/constitution/00-operating-system.md`): spine "
                 "`/sofi-boot` `/sofi-team` `/sofi-delegate` `/sofi-gate` `/sofi-handoff` · "
                 "power tools `/sofi-audit <layer>` `/sofi-spec-review \"<feature>\"` "
                 "`/sofi-feature \"<feature>\"` (big one — full loop) "
@@ -85,7 +85,7 @@ def main() -> None:
         else:
             lines.append(
                 "- no active project brain found under `projects/*/_context/`. "
-                "Scaffold one: `bash engine/bin/new-project.sh PRJ-XXXX \"title\" PRIORITY <date>`."
+                "Scaffold one: `bash company/os/bin/new-project.sh PRJ-XXXX \"title\" PRIORITY <date>`."
             )
 
         context = "\n".join(lines)

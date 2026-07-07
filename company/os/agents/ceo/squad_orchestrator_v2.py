@@ -201,7 +201,9 @@ class SquadOrchestrator:
 
         # Log to audit trail
         audit_log = f"sofi_force_unlock_{squad_id}_{int(time.time())}.log"
-        with open(os.path.expanduser(f"~/.engine/audit/{audit_log}"), "w") as f:
+        audit_dir = os.path.expanduser("~/.sofi/audit")
+        os.makedirs(audit_dir, exist_ok=True)
+        with open(os.path.join(audit_dir, audit_log), "w") as f:
             f.write(f"Force-unlock initiated by CEO\n")
             f.write(f"Squad: {squad_id}\n")
             f.write(f"Manifest: {json.dumps(manifest, indent=2)}\n")

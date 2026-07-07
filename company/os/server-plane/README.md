@@ -25,7 +25,7 @@ DNS-only exposes the server's real IP by design.
 ## Quickstart
 ```bash
 # ── on the SERVER ──────────────────────────────────────────────
-scp -r engine/server-plane  user@server:~/          # copy the kit over (or git pull)
+scp -r company/os/server-plane  user@server:~/          # copy the kit over (or git pull)
 cd ~/server-plane
 cp .env.example .env && nano .env                 # set DOMAIN, NETBIRD_SUBDOMAIN
 sudo bash bootstrap-server.sh                      # installs everything, prints checklist

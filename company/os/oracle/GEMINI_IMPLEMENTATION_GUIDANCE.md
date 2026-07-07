@@ -26,7 +26,7 @@ Gemini assessed criticality and reordered phases. Original timeline (1→2→3�
 
 ### Implementation Code (Gemini Provided)
 
-**File:** `engine/tooling/agents/devops/caddy_isolation.py`
+**File:** `company/os/agents/devops/caddy_isolation.py`
 
 ```python
 import os
@@ -92,7 +92,7 @@ def release_project_lock(lock_file_obj, squad_id, manifest):
 
 ### Integration into `sofi dispatch --squad`
 
-**Update:** `engine/tooling/bin/sofi dispatch`
+**Update:** `company/os/bin/sofi dispatch`
 
 ```bash
 # In the dispatch function, before launching squad agents:
@@ -138,7 +138,7 @@ sofi dispatch --squad PRJ-SYRH mobile-lead
 
 ### Implementation Code (Gemini Provided)
 
-**File:** `engine/tooling/agents/ceo/spec_review_preflight.py`
+**File:** `company/os/agents/ceo/spec_review_preflight.py`
 
 ```python
 def preflight_classify_failure(error_log, code_diff):
@@ -193,7 +193,7 @@ def spec_review_with_circuit_breaker(prj_id, feature_code, attempt=1):
     return result
 ```
 
-### Integration into `engine/protocols/spec-review.md`
+### Integration into `.claude/skills/sofi-spec-review/SKILL.md`
 
 Update hard-gate documentation:
 ```markdown
@@ -239,7 +239,7 @@ sofi spec-review PRJ-SAKK
 
 ### Implementation Code (Gemini Provided)
 
-**File:** `engine/tooling/bin/sofi` (checkpoint command update)
+**File:** `company/os/bin/sofi` (checkpoint command update)
 
 ```python
 import re
@@ -284,10 +284,10 @@ def validate_handoff_contract_check(handoff_file_path):
 ### Update `sofi checkpoint` Command
 
 ```bash
-# In engine/tooling/bin/sofi checkpoint:
+# In company/os/bin/sofi checkpoint:
 
 # Before git commit, validate handoff contract check
-python3 -c "from caddy_isolation import validate_handoff_contract_check; validate_handoff_contract_check('engine/HANDOFFS.md')"
+python3 -c "from caddy_isolation import validate_handoff_contract_check; validate_handoff_contract_check('company/brain/org/HANDOFFS.md')"
 
 git add .
 git commit -m "..."
@@ -328,7 +328,7 @@ sofi checkpoint PRJ-SAKK "feat: auth modal fix"
 
 ## Phase 4: Exfiltration Guard — SECURITY (Day 9)
 
-**File:** `engine/tooling/agents/ceo/sanitize_gemini_payload.py`
+**File:** `company/os/agents/ceo/sanitize_gemini_payload.py`
 
 ```python
 import re
@@ -366,7 +366,7 @@ push_to_gemini(sanitized_payload)
 
 ## Phase 5: Observe Loop — Days 10–11
 
-**File:** `engine/tooling/agents/tier-4-infrastructure/observe_sentry_loop.py`
+**File:** `company/os/agents/tier-4-infrastructure/observe_sentry_loop.py`
 
 ```python
 def append_runtime_constraint_to_brain(prj_id, exception_summary):
@@ -394,7 +394,7 @@ def append_runtime_constraint_to_brain(prj_id, exception_summary):
 
 ## Phase 6: Orchestration v2 — Days 12–13
 
-**File:** `engine/tooling/agents/ceo/squad_orchestrator_v2.py`
+**File:** `company/os/agents/ceo/squad_orchestrator_v2.py`
 
 Extends Phase 2 resource locking with dynamic manifest + auto-cleanup.
 

@@ -22,7 +22,9 @@ Providers (auto-detected; cloudflared preferred — no account, no interstitial)
 SECURITY — a tunnel publishes a local dev app to the open internet with NO auth
 in front of it. Treat every live tunnel as hostile-reachable: no real secrets, no
 production data, scope it to a demo, and run `sofi tunnel down` the moment you're
-done. Full rules: engine/protocols/public-tunnels.md.
+done. Full rules: company/rooms/11-devops/agents/ops-domain-warden.md (owner) +
+company/constitution/07-security-law.md; v5 text preserved at
+company/brain/org/archive-v5/protocols/public-tunnels.md.
 
 Flow:
   sofi tunnel up   <PRJ> [provider]   # ensure app+caddy, open tunnel, record URL

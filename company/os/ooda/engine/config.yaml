@@ -9,11 +9,11 @@ agent:
 
 llm:
   reasoning:
-    model: "claude-sonnet-4-6"       # workhorse — matches engine/routing/routing.yaml
+    model: "claude-sonnet-5"         # workhorse — matches company/nexus/routing.yaml
     temperature: 0.2
     max_tokens: 4096
   fast:
-    model: "claude-haiku-4-5"        # mechanical — matches engine/routing/routing.yaml
+    model: "claude-haiku-4-5"        # mechanical — matches company/nexus/routing.yaml
     temperature: 0.0
     max_tokens: 1024
 

@@ -5,9 +5,10 @@ description: Orient before any SOFI work — git sync, load the active project's
 
 # /sofi-boot — orient, never start blind
 
-The universal contract from `CLAUDE.md`: **no blind start.** Before acting on any
-SOFI project you orient with git, then read the live brain. This skill runs that
-sequence and reports back tersely (caveman doctrine: big brain, small mouth).
+The universal contract (`company/constitution/00-operating-system.md`, Article 00):
+**no blind start.** Before acting on any SOFI project you orient with git, then read
+the live brain. This skill runs that sequence and reports back tersely (doctrine:
+*big brain, small mouth*).
 
 ## Steps
 
@@ -19,15 +20,16 @@ sequence and reports back tersely (caveman doctrine: big brain, small mouth).
 
 2. **Git-orient (never blind).**
    ```bash
-   engine/tooling/bin/sofi sync <PRJ>     # or: git status --short && git log -1 --format='%h %s'
+   sofi sync <PRJ>     # or: git status --short && git log -1 --format='%h %s'
    ```
    Note the current `branch` and `head_sha`.
 
 3. **Read the brain — in this order:**
    - `projects/<PRJ>/_context/STATE.md` — branch, `head_sha`, `gate`, `active`, `local_domain`, `status`, `blockers`.
-   - `projects/<PRJ>/_context/HANDOFFS.md` — **your ticket** (the next action).
+   - `projects/<PRJ>/_context/HANDOFFS.md` — **your ticket** (the next action; bus schema `company/nexus/bus/ticket-schema.md`).
    - `projects/<PRJ>/_context/CONTEXT.md` — durable facts (read the tail; it's append-only).
    - `projects/<PRJ>/_context/DECISIONS.md` — only if a choice is in play.
+   - `projects/<PRJ>/_context/LESSONS.md` — procedural memory the org distilled (`/sofi-reflect`); read the rules before repeating a mistake.
 
 4. **Cross-check** the recorded `head_sha` in STATE.md against the real git HEAD.
    If they diverge, surface it — the brain is stale or someone committed out of band.
@@ -37,7 +39,7 @@ sequence and reports back tersely (caveman doctrine: big brain, small mouth).
 ```
 PROJECT <PRJ> — <title>
 gate <N> · branch <branch> · HEAD <sha> (matches STATE: yes/no)
-active agent: <role>   local: <local_domain>
+active room/agent: <id>   local: <local_domain>
 blockers: <none|...>
 NEXT TICKET: <first actionable line from HANDOFFS.md>
 ```
@@ -46,7 +48,7 @@ Then state the one next action and proceed (or ask if the ticket is ambiguous).
 
 ## Rules
 - Read-only. This skill **orients**; it does not change code or commit.
-- One brain per project, isolated by `PRJ-ID` — never bleed context across projects.
-- Pair with `/sofi-handoff` to *close* work the same way this *opens* it.
-- **Standing loop reminder:** every report/verdict-producing command (`/sofi-spec-review`, `/sofi-audit`, `/sofi-secure`, `/sofi-feature`, `/sofi-fix`, `/sofi-report`) routes its output through the external review desk before handoff — `sofi gemini review …` → analyze + EXECUTE the reply, loop till done. Boot only orients, so it doesn't fire the desk; surface it as the next step. `engine/protocols/external-review-desk.md`.
-- See `engine/protocols/00-operating-system.md` (universal contract) and `CLAUDE.md`.
+- One brain per project, isolated by `PRJ-ID` — never bleed context across projects (Teaching III · Radical Isolation).
+- Pair with `/sofi-handoff` to *close* work the same way this *opens* it (Article 08).
+- **Standing loop reminder:** every report/verdict-producing command (`/sofi-spec-review`, `/sofi-audit`, `/sofi-secure`, `/sofi-feature`, `/sofi-fix`, `/sofi-report`) routes its output through the **oracle desk** before handoff — `sofi oracle review --prj <PRJ> --json --text "…"` → analyze + EXECUTE the reply, loop till done (Teaching VII · Autonomous Oracle Loop; operator `gtw-external-reviewer`; loop architecture `company/os/oracle/GEMINI_LOOP_ARCHITECTURE.md`). Boot only orients, so it doesn't fire the desk; surface it as the next step.
+- See `company/CONSTITUTION.md` (supreme law), `company/constitution/00-operating-system.md` (the universal contract), and `CLAUDE.md`.

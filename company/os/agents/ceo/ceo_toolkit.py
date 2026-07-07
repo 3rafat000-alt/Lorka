@@ -2,7 +2,7 @@
 """
 ceo_toolkit — SOFI CEO Agent's automated command console (one file, three engines).
 
-The CEO drives 29 specialists across a 9-gate lifecycle. This toolkit is the
+The CEO drives 15 rooms · 104 colleagues across a 9-gate lifecycle. This toolkit is the
 "big brain, small mouth" console: orient, delegate, inspect, and gate — each with
 one function call, each emitting terse, paste-ready output that spends the fewest
 tokens that still clears the bar (Doctrine: *few token do trick*).
@@ -42,7 +42,7 @@ Import
 ------
     from ceo_toolkit import Orchestrator, ProjectInspector, ComplianceEngine
     ceo = Orchestrator()
-    block = ceo.delegate(role="backend-blade-engineer", prj="PRJ-SAKK",
+    block = ceo.delegate(role="bck-api-engineer", prj="PRJ-SAKK",
                          task="Add refund endpoint", priority="HIGH")
 """
 from __future__ import annotations
@@ -97,7 +97,7 @@ def _repo_root() -> Path:
             pass
     here = Path(__file__).resolve()
     for d in (here, *here.parents):
-        if (d / "CLAUDE.md").exists() and (d / "sofi").is_dir():
+        if (d / "CLAUDE.md").exists() and ((d / "company").is_dir() or (d / "engine").is_dir()):
             return d
     return here.parents[3] if len(here.parents) > 3 else here.parent
 
@@ -127,7 +127,7 @@ class Route:
     """A resolved model·effort·caveman route for a role (cheapest clearing dial)."""
     role: str
     model: str = "workhorse"
-    model_id: str = "claude-sonnet-4-6"
+    model_id: str = "claude-sonnet-5"
     tier: str = "🔵"
     effort: str = "medium"
     caveman: str = "full"
@@ -160,36 +160,21 @@ class Delegation:
         return d
 
 
-# Canonical role → spec path (Operating Prompt lives inside each spec file).
-# Mirrors engine/tooling/agents/ceo/dispatch.py; extended to the full roster.
-SPEC_PATH: dict[str, str] = {
-    "chief-product-strategist": "tier-0-strategy/chief-product-strategist",
-    "ux-researcher": "tier-0-strategy/ux-researcher",
-    "journey-architect": "tier-0-strategy/journey-architect",
-    "ui-ux-designer": "tier-0-strategy/ui-ux-designer",
-    "content-strategist": "tier-0-strategy/content-strategist",
-    "principal-system-architect": "tier-1-architecture/principal-system-architect",
-    "data-schema-engineer": "tier-1-architecture/data-schema-engineer",
-    "api-integration-specialist": "tier-1-architecture/api-integration-specialist",
-    "security-compliance-architect": "tier-1-architecture/security-compliance-architect",
-    "database-engineer": "tier-2-development/database-engineer",
-    "api-engineer": "tier-2-development/api-engineer",
-    "backend-blade-engineer": "tier-2-development/backend-blade-engineer",
-    "frontend-react-engineer": "tier-2-development/frontend-react-engineer",
-    "mobile-engineer": "tier-2-development/mobile-engineer",
-    "automated-testing-engineer": "tier-3-quality/automated-testing-engineer",
-    "manual-exploratory-tester": "tier-3-quality/manual-exploratory-tester",
-    "performance-load-analyst": "tier-3-quality/performance-load-analyst",
-    "qa-sre-lead": "tier-3-quality/qa-sre-lead",
-    "cicd-pipeline-engineer": "tier-4-infrastructure/cicd-pipeline-engineer",
-    "devops-cloud-lead": "tier-4-infrastructure/devops-cloud-lead",
-    "observability-sre": "tier-4-infrastructure/observability-sre",
-    "tier-0-advisor": "advisors/tier-0-advisor",
-    "tier-1-advisor": "advisors/tier-1-advisor",
-    "tier-2-advisor": "advisors/tier-2-advisor",
-    "tier-3-advisor": "advisors/tier-3-advisor",
-    "tier-4-advisor": "advisors/tier-4-advisor",
-}
+# Canonical agent id → spec path (Operating Prompt lives inside each spec file).
+# v6: loaded from the org index (company/nexus/registry.yaml) via sofi_tools.registry —
+# no hardcoded roster (v5 debt #4 paid). Empty when running standalone; the
+# delegator then prints a `sofi registry <id>` pointer instead of a path.
+def _build_spec_path() -> dict[str, str]:
+    if _SOFI is not None:
+        try:
+            from sofi_tools import registry as _reg  # type: ignore
+            return {aid: _reg.spec_path(aid) for aid in _reg.agents()}
+        except Exception:
+            pass
+    return {}
+
+
+SPEC_PATH: dict[str, str] = _build_spec_path()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -349,22 +334,29 @@ class Orchestrator:
 
     # -- tool grant ----------------------------------------------------------
     def default_tools(self, role: str) -> list[str]:
-        """Best-guess tool grant for a role from its tier family."""
-        spec = SPEC_PATH.get(role, "")
-        if "tier-0" in spec:
-            return self.DEFAULT_TOOLS["strategy"]
-        if "tier-1" in spec:
-            return self.DEFAULT_TOOLS["architecture"]
-        if "tier-3" in spec:
-            return self.DEFAULT_TOOLS["quality"]
-        if "tier-4" in spec:
-            return self.DEFAULT_TOOLS["infra"]
-        if "tier-2" in spec:
-            if "flutter" in spec or "bloc" in spec or "mobile" in spec or "native" in spec:
-                return self.DEFAULT_TOOLS["mobile"]
-            if "vue" in spec or "blade" in spec or "css" in spec or "frontend" in spec:
-                return self.DEFAULT_TOOLS["frontend"]
-            return self.DEFAULT_TOOLS["backend"]
+        """Tool grant for an agent: the registry's explicit grant when known
+        (company/nexus/registry.yaml `tools:`), else a room-family default from
+        the id's room prefix (<roomcode>-<role>)."""
+        if _SOFI is not None:
+            try:
+                from sofi_tools import registry as _reg  # type: ignore
+                tools = _reg.agent(role).get("tools")
+                if isinstance(tools, (list, tuple)) and tools:
+                    return list(tools)
+                if tools == "inherit":
+                    return ["Read", "Grep", "Glob", "Write", "Edit", "Bash",
+                            "WebSearch", "WebFetch"]
+            except Exception:
+                pass
+        room = role.split("-", 1)[0] if "-" in role else ""
+        family = {
+            "str": "strategy", "res": "strategy", "dsn": "strategy",
+            "arc": "architecture", "dat": "backend", "bck": "backend",
+            "fnt": "frontend", "mob": "mobile", "sec": "quality",
+            "qa": "quality", "ops": "infra", "obs": "infra",
+        }.get(room)
+        if family:
+            return self.DEFAULT_TOOLS[family]
         return ["Read", "Write", "Edit", "Bash"]
 
     # -- the single-call delegator ------------------------------------------
@@ -429,12 +421,12 @@ class Orchestrator:
         cache_note = " (reused from cache — context NOT re-sent)" if cached else ""
         return f"""\
 🎭 Role
-You are sofi-{role}. Project: {prj}. Route: {route.model} · {route.effort} · {route.caveman} ({route.tier} {route.model_id}).
-Spec + Operating Prompt: engine/agents/{spec}.md — read it before acting.
+You are {role}. Project: {prj}. Route: {route.model} · {route.effort} · {route.caveman} ({route.tier} {route.model_id}).
+Spec + Operating Prompt: {spec} — read it before acting.
 
 📂 Context{cache_note}
 BEFORE acting, orient (never blind):
-  - engine/protocols/00-operating-system.md
+  - company/constitution/00-operating-system.md
   - projects/{prj}/_context/STATE.md   (note branch + head_sha)
   - projects/{prj}/_context/HANDOFFS.md (your ticket)
   - projects/{prj}/_context/CONTEXT.md

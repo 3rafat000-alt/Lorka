@@ -1,8 +1,11 @@
 """
-routing — resolve the cheapest clearing route for a role from routing.yaml.
+routing — resolve the cheapest clearing route for an agent from the Nexus grid.
 
-Three dials: model · effort · caveman. This reads the machine-readable routing
-table and applies the priority override (CRITICAL may bump up; LOW is capped).
+Three dials: model · effort · caveman. This reads company/nexus/routing.yaml —
+the SINGLE source of routing truth (v5 debt #1 paid: the module-level ladder
+below mirrors the yaml `models:` block and includes the gatekeeper tier, so a
+CRITICAL bump can actually reach it) — and applies the priority override
+(CRITICAL bumps one step up the ladder, clamped; LOW is capped at workhorse).
 Uses pyyaml when present, else a small stdlib fallback for the `routes:` block.
 """
 from __future__ import annotations
@@ -14,17 +17,19 @@ from pathlib import Path
 from . import paths
 
 EFFORT = ["low", "medium", "high", "max"]
-MODEL_ORDER = ["mechanical", "workhorse", "deep"]
+# The ladder, cheapest → dearest: 🟢 → 🔵 → 🔮 → 🟣 (nexus/routing.yaml `models:`).
+MODEL_ORDER = ["mechanical", "workhorse", "gatekeeper", "deep"]
 MODEL_IDS = {
-    "deep": "claude-opus-4-8",
-    "workhorse": "claude-sonnet-4-6",
     "mechanical": "claude-haiku-4-5",
+    "workhorse": "claude-sonnet-5",
+    "gatekeeper": "claude-fable-5",
+    "deep": "claude-opus-4-8",
 }
-MODEL_TIER = {"deep": "🟣", "workhorse": "🔵", "mechanical": "🟢"}
+MODEL_TIER = {"mechanical": "🟢", "workhorse": "🔵", "gatekeeper": "🔮", "deep": "🟣"}
 
 
 def _routing_path() -> Path:
-    return paths.sofi_dir() / "routing" / "routing.yaml"
+    return paths.nexus_dir() / "routing.yaml"
 
 
 @lru_cache(maxsize=1)
@@ -83,6 +88,9 @@ def route_for(role: str, priority: str | None = None) -> dict:
 
     pr = (priority or "").upper()
     if pr == "CRITICAL":
+        # +1 step along the ladder, clamped at the top — so a workhorse route under
+        # CRITICAL lands on gatekeeper, and only an already-gatekeeper route reaches
+        # deep (nexus/routing.yaml escalation.priority_override).
         model = MODEL_ORDER[min(MODEL_ORDER.index(model) + 1, len(MODEL_ORDER) - 1)] \
             if model in MODEL_ORDER else model
         effort = EFFORT[min(EFFORT.index(effort) + 1, len(EFFORT) - 1)] \
@@ -93,10 +101,15 @@ def route_for(role: str, priority: str | None = None) -> dict:
         if effort in EFFORT and EFFORT.index(effort) > EFFORT.index("medium"):
             effort = "medium"
 
+    # Model id: the yaml `models:` block wins (single source); the module map is
+    # only the offline fallback for a stdlib-parsed file.
+    models = data.get("models") or {}
+    yaml_id = (models.get(model) or {}).get("id") if isinstance(models, dict) else None
+
     return {
         "role": role,
         "model": model,
-        "model_id": MODEL_IDS.get(model, model),
+        "model_id": yaml_id or MODEL_IDS.get(model, model),
         "tier": MODEL_TIER.get(model, ""),
         "effort": effort,
         "caveman": caveman,

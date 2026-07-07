@@ -12,3 +12,6 @@ storage/logs/
 .bundle
 *.tar.gz
 *.zip
+# ── v6 token shield: bulk knowledge/archive trees are read-on-demand, never auto-context ──
+company/superpowers/cybersecurity-skills/
+company/brain/org/archive-v5/

@@ -140,6 +140,6 @@ def validate_sofi_checkpoint(handoff_file_path: str, verbose: bool = False) -> i
 
 if __name__ == "__main__":
     # CLI usage: python3 handoff_validator.py <path_to_handoffs>
-    handoff_path = sys.argv[1] if len(sys.argv) > 1 else "engine/HANDOFFS.md"
+    handoff_path = sys.argv[1] if len(sys.argv) > 1 else "company/brain/org/HANDOFFS.md"
     exit_code = validate_sofi_checkpoint(handoff_path, verbose=True)
     sys.exit(exit_code)

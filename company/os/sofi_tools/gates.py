@@ -3,10 +3,15 @@ gates — the 9-gate lifecycle, in code. Enforce order, forbid skips.
 
 Gate 0 Inception → 1 Discovery → 2 Design → 3 Architecture → 4 Build →
 5 Quality → 6 Staging/UAT → 7 Prod → 8 Observe→loop.
+
+The gate→agents map is loaded from company/nexus/gates.yaml (v5 debt #5 paid:
+no hardcoded gate→role table — the yaml is the source; a minimal builtin map of
+owner-room Leads remains only as the offline fallback).
 """
 from __future__ import annotations
 
 import re
+from functools import lru_cache
 
 from . import paths, tickets
 
@@ -17,21 +22,73 @@ GATE_LABEL = {
     4: "Build", 5: "Quality", 6: "Staging/UAT", 7: "Production", 8: "Observe",
 }
 
-# Which roles own each gate (short-names matching routing.yaml).
-GATE_ROLES = {
-    0: ["chief-product-strategist"],
-    1: ["ux-researcher", "journey-architect"],
-    2: ["ui-ux-designer", "content-strategist"],
-    3: ["principal-system-architect", "data-schema-engineer",
-        "api-integration-specialist", "security-compliance-architect"],
-    4: ["database-engineer", "api-engineer", "backend-blade-engineer",
-        "frontend-react-engineer", "mobile-engineer"],
-    5: ["qa-sre-lead", "automated-testing-engineer", "manual-exploratory-tester",
-        "performance-load-analyst", "security-penetration-tester"],
-    6: ["devops-cloud-lead"],
-    7: ["cicd-pipeline-engineer", "devops-cloud-lead"],
-    8: ["observability-sre", "release-incident-manager"],
+# Minimal fallback: each gate's owner-room Lead (nexus/gates.yaml owner_room).
+# Used only when gates.yaml is unreadable — the yaml agent lists win.
+_BUILTIN_GATE_ROLES: dict[int, list[str]] = {
+    0: ["str-lead"],
+    1: ["res-lead"],
+    2: ["dsn-lead"],
+    3: ["arc-lead", "dat-lead", "sec-lead"],
+    4: ["bck-lead", "fnt-lead", "mob-lead", "dat-lead"],
+    5: ["qa-lead", "sec-lead"],
+    6: ["ops-lead"],
+    7: ["ops-lead", "ops-release-manager"],
+    8: ["obs-lead"],
 }
+
+
+@lru_cache(maxsize=1)
+def _load_gate_roles() -> dict[int, list[str]]:
+    """Parse company/nexus/gates.yaml → {gate id: [agent ids]}. Fail-open to the
+    builtin Lead map on any read/parse problem."""
+    p = paths.nexus_dir() / "gates.yaml"
+    try:
+        text = p.read_text(encoding="utf-8")
+    except OSError:
+        return dict(_BUILTIN_GATE_ROLES)
+    try:
+        import yaml  # type: ignore
+        data = yaml.safe_load(text)
+        out: dict[int, list[str]] = {}
+        for g in (data or {}).get("gates") or []:
+            gid = g.get("id")
+            agents = g.get("agents") or []
+            if isinstance(gid, int) and isinstance(agents, list):
+                out[gid] = [str(a) for a in agents]
+        if out:
+            return out
+    except Exception:
+        pass
+    # stdlib fallback: `- id: N` blocks with an `agents: [...]` list (may wrap lines)
+    out = {}
+    gid = None
+    collecting = False
+    buf = ""
+    for line in text.splitlines():
+        m = re.match(r"^\s*-\s*id:\s*(\d+)", line)
+        if m:
+            gid = int(m.group(1))
+            collecting = False
+            continue
+        if gid is None:
+            continue
+        if re.match(r"^\s*agents:\s*\[", line):
+            collecting = True
+            buf = line.split("[", 1)[1]
+        elif collecting:
+            buf += " " + line.strip()
+        if collecting and "]" in buf:
+            inner = buf.split("]", 1)[0]
+            out[gid] = [a.strip() for a in inner.split(",") if a.strip()]
+            collecting, buf = False, ""
+    return out or dict(_BUILTIN_GATE_ROLES)
+
+
+# Module-level view for existing consumers (dashboard, sofi gate-check output).
+try:
+    GATE_ROLES: dict[int, list[str]] = _load_gate_roles()
+except Exception:
+    GATE_ROLES = dict(_BUILTIN_GATE_ROLES)
 
 
 def label(gate: int) -> str:
@@ -39,7 +96,7 @@ def label(gate: int) -> str:
 
 
 def roles_for_gate(gate: int) -> list[str]:
-    return GATE_ROLES.get(gate, [])
+    return _load_gate_roles().get(gate, [])
 
 
 def _gate_num(raw: str) -> int | None:
@@ -83,13 +140,18 @@ def validate_no_skip(prj: str) -> dict:
     }
 
 
-def validate_tier_boundary(prj: str) -> dict:
-    """Every ticket's from:/to: must stay within a tier or cross via that tier's
-    Advisor (`sofi_tools.tickets.validate_tier_boundary`). Same PASS/FAIL shape as
-    the other two gate validators, so `cmd_gate_check` combines all three uniformly.
+def validate_room_boundary(prj: str) -> dict:
+    """Every ticket's from:/to: must stay within a room or cross via a Room Lead /
+    boardroom / gateway (`sofi_tools.tickets.validate_room_boundary`). Same
+    PASS/FAIL shape as the other gate validators, so `cmd_gate_check` combines
+    all four uniformly.
     """
-    violations = tickets.validate_tier_boundary(prj)
+    violations = tickets.validate_room_boundary(prj)
     return {"ok": not violations, "violations": violations}
+
+
+# Back-compat alias for v5 callers.
+validate_tier_boundary = validate_room_boundary
 
 
 def validate_artifacts(prj: str) -> dict:

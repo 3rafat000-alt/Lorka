@@ -111,12 +111,12 @@ Every tool call is logged:
 ## Custom Tools
 
 Tools are extensible. The live engine (v2) registers tools on the **`ToolBox`**
-(`engine/ooda/engine/tools/toolbox.py`), wired by `engine/ooda/engine/core/agent.py`. A tool is a callable exposing
+(`company/os/ooda/engine/tools/toolbox.py`), wired by `company/os/ooda/engine/core/agent.py`. A tool is a callable exposing
 `name`/`description`/`parameters` (JSON schema) plus a `safety_level` (`safe|medium|critical`),
 registered as a `ToolSpec`:
 
 ```python
-# add to engine/ooda/engine/tools/toolbox.py
+# add to company/os/ooda/engine/tools/toolbox.py
 from sofi.ooda.engine.tools.toolbox import ToolSpec, ToolResult
 
 class MyCustomTool:

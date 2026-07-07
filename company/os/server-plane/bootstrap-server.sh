@@ -11,7 +11,7 @@
 #   sudo FORCE=1 bash bootstrap-server.sh    # assume-yes for firewall + installer
 #
 # Reads ./.env (copy from .env.example first). Full doctrine:
-#   engine/protocols/server-plane.md
+#   company/brain/org/archive-v5/protocols/server-plane.md
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
