@@ -6,7 +6,7 @@
 
 | Tool | Owner (per `registry.yaml`) | What it does |
 |---|---|---|
-| `company/os/toolkit/tier-1-architecture/data-schema-engineer/migration_check.py` | `dat-db-engineer` | Enforces "migration without rollback = rejected" (Teaching VI) — scans a migration file or directory and fails if any lacks a non-empty `down()`/rollback path (Laravel/PHP or raw `*.sql`). Exit: `0` all reversible · `1` one or more irreversible · `2` bad path. Ported from `arc-data-architect`'s design-time tool in `04-architecture`; this room re-owns it at the physical-build stage — every migration `dat-db-engineer` writes at Gate 4 runs through this before it reaches `dat-lead`, and the same script informs her Gate-3 migration-validation feedback on `arc-data-architect`'s design. |
+| `company/os/toolkit/gate/migration_check.py` | `dat-db-engineer` | Enforces "migration without rollback = rejected" (Teaching VI) — scans a migration file or directory and fails if any lacks a non-empty `down()`/rollback path (Laravel/PHP or raw `*.sql`). Exit: `0` all reversible · `1` one or more irreversible · `2` bad path. Ported from `arc-data-architect`'s design-time tool in `04-architecture`; this room re-owns it at the physical-build stage — every migration `dat-db-engineer` writes at Gate 4 runs through this before it reaches `dat-lead`, and the same script informs her Gate-3 migration-validation feedback on `arc-data-architect`'s design. |
 | `company/os/sofi_tools/gates.py` (`sofi gate-check`) | `dat-lead` | Mechanical Gate-3/Gate-4 validation of this room's slice against `company/nexus/gates.yaml` — artifact existence, evidence-block presence, no boundary violations. Runs before any adversarial verify, both legs of `playbooks/gate-3-4-data-layer.md`. |
 | `company/os/sofi_tools/brain.py` (`sofi brain`, `sofi brain-query`) | every `dat-*` agent | Reads/writes the project brain; `brain-query type:decision` is the lookup a specialist runs before re-deciding something already settled in a past project's `DECISIONS.md` (a prior cache-stampede incident, a prior retention-policy call). |
 | `company/os/sofi_tools/runlog.py` | every `dat-*` agent that mutates the brain | Appends a `_context/_runlog.md` line on any state-mutating operation (Rule 6) — a migration run, a batch job's reconciliation pass. |
@@ -17,7 +17,7 @@ No script above is owned exclusively by this room's *process* — `sofi_tools` i
 
 ## What a new Data tool would look like
 
-A genuinely new script belongs at `company/rooms/08-data/tools/<name>.py`, only when no existing script in `company/os/sofi_tools/`, `company/os/toolkit/tier-1-architecture/`, or `company/os/toolkit/ceo/` already covers the job — check `company/nexus/registry.yaml`'s `tools:` section and `company/os/GOVERNANCE.md`'s registry rule before writing anything (Article 00 §5, "arm up"). Header contract, mandatory (Rule 8):
+A genuinely new script belongs at `company/rooms/08-data/tools/<name>.py`, only when no existing script in `company/os/sofi_tools/`, `company/os/toolkit/gate/`, or `company/os/toolkit/ceo/` already covers the job — check `company/nexus/registry.yaml`'s `tools:` section and `company/os/GOVERNANCE.md`'s registry rule before writing anything (Article 00 §5, "arm up"). Header contract, mandatory (Rule 8):
 
 ```python
 #!/usr/bin/env python3

@@ -1074,23 +1074,23 @@ tools:
       owner: gtw-external-reviewer
       use: "redacts keys/secrets/.env before any byte leaves the machine (Article 07 §3)"
     - name: fossflow_export
-      path: company/os/toolkit/tier-1-architecture/principal-system-architect/fossflow_export.py
+      path: company/os/toolkit/gate/fossflow_export.py
       owner: arc-system-architect
       use: "gate-3 isometric component/infra diagrams as version-controlled JSON"
     - name: migration_check
-      path: company/os/toolkit/tier-1-architecture/data-schema-engineer/migration_check.py
+      path: company/os/toolkit/gate/migration_check.py
       owner: dat-db-engineer
       use: "reversibility check — migration without rollback = rejected"
     - name: stride_scaffold
-      path: company/os/toolkit/tier-1-architecture/security-compliance-architect/stride_scaffold.py
+      path: company/os/toolkit/gate/stride_scaffold.py
       owner: sec-threat-modeler
       use: "STRIDE threat-model scaffold for the gate-3 security bundle"
     - name: coverage_gate
-      path: company/os/toolkit/tier-3-quality/qa-sre-lead/coverage_gate.py
+      path: company/os/toolkit/gate/coverage_gate.py
       owner: qa-automation-engineer
       use: "coverage >= 90% or the build FAILS (gate-5 exit bar)"
     - name: perf_budget
-      path: company/os/toolkit/tier-3-quality/performance-load-analyst/perf_budget.py
+      path: company/os/toolkit/gate/perf_budget.py
       owner: qa-perf-analyst
       use: "TTI < 2s and CWV budget enforcement (gate-5 exit bar)"
     - name: uiux_pipeline
@@ -1102,7 +1102,7 @@ tools:
       owner: ops-domain-warden
       use: "per-project Caddy vhost isolation for <slug>.local"
     - name: observe_sentry_loop
-      path: company/os/toolkit/tier-4-infrastructure/observe_sentry_loop.py
+      path: company/os/toolkit/gate/observe_sentry_loop.py
       owner: obs-insights-analyst
       use: "gate-8 Sentry loop — SLO breach → auto-filed Gate-1 re-open issue"
 

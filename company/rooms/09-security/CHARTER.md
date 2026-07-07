@@ -77,7 +77,7 @@ Routes are copied verbatim from `company/nexus/routing.yaml` (`routes.<id>`) —
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/toolkit/tier-1-architecture/security-compliance-architect/stride_scaffold.py` (STRIDE skeleton generator, owned by `sec-threat-modeler`), `company/os/sofi_tools/guard.py` (`scan_secrets`, `check_script_header`, `assert_net_allowed` — the mechanical fail-closed guards `sec-secrets-warden` and `sec-appsec-engineer` lean on), `company/os/toolkit/ceo/sofi_scan.py` (`security` mode — the zero-token pre-flag pass every `09-security` review opens with).
+See `tools/README.md`. Headline: `company/os/toolkit/gate/stride_scaffold.py` (STRIDE skeleton generator, owned by `sec-threat-modeler`), `company/os/sofi_tools/guard.py` (`scan_secrets`, `check_script_header`, `assert_net_allowed` — the mechanical fail-closed guards `sec-secrets-warden` and `sec-appsec-engineer` lean on), `company/os/toolkit/ceo/sofi_scan.py` (`security` mode — the zero-token pre-flag pass every `09-security` review opens with).
 
 ## Skills index
 

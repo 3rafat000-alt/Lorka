@@ -38,7 +38,7 @@ Update `docs/PRJ-XXXX_Frontend_A11y_Audit.md`: one row per component/criterion, 
 
 ### 6. `fnt-performance-engineer` — record the pre-diff baseline (if not already on file)
 ```bash
-python3 company/os/toolkit/tier-3-quality/performance-load-analyst/perf_budget.py projects/PRJ-XXXX/_scratch/baseline-metrics.json
+python3 company/os/toolkit/gate/perf_budget.py projects/PRJ-XXXX/_scratch/baseline-metrics.json
 ```
 If a baseline for this route doesn't already exist in `docs/PRJ-XXXX_Frontend_Perf_Baseline.md`, measure it now, before evaluating the diff — a regression is invisible without a "before" number.
 
@@ -47,7 +47,7 @@ If a baseline for this route doesn't already exist in `docs/PRJ-XXXX_Frontend_Pe
 # project's build + Lighthouse/CWV tooling, e.g.:
 npm run build -- --analyze
 npx lighthouse <url> --output=json --output-path=projects/PRJ-XXXX/_scratch/post-diff.json
-python3 company/os/toolkit/tier-3-quality/performance-load-analyst/perf_budget.py projects/PRJ-XXXX/_scratch/post-diff.json
+python3 company/os/toolkit/gate/perf_budget.py projects/PRJ-XXXX/_scratch/post-diff.json
 ```
 Check bundle-analyzer output for an oversized dependency or an unsplit chunk; check `perf_budget.py`'s exit code — `0` within budget, `1` breached.
 

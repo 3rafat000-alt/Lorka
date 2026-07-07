@@ -366,7 +366,7 @@ push_to_gemini(sanitized_payload)
 
 ## Phase 5: Observe Loop — Days 10–11
 
-**File:** `company/os/toolkit/tier-4-infrastructure/observe_sentry_loop.py`
+**File:** `company/os/toolkit/gate/observe_sentry_loop.py`
 
 ```python
 def append_runtime_constraint_to_brain(prj_id, exception_summary):

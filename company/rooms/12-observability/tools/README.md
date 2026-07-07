@@ -6,7 +6,7 @@
 
 | Tool | Owner (per `registry.yaml`) | What it does |
 |---|---|---|
-| `company/os/toolkit/tier-4-infrastructure/observe_sentry_loop.py` | `obs-monitoring-engineer` (instrumentation + classification), read by `obs-insights-analyst` and `obs-incident-commander` for root-cause context | The Gate-8 feedback hook (ADR-006): polls Sentry for high-frequency exceptions over a rolling window, classifies root cause (data constraint / API contract / user input / perf), and injects runtime-observed constraints straight into `_context/DECISIONS.md` — closing the "production anomaly → project brain" loop mechanically instead of by hand. Ported forward verbatim from v5's flat tier-4 toolkit; still the room's only genuinely observability-owned script. |
+| `company/os/toolkit/gate/observe_sentry_loop.py` | `obs-monitoring-engineer` (instrumentation + classification), read by `obs-insights-analyst` and `obs-incident-commander` for root-cause context | The Gate-8 feedback hook (ADR-006): polls Sentry for high-frequency exceptions over a rolling window, classifies root cause (data constraint / API contract / user input / perf), and injects runtime-observed constraints straight into `_context/DECISIONS.md` — closing the "production anomaly → project brain" loop mechanically instead of by hand. Ported forward verbatim from v5's flat tier-4 toolkit; still the room's only genuinely observability-owned script. |
 | `company/os/sofi_tools/gates.py` (`sofi gate-check`) | `obs-lead` | Mechanical Gate-8 validation against `company/nexus/gates.yaml` — artifact existence (`SLO_Report.md`, `Insights.md`), evidence-block presence, no boundary violations. Runs before any adversarial verify (`playbooks/gate-8-observe-procedure.md` step 9). |
 | `company/os/sofi_tools/brain.py` (`sofi brain`, `sofi brain-query`) | every `obs-*` agent | Reads/writes the project brain; `brain-query type:lesson` is the lookup `obs-incident-commander` runs before triaging and `obs-insights-analyst` runs before analyzing a drop-off, both checking for a comparable prior pattern in `LESSONS.md` before starting from a blank page. |
 | `company/os/sofi_tools/runlog.py` | every `obs-*` agent that mutates the brain | Appends a `_context/_runlog.md` line on any state-mutating action this room takes — an SLO redefinition, an issue auto-filed on breach, a Gate-1 re-open ticket written (Rule 6). |
@@ -17,7 +17,7 @@ No script above is owned exclusively by this room's *process* — `sofi_tools` i
 
 ## What a new Observability tool would look like
 
-A genuinely new script belongs at `company/rooms/12-observability/tools/<name>.py`, only when no existing script in `company/os/sofi_tools/`, `company/os/toolkit/tier-4-infrastructure/`, or `company/os/toolkit/ceo/` already covers the job — check `company/nexus/registry.yaml`'s `tools:` section and `company/os/GOVERNANCE.md`'s registry rule before writing anything (Article 00 §5, "arm up"). Header contract, mandatory (Rule 8):
+A genuinely new script belongs at `company/rooms/12-observability/tools/<name>.py`, only when no existing script in `company/os/sofi_tools/`, `company/os/toolkit/gate/`, or `company/os/toolkit/ceo/` already covers the job — check `company/nexus/registry.yaml`'s `tools:` section and `company/os/GOVERNANCE.md`'s registry rule before writing anything (Article 00 §5, "arm up"). Header contract, mandatory (Rule 8):
 
 ```python
 #!/usr/bin/env python3

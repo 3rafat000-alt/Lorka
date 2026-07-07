@@ -74,7 +74,7 @@ Routes are copied verbatim from `company/nexus/routing.yaml` (`routes.<id>`) —
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/toolkit/tier-1-architecture/data-schema-engineer/migration_check.py` (this room's own physical-build gate — registered in `company/nexus/registry.yaml` with `dat-db-engineer` as owner), `company/os/sofi_tools/gates.py` (`sofi gate-check`) for the mechanical Gate-3/Gate-4 validation this room's contribution feeds, `company/os/toolkit/ceo/sofi_scan.py` (`wiring`/`security` modes for locating a query seam or an N+1 pattern before `dat-db-engineer`'s pass), `company/os/toolkit/ceo/feature_scan.py` (Phase-1 scan behind any `/sofi-spec-review` touching this room's surface).
+See `tools/README.md`. Headline: `company/os/toolkit/gate/migration_check.py` (this room's own physical-build gate — registered in `company/nexus/registry.yaml` with `dat-db-engineer` as owner), `company/os/sofi_tools/gates.py` (`sofi gate-check`) for the mechanical Gate-3/Gate-4 validation this room's contribution feeds, `company/os/toolkit/ceo/sofi_scan.py` (`wiring`/`security` modes for locating a query seam or an N+1 pattern before `dat-db-engineer`'s pass), `company/os/toolkit/ceo/feature_scan.py` (Phase-1 scan behind any `/sofi-spec-review` touching this room's surface).
 
 ## Skills index
 

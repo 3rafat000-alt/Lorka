@@ -74,7 +74,7 @@ Routes are copied verbatim from `company/nexus/routing.yaml` (`routes.<id>`) —
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/toolkit/uiux/uiux_pipeline.py` (the shared design/taste/RTL/a11y static-pack scanner `fnt-css-artisan` and `fnt-a11y-engineer` run before a model ever reads a component), `company/os/toolkit/tier-3-quality/performance-load-analyst/perf_budget.py` (the Core Web Vitals budget gate `fnt-performance-engineer` self-checks against pre-emptively, owned by `10-quality` and enforced for real at Gate 5), `company/os/sofi_tools/gates.py` (`sofi gate-check`) and `company/os/sofi_tools/gitops.py` (`sofi worktree` / `sofi gate-merge`) for the room's own build-and-merge cycle.
+See `tools/README.md`. Headline: `company/os/toolkit/uiux/uiux_pipeline.py` (the shared design/taste/RTL/a11y static-pack scanner `fnt-css-artisan` and `fnt-a11y-engineer` run before a model ever reads a component), `company/os/toolkit/gate/perf_budget.py` (the Core Web Vitals budget gate `fnt-performance-engineer` self-checks against pre-emptively, owned by `10-quality` and enforced for real at Gate 5), `company/os/sofi_tools/gates.py` (`sofi gate-check`) and `company/os/sofi_tools/gitops.py` (`sofi worktree` / `sofi gate-merge`) for the room's own build-and-merge cycle.
 
 ## Skills index
 

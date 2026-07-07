@@ -22,7 +22,7 @@
 
 4. **`sec-threat-modeler` scaffolds STRIDE at zero extra tokens, then fills it.**
    ```bash
-   python3 company/os/toolkit/tier-1-architecture/security-compliance-architect/stride_scaffold.py \
+   python3 company/os/toolkit/gate/stride_scaffold.py \
      "<feature-name>" --prj <PRJ> --out docs/<PRJ>_Threat_Model.md
    ```
    Every asset/data-flow row gets a stated mitigation or an explicit accepted-risk note with a named owner — no blank rows survive this step.
