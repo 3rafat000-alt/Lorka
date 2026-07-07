@@ -39,6 +39,7 @@ id_rsa.*
 .claude/memory/
 **/.claude/memory/
 .sofi-run/
+*.pid
 
 # —— Ephemeral scratch (GOVERNANCE Rule 3 — purged at gate exit, never a deliverable) ——
 _scratch/
@@ -83,7 +84,7 @@ Thumbs.db
 *.swp
 
 # server-plane secrets
-engine/server-plane/.env
+company/os/server-plane/.env
 
 # pure-local netbird working dirs (secrets: setup keys, internal CA, sqlite)
 netbird-local/
@@ -92,6 +93,3 @@ netbird-host/
 # —— Claude Code machine-local state ——
 .claude/settings.local.json
 .claude/cache/
-
-# —— SOFI runtime pointers (regenerated per session) ——
-engine/.sofi_agent_briefing_current
