@@ -54,6 +54,17 @@ _SECRET_PATTERNS: list[tuple[str, re.Pattern]] = [
      re.compile(r"\bAKIA[0-9A-Z]{16}\b")),
     ("google_api_key",
      re.compile(r"\bAIza[0-9A-Za-z\-_]{30,}\b")),
+    # GitHub tokens — classic (ghp/gho/ghu/ghs/ghr_ + 36) and fine-grained (github_pat_)
+    ("github_token",
+     re.compile(r"\bgh[opsur]_[A-Za-z0-9]{36}\b")),
+    ("github_pat",
+     re.compile(r"\bgithub_pat_[A-Za-z0-9_]{22,}\b")),
+    # OpenAI / Anthropic-style secret keys (sk- / sk-proj-)
+    ("openai_key",
+     re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b")),
+    # Slack tokens (xoxb/xoxa/xoxp/xoxr/xoxs-)
+    ("slack_token",
+     re.compile(r"\bxox[baprs]-[A-Za-z0-9-]{10,}\b")),
     ("laravel_or_base64",
      re.compile(r"base64:[A-Za-z0-9+/=]{20,}")),
     ("telegram_bot_token",
@@ -121,6 +132,23 @@ _SENSITIVE_JSON_KEY = re.compile(
     r"pan|card[_-]?number|cvv|cvc|"
     r"wallet[_-]?address|private[_-]?address|seed|mnemonic)"
 )
+
+# ── high-signal credential shapes that must NEVER survive the sweep. Both the
+#    tripwire (validate_sanitized) and the last-ditch blunt scrub use this one list. ──
+_DANGER: list[tuple[re.Pattern, str]] = [
+    (re.compile(r"\b[srp]k_(?:live|test)_[0-9A-Za-z]{10,}\b"), "stripe_key"),
+    (re.compile(r"\bwhsec_[0-9A-Za-z]{10,}\b"), "stripe_webhook_secret"),
+    (re.compile(r"\bAKIA[0-9A-Z]{16}\b"), "aws_access_key"),
+    (re.compile(r"\bAIza[0-9A-Za-z\-_]{30,}\b"), "google_api_key"),
+    (re.compile(r"\bgh[opsur]_[A-Za-z0-9]{36}\b"), "github_token"),
+    (re.compile(r"\bgithub_pat_[A-Za-z0-9_]{22,}\b"), "github_pat"),
+    (re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b"), "openai_key"),
+    (re.compile(r"\bxox[baprs]-[A-Za-z0-9-]{10,}\b"), "slack_token"),
+    (re.compile(r"base64:[A-Za-z0-9+/=]{20,}"), "laravel_key"),
+    (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"), "pem_private_key"),
+    (re.compile(r"\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b"), "jwt"),
+    (re.compile(r"\b\d{6,}:[A-Za-z0-9_-]{30,}\b"), "telegram_bot_token"),
+]
 
 
 def _redact_json_values(node: Any) -> Any:
@@ -218,17 +246,7 @@ class GeminiPayloadSanitizer:
     @staticmethod
     def validate_sanitized(text: str) -> Tuple[bool, List[str]]:
         """Post-sweep tripwire: assert no high-signal credential shape survived."""
-        danger = [
-            (r"\b[srp]k_(?:live|test)_[0-9A-Za-z]{10,}\b", "stripe_key"),
-            (r"\bwhsec_[0-9A-Za-z]{10,}\b", "stripe_webhook_secret"),
-            (r"\bAKIA[0-9A-Z]{16}\b", "aws_access_key"),
-            (r"\bAIza[0-9A-Za-z\-_]{30,}\b", "google_api_key"),
-            (r"base64:[A-Za-z0-9+/=]{20,}", "laravel_key"),
-            (r"-----BEGIN [A-Z ]*PRIVATE KEY-----", "pem_private_key"),
-            (r"\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b", "jwt"),
-            (r"\b\d{6,}:[A-Za-z0-9_-]{30,}\b", "telegram_bot_token"),
-        ]
-        remaining = [name for pat, name in danger if re.search(pat, text)]
+        remaining = [name for pat, name in _DANGER if pat.search(text)]
         return (len(remaining) == 0), remaining
 
 
@@ -248,15 +266,18 @@ def sanitize_gemini_payload(raw_text: str, fail_on_unsafe: bool = False) -> str:
 
     is_safe, remaining = sanitizer.validate_sanitized(sanitized)
     if not is_safe:
-        # last-ditch scrub: blunt-force blank the surviving shapes so nothing leaks
-        for name in remaining:
-            pass
-        if fail_on_unsafe:
+        # last-ditch blunt scrub: forcibly blank every surviving danger shape so nothing
+        # leaks even if the structured sweep missed its context, then re-check.
+        for pat, _name in _DANGER:
+            sanitized = pat.sub(REDACTION, sanitized)
+        is_safe, remaining = sanitizer.validate_sanitized(sanitized)
+        if not is_safe and fail_on_unsafe:
             raise ValueError(
-                "Sanitization tripwire: credential shapes survived: "
+                "Sanitization tripwire: credential shapes survived even the last-ditch scrub: "
                 + ", ".join(remaining)
             )
-        print(f"[SANITIZE][WARNING] residual shapes after sweep: {remaining}")
+        if not is_safe:
+            print(f"[SANITIZE][WARNING] residual shapes after last-ditch scrub: {remaining}")
 
     return sanitized
 
