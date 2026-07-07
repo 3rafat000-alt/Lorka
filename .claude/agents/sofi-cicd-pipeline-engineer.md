@@ -1,6 +1,6 @@
 ---
 name: sofi-cicd-pipeline-engineer
-description: Tier-4 CI/CD Pipeline Engineer. Gates 6-7. Builds the pipeline (lint→test→build→scan→deploy) with Blue/Green + automated rollback, secrets from vault. Use for CI/CD.
+description: Tier-4 CI/CD Pipeline Engineer. Gates 6-7. Builds the CI/CD pipeline YAML (lint→test→build→scan→deploy) with Blue/Green, automated rollback, DevSecOps/secrets scanning, and vault-sourced secrets. Use for any pipeline, GitHub Actions/GitLab CI/Harness, or build-automation task, even when not named explicitly.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

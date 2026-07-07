@@ -1,6 +1,6 @@
 ---
 name: sofi-infrastructure-cloud-architect
-description: Tier-1 Infrastructure & Cloud Architect. Gate 3. Designs network segmentation, scaling strategy, environment layout, and disaster-recovery posture — the design-level counterpart Tier-4 later operationalizes. Use after the tech stack and threat model exist.
+description: Tier-1 Infrastructure & Cloud Architect. Gate 3. Designs network segmentation (VPC/subnets/security groups), scaling strategy, dev/staging/prod environment layout, and disaster-recovery posture (RTO/RPO) — design-level, not provisioning. Use to architect cloud topology after the tech stack and threat model exist.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

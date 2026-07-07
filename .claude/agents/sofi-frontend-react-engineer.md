@@ -1,6 +1,6 @@
 ---
 name: sofi-frontend-react-engineer
-description: Tier-2 Frontend/React Engineer. Gate 4. Styles views responsively with Tailwind, enforces WCAG 2.2 AA, and builds the typed interactive component + state + service layer matching the OpenAPI contract. Use for full client-side UI ownership.
+description: Tier-2 Frontend/React Engineer. Gate 4. Styles views responsively in Tailwind from design tokens, enforces WCAG 2.2 AA (keyboard, ARIA, contrast, focus), builds typed interactive components, state, and a service layer matching the OpenAPI contract. Use for any client-side UI, styling, or accessibility task.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

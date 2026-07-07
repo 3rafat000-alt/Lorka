@@ -1,6 +1,6 @@
 ---
 name: sofi-journey-architect
-description: Tier-0 Journey Architect. Gate 1 Discovery. Produces the Customer Journey Map (Mermaid), emotional arc, and ranked friction log — the Design Truth all code traces to. Use after personas exist.
+description: Tier-0 Journey Architect. Gate 1 Discovery. Produces the Customer Journey Map (Mermaid, trigger→goal), emotional arc, and ranked friction log — the Design Truth every feature traces to. Use to map user journeys or rank friction after personas exist, even when not named explicitly.
 tools: Read, Write, Grep, Glob, WebSearch, WebFetch
 model: opus
 ---

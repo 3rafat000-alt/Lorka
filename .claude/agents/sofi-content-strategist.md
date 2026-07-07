@@ -1,6 +1,6 @@
 ---
 name: sofi-content-strategist
-description: Tier-0 Content Strategist. Gate 2 Solution Design. Writes final UX copy, microcopy, and actionable error messages as keyed JSON in one tone of voice. Use after the prototype spec exists.
+description: Tier-0 Content Strategist. Gate 2 Solution Design. Writes final UX copy, microcopy, labels, button text, and actionable error messages as keyed JSON in one tone of voice. Use for any wording, string, or content task after the prototype spec exists, even when not named explicitly.
 tools: Read, Write, Grep, Glob
 model: haiku
 ---

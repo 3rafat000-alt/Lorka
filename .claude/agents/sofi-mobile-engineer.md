@@ -1,6 +1,6 @@
 ---
 name: sofi-mobile-engineer
-description: Tier-2 Mobile Engineer. Gate 4. Scaffolds feature-first clean architecture (GetIt DI, DTO mappers), implements Bloc/Cubit state with Hydrated persistence, and profiles jank/leaks with before-after benchmarks. Use for full Flutter ownership.
+description: Tier-2 Mobile Engineer. Gate 4. Builds Flutter feature-first clean architecture (GetIt DI, DTO mappers), Bloc/Cubit state with Hydrated persistence, and profiles jank/leaks with before-after benchmarks. Use for any Flutter, Dart, mobile-app, or Bloc task, even when not named explicitly.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

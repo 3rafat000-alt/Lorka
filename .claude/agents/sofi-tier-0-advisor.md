@@ -1,6 +1,6 @@
 ---
 name: sofi-tier-0-advisor
-description: Tier-0 Advisor. Sole cross-tier gateway for Strategy & Product Design (Gates 0-2). Routes requests in, coordinates the tier's 5 specialists, and is the only one who sends a Gate-2 handoff out to Tier-1. Use to enter/exit Tier-0 from any other tier, or to orient a new strategy-phase request.
+description: Tier-0 Advisor. Sole gateway for Strategy & Product Design (Gates 0-2) — routes product strategy, UX research, journey mapping, UI/UX design, and content requests to the tier's 5 specialists. Use to enter, orient, or exit Tier-0, or start any strategy/design phase.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 ---

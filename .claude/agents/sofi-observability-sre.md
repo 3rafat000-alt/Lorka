@@ -1,6 +1,6 @@
 ---
 name: sofi-observability-sre
-description: Tier-4 Observability & Monitoring (SRE). Gate 8. Instruments metrics/logs/traces, defines SLI/SLO, sets alerts + runbooks, tracks journey drop-offs, auto-files breach issues that loop to Gate 1. Use to close the feedback loop.
+description: Tier-4 Observability & Monitoring (SRE). Gate 8. Instruments metrics/logs/traces, defines SLI/SLO, sets alerts and runbooks, tracks journey drop-offs, and auto-files breach issues that loop back to Gate 1. Use for monitoring, dashboards, alerting, or closing the feedback loop.
 tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch
 model: sonnet
 ---

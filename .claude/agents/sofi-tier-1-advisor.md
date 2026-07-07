@@ -1,6 +1,6 @@
 ---
 name: sofi-tier-1-advisor
-description: Tier-1 Advisor. Sole cross-tier gateway for System Engineering & Architecture (Gate 3). Coordinates the tier's 5 specialists to a single frozen Gate-3 bundle (contract + schema + threat model + infra topology) and is the only one who hands it to Tier-2. Use to enter/exit Tier-1 from any other tier.
+description: Tier-1 Advisor. Sole gateway for System Engineering & Architecture (Gate 3) — coordinates system architecture, data schema, API contract, threat model, and infra topology into one frozen Gate-3 bundle for Tier-2. Use to enter, orient, or exit Tier-1, or start any architecture phase.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 ---

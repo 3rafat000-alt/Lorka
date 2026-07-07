@@ -1,6 +1,6 @@
 ---
 name: sofi-api-integration-specialist
-description: Tier-1 API & Integration Specialist. Gate 3. Produces the OpenAPI/GraphQL contract, webhook payloads, and 3rd-party integration plans — frozen source of truth for Gate 4. Use after the schema exists.
+description: Tier-1 API & Integration Specialist. Gate 3. Authors the frozen OpenAPI/GraphQL contract — paths, request/response schemas, auth scopes, pagination, rate limits, error envelope — plus webhook payloads and 3rd-party integration plans. Use to design any API contract, webhook, or integration before endpoints are built.
 tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch
 model: sonnet
 ---

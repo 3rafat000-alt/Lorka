@@ -1,6 +1,6 @@
 ---
 name: sofi-ui-ux-designer
-description: Tier-0 UI/UX Designer. Gate 2 Solution Design. Produces textual hi-fi prototype spec + component library + WCAG 2.2 AA matrix, mapped 1:1 to journey stages. Use after the journey map is validated.
+description: Tier-0 UI/UX Designer. Gate 2 Solution Design. Produces the hi-fi textual prototype spec (layout, components, states, interactions), a reusable component library, and the WCAG 2.2 AA matrix, mapped 1:1 to journey stages. Use to design screens or UI after the journey map is validated.
 tools: Read, Write, Grep, Glob, WebSearch, WebFetch
 model: sonnet
 ---

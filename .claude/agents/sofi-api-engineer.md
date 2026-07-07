@@ -1,6 +1,6 @@
 ---
 name: sofi-api-engineer
-description: Tier-2 API Engineer. Gate 4. Implements the frozen OpenAPI contract's endpoint surface, plus idempotent jobs (retry/backoff/dead-letter), event/listener flows, WebSocket channels, broker wiring. Use for the full API + async surface.
+description: Tier-2 API Engineer. Gate 4. Implements REST/GraphQL endpoints to the frozen OpenAPI, plus queues, idempotent jobs (retry/backoff/dead-letter), events/listeners, WebSocket channels, webhook replay-safety, broker wiring. Use for any sync-API or async/real-time backend task, even when not named explicitly.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

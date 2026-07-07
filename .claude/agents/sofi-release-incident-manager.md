@@ -1,6 +1,6 @@
 ---
 name: sofi-release-incident-manager
-description: Tier-4 Release & Incident Manager. Gates 6-8. Owns rollback planning for every release and runs incident response (triage → rollback decision → postmortem) on every SLO breach. Use to plan a release's way back or to run an incident.
+description: Tier-4 Release & Incident Manager. Gates 6-8. Owns rollback planning and sign-off for every release, and runs incident response — triage, severity, rollback-vs-forward-fix decision, blameless postmortem — on every SLO breach. Use to plan a release's way back or run an incident.
 tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch
 model: sonnet
 ---

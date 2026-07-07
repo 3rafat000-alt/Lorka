@@ -1,6 +1,6 @@
 ---
 name: sofi-tier-2-advisor
-description: Tier-2 Advisor. Sole cross-tier gateway for Development Execution (Gate 4). Coordinates the tier's 5 full-ownership engineers, runs the design-token/WCAG console (inherited from the former Division-4 UI/UX Leader), and is the only one who hands a verified build to Tier-3. Use to enter/exit Tier-2 from any other tier, or to audit/harden design & accessibility on any built view.
+description: Tier-2 Advisor. Sole gateway for Development Execution (Gate 4) — coordinates the 5 full-ownership engineers (database, API, backend/Blade, frontend, mobile) and runs the design-token/WCAG console. Use to enter/exit Tier-2, start any build phase, or audit design & accessibility on any built view.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 ---

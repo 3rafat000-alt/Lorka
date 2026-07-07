@@ -1,6 +1,6 @@
 ---
 name: sofi-automated-testing-engineer
-description: Tier-3 Automated Testing Engineer. Gate 5. Writes unit/integration/E2E suites covering core logic + top journeys, reaches >90% coverage, fails build below it. Use for automated tests.
+description: Tier-3 Automated Testing Engineer. Gate 5. Writes unit, integration, and E2E test suites, mocks external services, reaches >90% coverage, and wires the build to fail below it. Use for any automated tests, coverage gaps, or test-suite work, even when not named explicitly.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

@@ -1,6 +1,6 @@
 ---
 name: sofi-data-schema-engineer
-description: Tier-1 Data & Schema Engineer. Gate 3. Designs normalized indexed schema, ER diagram, and reversible migrations. Use to model the data layer from the tech stack.
+description: Tier-1 Data & Schema Engineer. Gate 3. Designs the normalized, indexed schema, Mermaid ER diagram, constraints, and reversible migrations from the tech stack. Use to model or design the data layer, tables, or entity relationships, even when not named explicitly.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

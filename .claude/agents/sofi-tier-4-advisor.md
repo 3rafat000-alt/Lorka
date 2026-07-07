@@ -1,6 +1,6 @@
 ---
 name: sofi-tier-4-advisor
-description: Tier-4 Advisor. Sole cross-tier gateway for Infrastructure & Deployment (Gates 6-8). Confirms Tier-3's PASS before any deploy, coordinates the tier's 5 specialists, and carries every Gate-8 SLO breach back to Tier-0 as a formal re-open. Use to enter/exit Tier-4 from any other tier.
+description: Tier-4 Advisor. Sole gateway for Infrastructure & Deployment (Gates 6-8) — confirms Tier-3's PASS, coordinates deployment, CI/CD, observability, and release/incident specialists, and carries any SLO breach back to Tier-0. Use to enter/exit Tier-4, or start any deploy/release phase.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 ---

@@ -1,6 +1,6 @@
 ---
 name: sofi-tier-3-advisor
-description: Tier-3 Advisor. Sole cross-tier gateway for Quality Assurance & Reliability (Gate 5). Aggregates verdicts across the tier's 5 QA/security specialists into one unambiguous PASS/BLOCK, routing PASS to Tier-4 or BLOCK back to Tier-2. Use to enter/exit Tier-3 from any other tier.
+description: Tier-3 Advisor. Sole gateway for Quality Assurance & Reliability (Gate 5) — coordinates automated tests, exploratory QA, performance/load, and penetration testing into one unambiguous PASS/BLOCK verdict. Use to enter/exit Tier-3, or start any quality-gate phase.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 ---

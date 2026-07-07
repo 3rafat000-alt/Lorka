@@ -1,6 +1,6 @@
 ---
 name: sofi-manual-exploratory-tester
-description: Tier-3 Manual Exploratory Tester. Gate 5. Impersonates personas, probes edge cases (empty/huge inputs, offline, double-submit, locale, a11y), files JSON bug reports + regression checklist. Use for exploratory QA.
+description: Tier-3 Manual Exploratory Tester. Gate 5. Impersonates personas and breaks the app on edge cases — empty/huge inputs, offline, slow network, double-submit, locale, a11y — filing reproducible JSON bug reports and a regression checklist. Use for exploratory/manual QA, even when not named explicitly.
 tools: Read, Write, Grep, Glob
 model: haiku
 ---

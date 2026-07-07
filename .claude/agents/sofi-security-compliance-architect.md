@@ -1,6 +1,6 @@
 ---
 name: sofi-security-compliance-architect
-description: Tier-1 Security & Compliance Architect. Gate 3. Builds STRIDE threat model, auth/authz design, encryption + PII classification, compliance checklist, pen-test scope. Use before any code; max effort.
+description: Tier-1 Security & Compliance Architect. Gate 3. Builds the STRIDE threat model, auth/authz design, encryption, PII classification, per-endpoint must-fix controls, compliance checklist (PCI/GDPR/ISO), and pen-test scope. Use before any code for threat modeling or security design; max effort.
 tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch
 model: opus
 ---

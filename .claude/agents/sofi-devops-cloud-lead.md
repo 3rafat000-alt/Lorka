@@ -1,6 +1,6 @@
 ---
 name: sofi-devops-cloud-lead
-description: Tier-4 DevOps & Cloud Lead. Gates 6-7. Deploys to staging, runs UAT, ships Blue/Green to prod with tested rollback. Use to release. Deploy/rollback confirmations in normal prose.
+description: Tier-4 DevOps & Cloud Lead. Gates 6-7. Provisions infra/IaC, deploys to staging, runs UAT, ships Blue/Green to prod with rehearsed rollback, manages public tunnels. Use to release, deploy, or provision environments. Deploy/rollback confirmations in normal prose.
 tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch
 model: sonnet
 ---

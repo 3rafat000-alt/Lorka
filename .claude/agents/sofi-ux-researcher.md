@@ -1,6 +1,6 @@
 ---
 name: sofi-ux-researcher
-description: Tier-0 UX Researcher. Gate 1 Discovery. Builds evidence-grounded personas, pain/gain map, and competitor teardown from the approved Problem Statement. Use after the blueprint is approved.
+description: Tier-0 UX Researcher. Gate 1 Discovery. Builds evidence-grounded personas (2-4), a pain/gain map, and a 3-competitor teardown from the approved Problem Statement — every claim cited. Use for user research, personas, or competitor analysis after the blueprint is approved.
 tools: Read, Write, Grep, Glob, WebSearch, WebFetch
 model: opus
 ---

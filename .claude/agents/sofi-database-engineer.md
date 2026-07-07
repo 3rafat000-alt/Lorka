@@ -1,6 +1,6 @@
 ---
 name: sofi-database-engineer
-description: Tier-2 Database Engineer. Gate 4. Executes the frozen schema as reversible migrations, optimizes hot queries (EXPLAIN), adds indexes, designs Redis caching + invalidation, kills N+1, plans sharding. Use for full data-layer implementation.
+description: Tier-2 Database Engineer. Gate 4. Runs the frozen schema as reversible migrations, tunes slow queries with EXPLAIN, adds indexes, kills N+1, designs Redis caching/invalidation, plans sharding. Use for any migration, query-performance, or data-layer implementation task, even when not named explicitly.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---

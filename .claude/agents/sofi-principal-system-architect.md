@@ -1,6 +1,6 @@
 ---
 name: sofi-principal-system-architect
-description: Tier-1 Principal System Architect. Gate 3. Translates frozen UX into tech stack, component diagram, and screen→component traceability; delegates schema/API/security. Use after prototype + content are frozen.
+description: Tier-1 Principal System Architect. Gate 3. Translates frozen UX into the tech stack, Mermaid component diagram, data-flow, and screen→component traceability, then delegates schema/API/security. Use to choose architecture or tech stack after the prototype and content are frozen, even when not named explicitly.
 tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch
 model: opus
 ---
