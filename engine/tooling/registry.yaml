@@ -57,6 +57,9 @@ agent_toolkits:
     - { script: "agents/ceo/reflection_engine.py",
         purpose: "v5 reflection/dreaming engine — scan (0 model tokens) locates NEW learning signals in HANDOFFS history (escalations, circuit-breakers, recurring patterns), dedups vs LESSONS.md; write appends a distilled situation·what-failed·rule lesson to procedural memory. Backs the reflection doctrine flow. Scheduled/on-demand, never per-turn (per-turn memory updates degrade quality)",
         gate: all }
+    - { script: "agents/ceo/registry.py",
+        purpose: "coordination registry (0 model tokens) — the 1-line-per-artifact index the BRAIN LAYER scans instead of re-reading the 240 KB brain. cmds add·list·find·verify·prune; add upserts by TKT id, verify prints exists·bytes·words·sha (non-zero exit if MISSING) so deliverables are confirmed WITHOUT opening them. Backs the read/execute split (engine/protocols/04-coordination-registry.md) — kills context amnesia. Reads/indexes never writes code",
+        gate: all }
   tier-2-advisor:
     - { script: "agents/uiux/uiux_pipeline.py",
         purpose: "Tier-2 Advisor's design/a11y console (0 model tokens to locate) — cmds scan·rtl·gate·brief; wires sofi_scan taste+design + an RTL currency-&lrm; check + sofi_verify into one exit-gated pipeline, then emits paste-ready RCCF delegation briefs routing findings to the relevant Tier-2 engineer. Backs engine/agents/advisors/tier-2-advisor.md and sofi-tier-2-advisor. Reads never writes",
