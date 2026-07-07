@@ -50,11 +50,11 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
 | 1 | Foundation + kill real dead weight (engine/, orphan worktree, runtime junk, ignores) | 🟢 | ✅ DONE — commits 5a567a3, 5c90557, 65895f5 |
 | 5a | CLAUDE.md honesty (hooks + CLI verbs) | 🟢 | ✅ DONE — commit ff233ba |
 | 5b | registry.yaml drift: tool-grant fixes (arc-infra-architect Write/Edit; gtw-router/conflict-resolver Bash), stale module list, verb list | 🟢 | ⏳ next |
-| 5c | gates.yaml: Gate-2 state count (3 vs 5); `sofi squad` hardcoded roster → read gates.yaml | 🟡 | ⏳ |
+| 5c | gates.yaml state count 3→5; `sofi squad` hardcoded roster | 🟡 | 🔶 PARTIAL — state bar 3→5 done (8335a74); `sofi squad` reading gates.yaml still ⏳ (cli.py code fix) |
 | 5d | skills referencing mock/demo scripts as production (spec_review_preflight.py mock; reflection confidence gate) | 🟡 | ⏳ |
 | 4 | Purge v5 brain rot: `company/brain/org/{PERSONAS,TEAM_STATUS,HANDOFFS}.md` (30-agent/5-tier) | 🟢 | ✅ DONE — refreshed IN PLACE (architectural slots per BRAIN.md, NOT deleted → zero cascade), ~290 lines v5 rot removed, content now points to live sources; fc79731 |
 | 3 | OODA engine (broken store() signature) + autopilot ("v2 live" but never ran) — retire + de-reference | 🟡 | ✅ DONE — deleted both + v5 docs + 2 stale reports + orphan branch; de-ref'd CLAUDE/MEMORY/reflection; commit f1702c6 |
-| 6 | De-dup + dead functions | 🟡 | 🔶 PARTIAL — deleted budget.py + event_server.py (d8aeaaf); remaining: runlog, dup fns (_gate_num, role_room), index.html vs identity.css tokens |
+| 6 | De-dup + dead functions | 🟡 | 🔶 PARTIAL — deleted dead budget.py + event_server.py (d8aeaaf). `_gate_num` dedup **SKIPPED**: gates.py (split) vs transitions.py (regex) are NOT identical → merging = behavior change, not safe dedup (behavior-preservation wins). runlog + index.html/identity.css token dedup deferred (low value / breakage risk). |
 | 2 | Restructure `os/agents`→`os/toolkit/` + flatten tier nesting into `toolkit/gate/` | 🔴 | ✅ DONE — rename 90279c4, flatten f52b454 (runtime-verified: cli, scan/oracle clusters, uiux, dashboard, sofi CLI; 0 broken refs). `toolkit/ceo`→`core` also done (cd67ec5). Final toolkit/: `core · gate · uiux · devops · _TEMPLATE` (was 8 dirs incl 6 nested tier/role dirs). server-plane KEPT (live remote-publish subsystem, feeds Phase 8). |
 | 6b | Deliberate spawnable frontmatter unification (canonical format for all 105 + reconcile grants with registry) — also fixes the `sofi doctor` write bug | 🟡 | ⏳ |
 | 7 | Build the named-but-unbuilt room tools (kill-criterion-linter, two-track-classifier, token-dup linter, …) | build | ⏳ |
