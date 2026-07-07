@@ -42,6 +42,42 @@ sofi-ux-researcher  sofi-backend-…   sofi-qa-sre-lead   … any leaf specialis
 
 ---
 
+## §0.1. Shard fan-out — one job, N clones of the same specialist (the map pattern · binding)
+
+> **Two shapes of parallelism, one mechanism.** §0's fan-out spawns *different* specialists for *different* kinds of work (backend + frontend + pentest, in one message). **Shard fan-out spawns the *same* specialist N times over a *partitioned* work-list** — restyle 10 admin views, add tests to 12 controllers, audit 8 endpoints for IDOR. Same tool, same one-hop topology; the only new idea is *replication over a disjoint slice-set.*
+
+**The pattern.** When one bounded process cleanly partitions into **N context-independent micro-slices**, the main session spawns **N instances of the same leaf specialist in ONE message** — every RCCF block **identical** except its Command carries a different **shard key** (its slice) and an out-of-bounds fence naming the sibling shards. Each clone does one **tiny, fast** micro-task, holding only its slice in context; they run concurrently; then the **main session merges the N returns in the next round** (the *reduce*). This is map-reduce: the spawns are the **map**, the main session is the **reduce**.
+
+**Why bother.** A big serial grind becomes a wide-shallow sweep. Ten small fast briefs beat one huge slow brief — each clone finishes quickly on a thin context (token-thrift), a stall in one shard never blocks the other nine, and each shard's output is independently gradeable. *few token do trick* — small mouths, many of them.
+
+**No new topology.** 10 clones is still **flat and one-hop** — the main session fires 10 `Agent()` calls; none of them spawns anyone. Depth is still faked with rounds: the *reduce* is a main-session reasoning pass (a mask), **never** a spawn. §0 is untouched — this is that mechanism, replicated.
+
+**The five guardrails (break one and you get silent corruption, not an error):**
+
+| # | Rule | Why |
+|---|------|-----|
+| 1 | **Partition must be disjoint.** No two shards touch the same file / row / endpoint. Split along a natural seam — per-file · per-endpoint · per-entity · per-route-group · per-page. | Parallel writers on one file **collide, last-writer-wins, silently.** If slices *must* write shared paths, isolate each in its own worktree (`sofi worktree`) or serialize them — **don't shard.** |
+| 2 | **Each shard is a full RCCF.** Clone the block; vary **only** Command's slice + out-of-bounds (*"your shard = X; do NOT touch shards Y…Z — a sibling clone owns each"*). Role · Context · Format are byte-identical across all N. | A thin clone-brief wanders exactly like a thin single-brief (§2, 📂). Replication multiplies a bad brief N times. |
+| 3 | **N = real disjoint slices, not a round number.** 10 is illustrative, **not a quota.** Shard to the count of genuinely independent micro-tasks; over-sharding a 3-seam job into 10 clones invents fake work and 7 collide. **Never shard the *sequential phases* of one ticket** — FormReq→Ctrl→Svc is order-dependent, one specialist, one artifact. | Fan-out is licensed by *independence*, not by wanting more agents (§6). |
+| 4 | **The reduce is yours.** After the round returns N artifacts, the **main session** (not a spawn) merges · dedups · verifies into one coherent result, then checkpoints **once**. | Map is parallel; reduce is a single reasoning pass. A spawn cannot reduce its siblings — it can't see them. |
+| 5 | **Respect the concurrency cap + the slice floor.** Fire all N in one message anyway — excess spawns queue and drain as slots free. But don't shard past the point where per-clone re-orientation (each re-reads STATE/CONTEXT) outweighs the slice — micro-slices small, **not trivial.** | Below the floor you pay more orientation overhead than work; the sweep costs more than the grind it replaced. |
+
+**The shape (one message · 10 `Agent()` calls · same Role/Context/Format · sharded Command):**
+```
+clone 01  🎯 Command  Restyle admin view → shard: resources/views/admin/wallets/index.blade.php
+                      out-of-bounds → every other admin view (clones 02–10 each own theirs).
+clone 02  🎯 Command  Restyle admin view → shard: resources/views/admin/wallets/show.blade.php
+                      out-of-bounds → every other admin view.
+   ⋮                    (Role · Context · Format identical to clone 01)
+clone 10  🎯 Command  Restyle admin view → shard: resources/views/admin/settings/index.blade.php
+                      out-of-bounds → every other admin view.
+# → then the main session REDUCES: merge 10 returns · verify once · one checkpoint.
+```
+
+**One-line rule:** *partition the job into disjoint micro-slices, spawn one clone of the specialist per slice in a single message, reduce the returns yourself — map wide, one hop, then merge.* 🪨
+
+---
+
 ## 1. Why four fields (and not three, not five)
 
 Each field removes one specific failure mode. Drop a field → you re-introduce its failure.
@@ -195,7 +231,7 @@ Three upgrades that turn the four-field block from "a good brief" into "a frozen
 
 **Freeze the brief — no instruction drip.** Once the block is complete and the agent is spawned, the RCCF is **frozen**: you do not feed it corrections one message at a time as it works. Mid-flight instruction drip is how scope creeps and context rots. If the brief was wrong, stop the agent, fix the block, re-spawn clean — don't patch it live.
 
-**Budget the autonomy — pick the effort-scaling row.** Every block states its task class from `routing.yaml` `effort_scaling` (trivial-fix · single-role · cross-tier · audit-sweep · arbitration), which fixes the spawn width and call budget, plus a **fail-safe stop** (the 3-attempt self-correction ceiling → 4th = circuit breaker). Bounded autonomy empirically completes *more* tasks, not fewer. Fan out parallel specialists ONLY when the sub-tasks are context-independent; never fan out the sequential phases of one ticket.
+**Budget the autonomy — pick the effort-scaling row.** Every block states its task class from `routing.yaml` `effort_scaling` (trivial-fix · single-role · cross-tier · audit-sweep · arbitration), which fixes the spawn width and call budget, plus a **fail-safe stop** (the 3-attempt self-correction ceiling → 4th = circuit breaker). Bounded autonomy empirically completes *more* tasks, not fewer. Fan out parallel specialists ONLY when the sub-tasks are context-independent; never fan out the sequential phases of one ticket. This licence covers **shard fan-out** (`§0.1`) too — N clones of *one* specialist over a disjoint slice-set, each a micro-task, reduced by the main session.
 
 The **boundaries field is first-class** — Command's `out-of-bounds` is not optional decoration; it is the single most under-used, highest-value line. "What this must NOT touch" (files, other projects, other endpoints, the schema) gets stated explicitly every time.
 

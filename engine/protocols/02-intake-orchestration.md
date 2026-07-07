@@ -88,6 +88,10 @@ verify + checkpoint    python3 engine/tooling/agents/ceo/sofi_verify.py --prj <P
 - **Leaves are spawned in parallel** *within a round*, but **only when their sub-tasks are
   context-independent** (`routing.yaml budgeted_autonomy`). Never fan out the sequential phases of a
   single ticket; those are one specialist, one artifact.
+- **Same job, many slices → shard fan-out.** When one process partitions into *disjoint* micro-slices,
+  spawn **N clones of the *same* leaf specialist in one message** — each clone a tiny fast micro-task,
+  the main session reducing the returns. Still one hop, still one round. Full doctrine + the five
+  guardrails: `01-delegation-rccf.md §0.1`.
 - **Depth is faked by rounds, not nesting.** Round 1's returns inform round 2's spawns. The main
   session is the memory between rounds — that is what replaces the impossible recursive tree.
 
