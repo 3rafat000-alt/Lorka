@@ -9,9 +9,6 @@
 opencode.json
 props-debug.pdf
 
-# —— GitHub workflows (disabled — CI runs in project repos) ——
-.github/
-
 # —— Projects live at their own physical root ~/Desktop/Lorka/projects/ (single-root,
 #    NO symlink, moved in-repo 2026-07-03). Tooling resolves via sofi_tools.paths
 #    (SOFI_PROJECTS_DIR override, else ~/Desktop/projects if present, else this dir).

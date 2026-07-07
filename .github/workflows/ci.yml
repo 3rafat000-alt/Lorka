@@ -1,0 +1,74 @@
+name: SOFI framework CI
+
+# Read-only integrity gate for the SOFI framework itself (not project code).
+# No secrets required — every check reads the tree and fails on drift.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install --quiet pyyaml
+
+      - name: Nexus YAML is valid (registry · routing · gates)
+        run: |
+          python3 - <<'PY'
+          import yaml, glob, sys
+          bad = 0
+          for f in sorted(glob.glob("company/nexus/*.yaml")):
+              try:
+                  yaml.safe_load(open(f)); print(f"  ok   {f}")
+              except Exception as e:
+                  print(f"  FAIL {f}: {e}"); bad += 1
+          sys.exit(1 if bad else 0)
+          PY
+
+      - name: sofi_tools library imports clean
+        run: PYTHONPATH=company/os python3 -c "import sofi_tools.cli; print('cli imports ok')"
+
+      - name: Agent parity — 105 spawnables ↔ 105 room specs ↔ registry
+        run: |
+          python3 - <<'PY'
+          import glob, sys, yaml
+          spawn = {p.split('/')[-1][:-3] for p in glob.glob(".claude/agents/*.md")}
+          specs = {p.split('/')[-1][:-3] for p in glob.glob("company/rooms/*/agents/*.md")}
+          reg = yaml.safe_load(open("company/nexus/registry.yaml"))
+          reg_ids = {a["id"] for r in reg.get("rooms", []) for a in r.get("agents", [])}
+          print(f"spawnables={len(spawn)} specs={len(specs)} registry={len(reg_ids)}")
+          ok = len(spawn) == len(specs) == len(reg_ids) == 105
+          if spawn ^ specs:  print("spawn⇎specs diff:", sorted(spawn ^ specs))
+          if spawn ^ reg_ids: print("spawn⇎registry diff:", sorted(spawn ^ reg_ids))
+          sys.exit(0 if ok and not (spawn ^ specs) and not (spawn ^ reg_ids) else 1)
+          PY
+
+      - name: No hardcoded secrets in tracked files
+        run: |
+          # exclude vendored skills, doc refs, and well-known example/placeholder keys
+          # (e.g. AWS's canonical AKIAIOSFODNN7EXAMPLE, redacted/allowlist contexts)
+          hits=$(git grep -nIE '(ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16})' \
+                   -- ':!company/superpowers/*' ':!**/references/*' \
+                 | grep -viE 'example|allowlist|placeholder|redacted|xxxx' || true)
+          if [ -n "$hits" ]; then
+            echo "$hits"; echo "::error::hardcoded credential found in a tracked file"; exit 1
+          fi
+          echo "no hardcoded secrets in tracked files"
+
+      - name: No committed runtime junk (__pycache__ · *.pid · engine/)
+        run: |
+          bad=$(git ls-files | grep -E '(^|/)__pycache__/|\.pid$|^engine/' || true)
+          if [ -n "$bad" ]; then echo "::error::runtime junk tracked:"; echo "$bad"; exit 1; fi
+          echo "tree is clean of runtime junk"
