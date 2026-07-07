@@ -27,17 +27,26 @@ cli — the `sofi` dispatcher every agent calls.
     sofi oracle <op> ...          external review desk: review·capture·status (alias: sofi gemini)
     sofi tools                    list the tooling registry (shared + per-role scripts)
     sofi doctor                   self-check the library + governance (105↔105 agent parity)
+    sofi plan   <PRJ> [--file F]  freeze a task list (JSON, --file or stdin) into PLAN.dag.json
+    sofi run    <PRJ> [--mark ID:STATUS]  dry driver: render next dispatchable DAG nodes
+    sofi resume <PRJ> [ticket]     machine-checkable resume: FRESH/DEGRADED/UNKNOWN vs git HEAD
+    sofi events [-n N]             tail + summarize the fleet telemetry log
+    sofi lint                      lint the agent roster (frontmatter·RCCF·parity·registry·pins)
+    sofi recall <PRJ> --text Q     search the memory db (memdb) for a project
 
 Exit 0 = ok, non-zero = a gate/governance check failed (CI can gate on it).
 """
 from __future__ import annotations
 
 import argparse
+import json
+import subprocess
 import sys
 from pathlib import Path
 
 from . import (paths, brain, tickets, routing, gates, guard, runlog, gitops,
-               domain, tunnel, registry)
+               domain, tunnel, registry, scheduler, memdb, resume,
+               telemetry, agentlint, transitions)
 
 _ROUTE_DELEGATION = """\
 You are {role}. Project: {prj}.
@@ -213,14 +222,141 @@ def cmd_gate_check(a) -> int:
     print(f"━━ gate-check {a.prj} ━━")
     print(f"  sequence : {' '.join(map(str, order['sequence']))}")
     print(f"  no-skip  : {'✓' if order['ok'] else '✗ ' + '; '.join(order['skips'])}")
+    if order.get("transitions"):
+        print(f"  hops     : {' · '.join(order['transitions'])}")
     if order["loops"]:
         print(f"  loops    : {', '.join(order['loops'])}")
     print(f"  artifacts: {'✓ all ' + str(len(arts['checked'])) + ' present' if arts['ok'] else '✗ missing ' + '; '.join(arts['missing'])}")
     print(f"  rooms    : {'✓ no boundary violations' if room['ok'] else '✗ ' + '; '.join(room['violations'])}")
     print(f"  evidence : {'✓ done-tickets carry proof' if evid['ok'] else '✗ ' + '; '.join(evid['unproven'])}")
     ok = order["ok"] and arts["ok"] and room["ok"] and evid["ok"]
+    if a.to_gate is not None:
+        adv = transitions.check_gate_advance(a.prj, a.to_gate)
+        mark = "✓" if adv["ok"] else "✗"
+        print(f"  advance→{a.to_gate} : {mark} {adv['kind']} — {adv['reason']}")
+        ok = ok and adv["ok"]
     print(f"  VERDICT  : {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
+
+
+def cmd_plan(a) -> int:
+    """Freeze a task list into a DAG (`scheduler.build_dag`+`save_dag`) and
+    print it as mermaid. Tasks JSON: a list of {id, room, agent, gate, deps,
+    task, status?} dicts, read from --file or stdin."""
+    _need_project(a.prj)
+    raw = Path(a.file).read_text(encoding="utf-8") if a.file else sys.stdin.read()
+    try:
+        tasks = json.loads(raw)
+    except json.JSONDecodeError as e:
+        print(f"✗ invalid tasks JSON: {e}", file=sys.stderr)
+        return 2
+    if not isinstance(tasks, list):
+        print("✗ tasks JSON must be a list of task objects", file=sys.stderr)
+        return 2
+    try:
+        dag = scheduler.build_dag(tasks)
+    except ValueError as e:
+        print(f"✗ {e}", file=sys.stderr)
+        return 2
+    out = scheduler.save_dag(a.prj, dag)
+    print(f"✓ saved {out} ({len(dag['nodes'])} node(s))")
+    print(scheduler.to_mermaid(dag))
+    return 0
+
+
+def cmd_run(a) -> int:
+    """Dry driver: load the frozen DAG, optionally mark one node, render the
+    next dispatchable (ready) nodes. Never spawns a model."""
+    _need_project(a.prj)
+    try:
+        dag = scheduler.load_dag(a.prj)
+    except FileNotFoundError as e:
+        print(f"✗ {e}", file=sys.stderr)
+        return 2
+    if a.mark:
+        if ":" not in a.mark:
+            print("✗ --mark must be NODE_ID:STATUS", file=sys.stderr)
+            return 2
+        nid, status = a.mark.split(":", 1)
+        try:
+            scheduler.mark(dag, nid, status)
+        except KeyError as e:
+            print(f"✗ {e}", file=sys.stderr)
+            return 2
+        scheduler.save_dag(a.prj, dag)
+        print(f"✓ marked {nid} → {status}")
+    if scheduler.is_complete(dag):
+        print("✓ DAG complete — all nodes done")
+        return 0
+    ready = scheduler.ready_nodes(dag)
+    if not ready:
+        print("(no ready nodes — blocked on open deps, or an empty plan)")
+        return 0
+    print(f"━━ ready nodes ({len(ready)}) ━━")
+    for n in ready:
+        print(f"  {n['id']:12} {n.get('room', ''):5} {n.get('agent', ''):26} "
+              f"gate {n.get('gate', '')}: {n.get('task', '')[:60]}")
+    return 0
+
+
+def cmd_resume(a) -> int:
+    """Machine-checkable resume: classify a ticket (or the latest breadcrumb)
+    FRESH/DEGRADED/UNKNOWN against the project repo's actual current HEAD."""
+    _need_project(a.prj)
+    proc = subprocess.run(
+        ["git", "-C", str(paths.project_repo(a.prj)), "rev-parse", "HEAD"],
+        capture_output=True, text=True,
+    )
+    current_head = proc.stdout.strip() if proc.returncode == 0 else ""
+    if not current_head:
+        print(f"✗ could not resolve current HEAD for {a.prj}", file=sys.stderr)
+        return 2
+    ticket = a.ticket
+    if not ticket:
+        crumb = resume.latest_breadcrumb(a.prj)
+        if not crumb:
+            print(f"(no breadcrumbs yet for {a.prj})")
+            return 0
+        ticket = crumb.get("ticket", "")
+    result = resume.classify(a.prj, ticket, current_head)
+    print(f"━━ resume {a.prj} {ticket} ━━")
+    print(f"  mode      : {result['mode']}")
+    print(f"  reason    : {result['reason']}")
+    print(f"  next_step : {result['next_step']}")
+    return 0 if result["mode"] != "DEGRADED" else 1
+
+
+def cmd_events(a) -> int:
+    events = telemetry.read_events(a.n)
+    summary = telemetry.summarize_events(events)
+    print(f"━━ events — last {len(events)} (of log) ━━")
+    print(f"  total     : {summary['total']}")
+    print(f"  by_source : {summary['by_source']}")
+    print(f"  by_kind   : {summary['by_kind']}")
+    print(f"  by_agent  : {summary['by_agent']}")
+    if a.verbose:
+        for e in events[-20:]:
+            print(f"  {e}")
+    return 0
+
+
+def cmd_lint(a) -> int:
+    return agentlint.main(a.rest)
+
+
+def cmd_recall(a) -> int:
+    _need_project(a.prj)
+    hits = memdb.search(a.text, k=a.k, project=a.prj)
+    if not hits:
+        print("(no matches)")
+        return 0
+    print(f"━━ recall {a.prj} — {len(hits)} match(es) ━━")
+    for h in hits:
+        if h["type"] == "observation":
+            print(f"  [{h['id']}] obs · {h.get('kind', '')} · {h.get('ts', '')} — {h['summary']}")
+        else:
+            print(f"  [{h['id']}] sec · {h.get('heading', '')} ({h.get('file', '')}) — {h['summary']}")
+    return 0
 
 
 def cmd_dispatch(a) -> int:
@@ -475,7 +611,10 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("route"); s.add_argument("role")
     s.add_argument("priority", nargs="?", default=None); s.set_defaults(fn=cmd_route)
 
-    s = sub.add_parser("gate-check"); s.add_argument("prj"); s.set_defaults(fn=cmd_gate_check)
+    s = sub.add_parser("gate-check"); s.add_argument("prj")
+    s.add_argument("--to-gate", type=int, default=None, dest="to_gate",
+                   help="also validate this proposed advance via transitions.check_gate_advance")
+    s.set_defaults(fn=cmd_gate_check)
 
     s = sub.add_parser("dispatch"); s.add_argument("prj")
     s.add_argument("role", nargs="?", default=None); s.set_defaults(fn=cmd_dispatch)
@@ -542,6 +681,34 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("tools").set_defaults(fn=cmd_tools)
     sub.add_parser("doctor").set_defaults(fn=cmd_doctor)
+
+    s = sub.add_parser("plan", help="freeze a task list (JSON, --file or stdin) into PLAN.dag.json")
+    s.add_argument("prj"); s.add_argument("--file", default=None)
+    s.set_defaults(fn=cmd_plan)
+
+    s = sub.add_parser("run", help="dry driver — render the DAG's next dispatchable nodes")
+    s.add_argument("prj"); s.add_argument("--mark", default=None,
+                   help="NODE_ID:STATUS — mark a node before rendering ready nodes")
+    s.set_defaults(fn=cmd_run)
+
+    s = sub.add_parser("resume", help="machine-checkable resume vs git HEAD (FRESH/DEGRADED/UNKNOWN)")
+    s.add_argument("prj"); s.add_argument("ticket", nargs="?", default=None)
+    s.set_defaults(fn=cmd_resume)
+
+    s = sub.add_parser("events", help="tail + summarize the fleet telemetry log")
+    s.add_argument("-n", type=int, default=100, dest="n")
+    s.add_argument("--verbose", action="store_true")
+    s.set_defaults(fn=cmd_events)
+
+    s = sub.add_parser("lint", help="lint the agent roster (frontmatter·RCCF·parity·registry·pins)")
+    s.add_argument("rest", nargs=argparse.REMAINDER, help="passthrough args (e.g. --pin)")
+    s.set_defaults(fn=cmd_lint)
+
+    s = sub.add_parser("recall", help="search the memory db (memdb) for a project")
+    s.add_argument("prj"); s.add_argument("--text", required=True, dest="text")
+    s.add_argument("--k", type=int, default=8)
+    s.set_defaults(fn=cmd_recall)
+
     return p
 
 

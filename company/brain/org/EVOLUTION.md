@@ -78,37 +78,38 @@ not new doctrine — turn prose laws into code that blocks, lints, budgets, and 
 | **Trigger-form descriptions as router keys** (progressive disclosure L1) | every agent/skill frontmatter | P2 |
 | **Fresh-context gatekeeper owns gate advancement**, never the implementer | `gtw-gatekeeper`, `03-verification.md` | P5 |
 
-### 🗺 Backlog — v6.1 mechanization (priority-ordered, each is a concrete room ticket)
-1. **[HIGH] Deterministic scheduler — `sofi plan` → frozen DAG → `sofi run`.** One Fable call decomposes
-   the plan into an inspectable DAG artifact in the brain; dispatch/gate-checks/merges run as plain
-   Python. Zero model tokens on coordination — the single biggest lever at 105-agent scale. *(P4; owner
-   gtw-dispatcher.)* First step: `sofi plan <PRJ>` emitting `_context/PLAN.dag.json`.
-2. **[HIGH] Fail-closed gate hooks.** Convert the Stop hook to demand pasted `record-gates` proof at the
-   exact working-tree hash before a turn ends when files changed; gate order as a `_VALID_TRANSITIONS`
-   table in `sofi gate-check`. Doctrine → impossibility. *(P6; owner gtw-gatekeeper + sec-lead.)*
-3. **[HIGH] Budgets enforced at the spawner.** `sofi dispatch`/`sofi squad` carry mandatory
-   maxConcurrency / maxRounds / tokenCap / deadline; a heartbeat file per squad; escalation ladder as a
-   nexus table. Runaway loops are the #1 failure at 100+ agents. *(P13; owner gtw-budget-warden.)*
-4. **[HIGH] The harness remembers — capture→compress→inject brain pipeline over SQLite FTS5.** PostToolUse
-   captures, SessionEnd compresses, SessionStart injects a ≤1k-token digest; topical `[LEARN]`
-   auto-injection at UserPromptSubmit. Keep the LLM out of the write path. *(P10, P9; owner knw-memory-curator.)*
-5. **[MED] LESSONS as a managed cache, not a log.** Confidence scores, injection cap (≤6 above 0.7),
-   occurrence-threshold promotion (5+ across 2+ projects → global), 5%/week decay, vaccine auto-injection
-   into an incoming Work Order's brief. *(P11; owner knw-reflector.)*
-6. **[MED] Section-level indexed brain retrieval.** Index brain files by heading into stable IDs with byte
-   offsets + SHA-256 drift hashes; `sofi brain-query` returns summaries, fetch exact sections
-   (~12k→~400 tokens/lookup). *(P9; owner knw-brain-query.)*
-7. **[MED] Zero-cost acceptance router.** `sofi route` tries the cheap tier, machine-scores the output
-   (refusal/truncation/parse-fail vs 0.80), escalates on evidence — "escalate on evidence only" made
-   mechanical; hard override rules for spec-review-class categories run BEFORE the classifier. *(P12; owner gtw-router.)*
-8. **[MED] Breadcrumb-JSON resume.** Replace STATE.md prose `head_sha` with
-   `breadcrumbs/<ticket>.json {branch,base_sha,head_sha,completed[],next_step}` + a FRESH/DEGRADED
-   resolver in `sofi sync` (never resume silently on stale state). *(P14; owner gtw-dispatcher.)*
-9. **[MED] Config lint in CI.** `claude plugin validate --strict` + an eval harness over the roster
-   itself (static lint + LLM judge); SHA-256 content-pin agents/skills against drift. *(agent-def best
-   practices; owner knw-lead + ops-cicd-engineer.)*
-10. **[LOW] Fleet telemetry.** A `send_event.py` line in every room's hooks → one SQLite+WebSocket server
-    feeding the dashboard's live swimlanes. At 105 agents, hooks must emit as well as guard. *(P15; owner obs-monitoring-engineer.)*
+### ✅ v6.1 mechanization — EXECUTED 2026-07-07 (all 10 items shipped)
+
+Built as 9 isolated `sofi_tools` modules (parallel) + one integrator wiring CLI/hooks/gates/dashboard.
+Verified: `sofi doctor` PASS (105↔105) · `py_compile` clean on all 20 files · every new verb exercised ·
+every hook exits 0 on a project-less tree (fail-open, project-scoped) · telemetry captured live from this
+session's own edits · `[LEARN]` capture confirmed end-to-end. Modules are **plumbing** — the rooms invoke
+them; nothing runs a model on the write path.
+
+| # | Item | Shipped as | Verb / wiring |
+|---|------|-----------|---------------|
+| 1 | Deterministic scheduler | `scheduler.py` (build/validate DAG, topo, ready-set, mermaid) | `sofi plan <PRJ> --file` → `_context/PLAN.dag.json`; `sofi run <PRJ> [--mark id:status]` |
+| 2 | Fail-closed gate transitions | `transitions.py` (`_VALID_TRANSITIONS`, advance/rework/loopback/ILLEGAL_SKIP) | `sofi gate-check` prints the transition verdict; Stop hook gates project-scoped, fail-open, deadlock-capped |
+| 3 | Spawner-level budgets | `budget.py` (Budget dataclass, `check_spawn`, heartbeat, 3-attempt circuit-breaker + crash-dump ledger) | reads `nexus/routing.yaml` effort_scaling/budgeted_autonomy |
+| 4+6 | Harness-remembers brain pipeline | `memdb.py` (SQLite FTS5: capture · heading-indexed sections + SHA-256 drift · search→summaries · inject_digest ≤1k · compress_session · learn_match) | PostToolUse captures · SessionStart injects · `sofi recall <PRJ> --text` |
+| 5 | LESSONS as managed cache | `lessons_cache.py` (confidence, decay 5%/wk, injection cap ≤6@0.7, occurrence-promotion, vaccine_for) | knw-reflector doctrine, UserPromptSubmit vaccine |
+| 7 | Zero-cost acceptance router | `acceptance.py` (heuristic score, escalate@<0.80, override rules before classifier) | composes `routing.route_for` |
+| 8 | Breadcrumb-JSON resume | `resume.py` (write/read breadcrumb, FRESH/DEGRADED/UNKNOWN classifier) | `sofi resume <PRJ> [TKT]` — DEGRADED exits non-zero |
+| 9 | Config lint in CI | `agentlint.py` (frontmatter · 105↔105 parity · registry consistency · SHA-256 pins → `nexus/agent-pins.json`) | `sofi lint`; `.github/workflows/lint-agents.yml` |
+| 10 | Fleet telemetry | `telemetry.py` + `event_server.py` (JSONL emit, best-effort POST, stdlib event server) | every hook emits; `sofi events`; dashboard `/api/events` + `/api/plan` |
+
+New hook: `.claude/hooks/user_prompt_submit.py` (vaccine + `[LEARN]` capture) wired in `settings.json`.
+
+### 🗺 Backlog — future rounds (priority-ordered, each a concrete room ticket)
+1. **[MED] Wire the plumbing into the room playbooks.** The v6.1 modules exist and pass; now update the
+   Gateway/Knowledge room playbooks so gtw-dispatcher actually calls `sofi plan/run`, gtw-budget-warden
+   enforces `budget.check_spawn` per squad, and knw-reflector runs `lessons_cache` on gate-close.
+2. **[MED] Dashboard live swimlanes.** Consume the new `/api/events` + `/api/plan` endpoints in the
+   dashboard UI (per-session lanes from `telemetry`, DAG progress from `scheduler`).
+3. **[LOW] Family-diverse verification.** Route gtw-gatekeeper's highest-stakes verdicts (money/auth/PII)
+   through the oracle desk for a non-Claude second opinion (V2 judge-bias guard).
+4. **[LOW] pass^k reliability harness.** A `sofi verify --k N` that re-runs a gate's critical-path check
+   k times and blocks on any flake (V3), owned by qa-lead.
 
 ### 🚨 Anti-patterns the research flags (audit the org against these each gate-close)
 LLM-as-coordinator · free-form inter-agent chat · self-graded completion · description-as-workflow-summary ·

@@ -40,7 +40,8 @@ sys.path.insert(0, str(_TOOLING))
 sys.path.insert(0, str(_ROOT / "company" / "os" / "agents" / "ceo"))
 
 try:
-    from sofi_tools import tickets, gates, brain, paths, registry as sregistry  # noqa: E402
+    from sofi_tools import (tickets, gates, brain, paths, registry as sregistry,  # noqa: E402
+                            telemetry, scheduler)
     _HAVE_TOOLS = True
 except Exception as e:  # degrade gracefully; the UI shows the error rather than lying
     print(f"[warn] sofi_tools import failed: {e}", file=sys.stderr)
@@ -359,6 +360,34 @@ def api_reflection(prj: str):
 @app.get("/api/state")
 def api_state(prj: str):
     return JSONResponse(build_state(prj))
+
+
+@app.get("/api/events")
+def api_events(n: int = 100):
+    """Read-only: tail + summarize the fleet telemetry log (v6.1 telemetry.py).
+    Never fabricated — empty/error when sofi_tools or the log is unavailable."""
+    if not _HAVE_TOOLS:
+        return JSONResponse({"events": [], "summary": {}, "error": "sofi_tools unavailable"})
+    try:
+        events = telemetry.read_events(n)
+        return JSONResponse({"events": events, "summary": telemetry.summarize_events(events)})
+    except Exception as e:
+        return JSONResponse({"events": [], "summary": {}, "error": str(e)})
+
+
+@app.get("/api/plan")
+def api_plan(prj: str):
+    """Read-only: render the project's frozen DAG (PLAN.dag.json, v6.1
+    scheduler.py) as mermaid, when one exists."""
+    if not _HAVE_TOOLS:
+        return JSONResponse({"mermaid": "", "dag": None, "error": "sofi_tools unavailable"})
+    try:
+        dag = scheduler.load_dag(prj)
+        return JSONResponse({"mermaid": scheduler.to_mermaid(dag), "dag": dag})
+    except FileNotFoundError:
+        return JSONResponse({"mermaid": "", "dag": None, "note": f"no PLAN.dag.json for {prj}"})
+    except Exception as e:
+        return JSONResponse({"mermaid": "", "dag": None, "error": str(e)})
 
 
 @app.get("/api/snapshot")

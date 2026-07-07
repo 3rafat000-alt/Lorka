@@ -110,9 +110,19 @@ def _gate_num(raw: str) -> int | None:
 def validate_no_skip(prj: str) -> dict:
     """Walk the ticket queue forward; confirm gates never skip a step.
 
-    Returns {ok, sequence, skips, loops}. A loop-back (gate N → gate M<N) is
-    allowed and reported separately, not counted as a skip.
+    Returns {ok, sequence, skips, loops, transitions}. A loop-back (gate N →
+    gate M<N) is allowed and reported separately, not counted as a skip.
+    `transitions` (v6.1) additionally names the transitions.valid_transition
+    kind (advance/rework/loopback/ILLEGAL_SKIP) for each adjacent hop in the
+    ticket sequence — the mechanical state-machine verdict layered on top of
+    this validator's own +1-jump heuristic, without changing this function's
+    existing return shape (only a field is added).
     """
+    # Local import: transitions.py imports gates at module scope, so importing
+    # transitions at gates.py module scope would cycle; both modules are fully
+    # loaded by the time this function actually runs.
+    from . import transitions
+
     seq: list[int] = []
     loops: list[str] = []
     for t in tickets.parse(prj):
@@ -132,11 +142,17 @@ def validate_no_skip(prj: str) -> dict:
             skips.append(f"jumped {highest}→{g}")
         highest = max(highest, g)
 
+    trans: list[str] = []
+    for i in range(1, len(seq)):
+        _ok, kind = transitions.valid_transition(seq[i - 1], seq[i])
+        trans.append(f"{seq[i - 1]}→{seq[i]}: {kind}")
+
     return {
         "ok": not skips,
         "sequence": seq,
         "skips": skips,
         "loops": loops,
+        "transitions": trans,
     }
 
 
