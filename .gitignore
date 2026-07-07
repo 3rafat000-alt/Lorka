@@ -40,6 +40,7 @@ id_rsa.*
 **/.claude/memory/
 .sofi-run/
 *.pid
+.sofi_agent_briefing_current
 
 # —— Ephemeral scratch (GOVERNANCE Rule 3 — purged at gate exit, never a deliverable) ——
 _scratch/

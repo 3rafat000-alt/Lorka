@@ -10,13 +10,14 @@ import sys
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
-_SOFI_ROOT = _HERE.parents[2]  # /sofi from /tooling/agents/ceo
+_SOFI_ROOT = _HERE.parents[2]  # company/ (from company/os/toolkit/core/)
 
+# v6/v7 binding doctrine an agent must run with. (v5's AGENT_BRIEFING.md /
+# DOCTRINE.md / protocols/02-autonomous-gemini-loop.md were replaced by these.)
 BRIEFING_FILES = [
-    "AGENT_BRIEFING.md",
-    "GEMINI_LOOP_ARCHITECTURE.md",
-    "protocols/02-autonomous-gemini-loop.md",
-    "DOCTRINE.md",
+    "CONSTITUTION.md",
+    "constitution/00-operating-system.md",
+    "os/oracle/GEMINI_LOOP_ARCHITECTURE.md",
 ]
 
 
