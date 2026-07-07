@@ -43,7 +43,7 @@ SECRET_PATTERNS = [
     r'(?i)(password|secret|api[_-]?key|api[_-]?secret|access[_-]?key|token)\s*[=:]\s*["\']?[A-Za-z0-9/\+_\-]{12,}',
 ]
 
-# —— Git discipline (engine/protocols/git-discipline.md) — enforced at commit time ——
+# —— Git discipline (company/constitution/06-git-discipline.md) — enforced at commit time ——
 # Commit subjects MUST start with a Conventional-Commit type.
 CONVENTIONAL = re.compile(
     r'^(feat|fix|chore|docs|refactor|test|perf|ci|build|style|revert|wip)'
@@ -79,7 +79,7 @@ def check_commit(command: str):
     # Never stage/commit a forbidden path named explicitly on the command line.
     # (.env.example is allowed — the pattern only matches secret/runtime variants.)
     if FORBIDDEN_PATH.search(norm) and not re.search(r'\.env\.example\b', norm):
-        return "stages a secret / runtime / _scratch path (git-discipline §7) — never commit it"
+        return "stages a secret / runtime / _scratch path (06-git-discipline.md §7) — never commit it"
     if is_commit:
         m = _MSG.search(command)
         if m:
@@ -91,7 +91,7 @@ def check_commit(command: str):
             if not CONVENTIONAL.match(msg):
                 return ("commit message must start with a type "
                         "(feat|fix|chore|docs|refactor|test|perf|ci|build|style|revert|wip): … "
-                        "— see git-discipline.md §4")
+                        "— see company/constitution/06-git-discipline.md §4")
     return None
 
 

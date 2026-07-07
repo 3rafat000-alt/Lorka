@@ -22,8 +22,11 @@
   "integrations": {
     "sofi": {
       "enabled": true,
-      "rostersPath": "engine/ROSTER.md",
-      "protocolsPath": "engine/protocols"
+      "version": "6.0",
+      "rostersPath": "company/ORG.md",
+      "registryPath": "company/nexus/registry.yaml",
+      "constitutionPath": "company/CONSTITUTION.md",
+      "protocolsPath": "company/constitution"
     }
   }
 }

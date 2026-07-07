@@ -23,18 +23,21 @@ import sys
 
 _HERE = pathlib.Path(__file__).resolve().parent
 _ROOT = _HERE.parent
-sys.path.insert(0, str(_ROOT / "engine" / "tooling"))
+sys.path.insert(0, str(_ROOT / "company" / "os"))
 try:
-    from sofi_tools import paths, tickets, gates, brain
+    from sofi_tools import paths, tickets, gates, brain, registry as sregistry
     _OK = True
 except Exception as e:
     print(f"[project_reader] sofi_tools import failed: {e}", file=sys.stderr)
     _OK = False
 
-# The 30 real role slugs (for agent detection in freeform prose).
+# The 105 real agent ids (for agent detection in freeform prose) — registry-driven.
 ROLE_SLUGS = set()
 if _OK:
-    ROLE_SLUGS = set(tickets.ROLE_TIER) | set(tickets.ADVISOR_TIER)
+    try:
+        ROLE_SLUGS = set(sregistry.agents())
+    except Exception:
+        ROLE_SLUGS = set()
 # Also match the historical sofi-<slug> agent form and legacy names.
 _AGENT_RE = re.compile(r"sofi-([a-z][a-z0-9-]+)|(?<![a-z-])(" +
                        "|".join(sorted((ROLE_SLUGS or {"ceo-sofi"}), key=len, reverse=True)) +
@@ -248,7 +251,7 @@ def observatory(prj: str) -> dict:
         return {"error": "sofi_tools unavailable"}
     try:
         g = {"no_skip": gates.validate_no_skip(prj), "artifacts": gates.validate_artifacts(prj),
-             "tier_boundary": gates.validate_tier_boundary(prj), "evidence": gates.validate_evidence(prj)}
+             "room_boundary": gates.validate_room_boundary(prj), "evidence": gates.validate_evidence(prj)}
     except Exception as e:
         g = {"error": str(e)}
     return {"pulse": team_pulse(prj), "worklog": state_worklog(prj, 40),
