@@ -81,7 +81,7 @@ gates:
       - "docs/<PRJ>_A11y_Matrix.md (WCAG 2.2 AA)"
     exit_bar:
       - "WCAG 2.2 AA matrix passes — accessibility wins over any taste dial (/sofi-design-taste)"
-      - "every screen traces 1:1 to a Journey Map stage; every state (empty/loading/error) specified"
+      - "every screen traces 1:1 to a Journey Map stage; every state (empty/loading/error/offline/partial) specified"
       - "all UI strings live in Content_Strings.json — none invented downstream"
       - "THE FREEZE: dsn-lead signs — after this ticket, the prototype IS truth for everything downstream (Teaching I)"
     on_fail: "bounced inside the room until AA passes; a screen with no journey stage is deleted, not argued for"
@@ -136,7 +136,7 @@ gates:
       - "database migrations WITH tested down() (dat-db-engineer)"
     exit_bar:
       - "OpenAPI + Journey Map = the single truth — request/response byte-parity with the contract; no null-accessor client code"
-      - "ALL states built: empty / loading / error, per the frozen prototype"
+      - "ALL states built: empty / loading / error / offline / partial, per the frozen prototype"
       - "every diff passed its room's fresh-context code reviewer (bck/fnt-code-reviewer, V2) before leaving the room"
       - "leads gate-merge worktrees at close (sofi gate-merge --no-ff) — never before"
     on_fail: "contract drift → reject upward to 04-architecture (the contract is frozen, the code moves, not the spec); failed review → back to the engineer, attempt-counted toward the circuit breaker"
