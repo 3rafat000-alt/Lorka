@@ -1,4 +1,0 @@
-Evaluate result. Output JSON only:
-{"score":0.0-1.0,"goal_achieved":bool,
-"key_insight":"...","improvements":[],
-"failure_pattern":bool,"alert_human":bool}

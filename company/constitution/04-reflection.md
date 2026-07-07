@@ -6,7 +6,7 @@ A company that files the same escalation twice has a memory problem, not a skill
 
 ## The three hard rules (from the research, not opinion)
 
-1. **Scheduled, never per-turn.** Continuous "update memory after every interaction" measurably *degrades* memory quality. Reflection runs at **gate-close** or **on demand** (`/sofi-reflect`), never inside a working turn. Specialists do not self-reflect mid-task — `knw-reflector` runs the loop over *closed* work. (The OODA engine's per-cycle scoring in `company/os/ooda/` is a separate, lightweight runtime signal — it feeds candidates to this loop; it never writes lessons itself. Two engines, deliberately distinct.)
+1. **Scheduled, never per-turn.** Continuous "update memory after every interaction" measurably *degrades* memory quality. Reflection runs at **gate-close** or **on demand** (`/sofi-reflect`), never inside a working turn. Specialists do not self-reflect mid-task — `knw-reflector` runs the loop over *closed* work.
 2. **Retain by default, consolidate deliberately.** Never overwrite or delete a raw episode to "tidy up." The engine only *adds* distilled lessons for signals it hasn't already distilled (dedup by `sig:`). Raw `HANDOFFS.md` history stays intact — it is the audit trail and the future training ground.
 3. **Distil to a lesson, not a re-summary.** A lesson is `situation · what-failed · rule` in one or two lines — the durable rule that prevents recurrence — not a paragraph re-narrating the ticket. Logs don't compound; rules do.
 

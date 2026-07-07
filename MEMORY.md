@@ -75,10 +75,9 @@
 | Dispatcher + all CLI verbs | `company/os/bin/sofi` |
 | Shared Python library | `company/os/sofi_tools/` |
 | Per-role toolkits (scanners) | `company/os/agents/` |
-| OODA autonomous engine | `company/os/ooda/` |
 | Local domains / public tunnels | `company/constitution/07-security-law.md` · `sofi domain` / `sofi tunnel` |
 | Oracle desk (external review) | `company/os/oracle/` · `sofi oracle review` · owner `gtw-external-reviewer` |
-| Autopilot / caveman / server-plane | `company/os/{autopilot,caveman,server-plane}/` |
+| caveman / server-plane | `company/os/{caveman,server-plane}/` |
 | Superpowers registry | `company/superpowers/SUPERPOWERS.md` |
 | Who holds Web tools | `company/nexus/registry.yaml` (grants) · `company/constitution/09-research-law.md` |
 | Artifact templates (ADR, OpenAPI, journey map…) | `company/templates/` |
