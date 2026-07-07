@@ -13,9 +13,13 @@ task: model entities for the audit-log journey; reversible migrations.
 consumes: docs/PRJ-0001_Tech_Stack.md, OpenAPI.yaml
 expected: docs/PRJ-0001_Schema.sql + ERD + migrations(+rollback)
 route: sonnet-4-6 · high · full
+depends_on: TKT-011, TKT-012
 status: open | accepted | done | rejected
 ```
 Caveman one-liner form when terse: `@Tier1.Data-Schema-Engineer -> model audit entities -> Schema.sql {sonnet-4-6·high·full}`.
+
+## Dependency-aware next-ticket (v5.1 — the machine frontier, not a hand-picked queue)
+`depends_on:` names the tickets that must be `done` before this one is pickable (omit / `none` = unblocked now). This turns `HANDOFFS.md` from a queue the brain layer eyeballs by gate-order into a real dependency DAG — so parallel worktree squads get a deterministic "what can start right now" instead of a judgment call. The resolver is 0-model-token: `python3 engine/tooling/agents/ceo/next_ticket.py --prj <PRJ>` returns the **unblocked frontier** (every open ticket whose `depends_on` are all `done`), and `--check TKT-0NN` fails (exit≠0) if you try to start a ticket whose deps aren't closed. Grounded in claude-task-master's `next` (dependency-aware unblocked resolution). The brain layer scans the frontier; leaves still receive one frozen RCCF as before. Gate-order (no-skip, `00-operating-system.md`) still binds — a dependency edge never lets work jump a gate.
 
 ## Tier isolation (binding — no exceptions)
 A ticket's `to:`/`from:` may only name an agent in the **same tier** as the sender, or that tier's own **Advisor** (`tier-0-advisor` … `tier-4-advisor`). A specialist may never address a specialist in another tier directly — not even "just a quick question." Cross-tier work is always a **request** addressed to your own tier's Advisor, who forwards it to the target tier's Advisor, who assigns it internally; the answer returns the same path as a **report**. `sofi_tools.tickets.validate_tier_boundary()` enforces this and is wired into `sofi gate-check` — a boundary violation fails the gate the same way a skipped gate does.

@@ -107,6 +107,7 @@ task: produce Project_Blueprint.md + 5 deep questions.
 consumes: user request
 expected: docs/${ID}_Project_Blueprint.md
 route: opus-4-8 · high · lite
+depends_on: none
 status: open
 EOF
 
