@@ -73,7 +73,7 @@ Routes are copied verbatim from `company/nexus/routing.yaml` (`routes.<id>`) —
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/toolkit/ceo/sofi_verify.py` (mechanical lint/build-health gate every merge passes through), `company/os/toolkit/ceo/sofi_scan.py` (modes `search`/`wiring`/`security` for locating a screen, a Bloc, or a platform-channel seam), `company/os/toolkit/ceo/feature_scan.py` + `spec_review_preflight.py` (the Phase-1 scan behind any `/sofi-spec-review` this room's work triggers).
+See `tools/README.md`. Headline: `company/os/toolkit/core/sofi_verify.py` (mechanical lint/build-health gate every merge passes through), `company/os/toolkit/core/sofi_scan.py` (modes `search`/`wiring`/`security` for locating a screen, a Bloc, or a platform-channel seam), `company/os/toolkit/core/feature_scan.py` + `spec_review_preflight.py` (the Phase-1 scan behind any `/sofi-spec-review` this room's work triggers).
 
 ## Skills index
 

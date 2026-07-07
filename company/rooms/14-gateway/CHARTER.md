@@ -76,7 +76,7 @@ Routes are copied verbatim from `company/nexus/routing.yaml` (`routes.<id>`) —
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/sofi_tools/gates.py` (`sofi gate-check`, this room's mechanical verification layer), `company/os/toolkit/ceo/gemini_review.py` + `gemini_bridge.py` + `sanitize_gemini_payload.py` (the oracle desk's full driver stack, all three owned by `gtw-external-reviewer` in `registry.yaml`), `company/os/toolkit/ceo/dispatch.py` (`gtw-dispatcher`'s ticket-render tool), `company/os/toolkit/ceo/handoff_validator.py` (`gtw-gatekeeper`'s evidence-validation support), `company/os/sofi_tools/routing.py` (`sofi route`, `gtw-router`'s ground truth reader).
+See `tools/README.md`. Headline: `company/os/sofi_tools/gates.py` (`sofi gate-check`, this room's mechanical verification layer), `company/os/toolkit/core/gemini_review.py` + `gemini_bridge.py` + `sanitize_gemini_payload.py` (the oracle desk's full driver stack, all three owned by `gtw-external-reviewer` in `registry.yaml`), `company/os/toolkit/core/dispatch.py` (`gtw-dispatcher`'s ticket-render tool), `company/os/toolkit/core/handoff_validator.py` (`gtw-gatekeeper`'s evidence-validation support), `company/os/sofi_tools/routing.py` (`sofi route`, `gtw-router`'s ground truth reader).
 
 ## Skills index
 

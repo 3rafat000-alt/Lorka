@@ -37,7 +37,7 @@ _HERE = pathlib.Path(__file__).resolve().parent
 _ROOT = _HERE.parent                                   # .../Lorka
 _TOOLING = _ROOT / "company" / "os"
 sys.path.insert(0, str(_TOOLING))
-sys.path.insert(0, str(_ROOT / "company" / "os" / "toolkit" / "ceo"))
+sys.path.insert(0, str(_ROOT / "company" / "os" / "toolkit" / "core"))
 
 try:
     from sofi_tools import (tickets, gates, brain, paths, registry as sregistry,  # noqa: E402

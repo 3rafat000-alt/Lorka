@@ -11,13 +11,13 @@
 | `company/os/sofi_tools/brain.py` (`sofi brain`, `sofi brain-query`) | every `obs-*` agent | Reads/writes the project brain; `brain-query type:lesson` is the lookup `obs-incident-commander` runs before triaging and `obs-insights-analyst` runs before analyzing a drop-off, both checking for a comparable prior pattern in `LESSONS.md` before starting from a blank page. |
 | `company/os/sofi_tools/runlog.py` | every `obs-*` agent that mutates the brain | Appends a `_context/_runlog.md` line on any state-mutating action this room takes — an SLO redefinition, an issue auto-filed on breach, a Gate-1 re-open ticket written (Rule 6). |
 | `company/os/sofi_tools/tickets.py` (`sofi escalate`, ticket read/write) | `obs-lead`, `obs-incident-commander` | The mechanical ticket layer under `sofi escalate`/`sofi dispatch` — what `obs-incident-commander`'s immediate security-spur handoff (step 4a, `playbooks/incident-response-postmortem.md`) actually files, and what `obs-lead` uses to open the formal Gate-1 re-open. |
-| `company/os/toolkit/ceo/sofi_scan.py` (`search`/`wiring` modes) | `obs-monitoring-engineer` | Locates existing instrumentation hooks or a metric-emission seam in the codebase at zero model tokens before he writes new instrumentation from scratch — the same Python-locates-model-judges pattern the rest of the company uses. |
+| `company/os/toolkit/core/sofi_scan.py` (`search`/`wiring` modes) | `obs-monitoring-engineer` | Locates existing instrumentation hooks or a metric-emission seam in the codebase at zero model tokens before he writes new instrumentation from scratch — the same Python-locates-model-judges pattern the rest of the company uses. |
 
 No script above is owned exclusively by this room's *process* — `sofi_tools` is the company's standing console, invoked here under each specialist's own agent id and logged to `.claude/memory/audit.jsonl`. `observe_sentry_loop.py` is the one script genuinely re-owned into this room from v5's flat tier-4 toolkit; it carries its original header forward, now read against the v6 `obs-monitoring-engineer`/`obs-lead` ids.
 
 ## What a new Observability tool would look like
 
-A genuinely new script belongs at `company/rooms/12-observability/tools/<name>.py`, only when no existing script in `company/os/sofi_tools/`, `company/os/toolkit/gate/`, or `company/os/toolkit/ceo/` already covers the job — check `company/nexus/registry.yaml`'s `tools:` section and `company/os/GOVERNANCE.md`'s registry rule before writing anything (Article 00 §5, "arm up"). Header contract, mandatory (Rule 8):
+A genuinely new script belongs at `company/rooms/12-observability/tools/<name>.py`, only when no existing script in `company/os/sofi_tools/`, `company/os/toolkit/gate/`, or `company/os/toolkit/core/` already covers the job — check `company/nexus/registry.yaml`'s `tools:` section and `company/os/GOVERNANCE.md`'s registry rule before writing anything (Article 00 §5, "arm up"). Header contract, mandatory (Rule 8):
 
 ```python
 #!/usr/bin/env python3

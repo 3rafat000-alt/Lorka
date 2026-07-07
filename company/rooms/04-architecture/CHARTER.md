@@ -77,7 +77,7 @@ Routes are copied verbatim from `company/nexus/routing.yaml` (`routes.<id>`) —
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/toolkit/gate/fossflow_export.py` (topology spec → FossFLOW isometric diagram JSON), `company/os/toolkit/gate/migration_check.py` (mechanical "no rollback = rejected" enforcement), `company/os/toolkit/gate/stride_scaffold.py` (STRIDE skeleton, consumed by `09-security` but readable here for alignment), `company/os/toolkit/ceo/feature_scan.py` + `sofi_automator.py` + `spec_review_preflight.py` (the Phase-1 scan `arc-review-architect` runs before every spec-review).
+See `tools/README.md`. Headline: `company/os/toolkit/gate/fossflow_export.py` (topology spec → FossFLOW isometric diagram JSON), `company/os/toolkit/gate/migration_check.py` (mechanical "no rollback = rejected" enforcement), `company/os/toolkit/gate/stride_scaffold.py` (STRIDE skeleton, consumed by `09-security` but readable here for alignment), `company/os/toolkit/core/feature_scan.py` + `sofi_automator.py` + `spec_review_preflight.py` (the Phase-1 scan `arc-review-architect` runs before every spec-review).
 
 ## Skills index
 

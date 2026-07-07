@@ -39,7 +39,7 @@ import sys
 from pathlib import Path
 
 # ── reuse the CEO engine (same-repo import) ──
-_CEO = Path(__file__).resolve().parents[1] / "ceo"
+_CEO = Path(__file__).resolve().parents[1] / "core"
 sys.path.insert(0, str(_CEO))
 try:
     import sofi_scan  # type: ignore

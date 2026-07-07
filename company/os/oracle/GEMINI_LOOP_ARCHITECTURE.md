@@ -45,7 +45,7 @@ User: Reads status. Observes. No questions.
                            ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ LAYER 2: GEMINI ROUTING (Python tooling)                        │
-│ - company/os/toolkit/ceo/gemini_review.py                      │
+│ - company/os/toolkit/core/gemini_review.py                      │
 │   ├─ Sanitize (redact secrets before send)                      │
 │   ├─ Condense (if >6k chars, drop code, keep signal)            │
 │   ├─ Push (send report + standing preamble to desk)             │
@@ -57,7 +57,7 @@ User: Reads status. Observes. No questions.
                            ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ LAYER 3: GEMINI BRIDGE (Playwright automation)                  │
-│ - company/os/toolkit/ceo/gemini_bridge.py                      │
+│ - company/os/toolkit/core/gemini_bridge.py                      │
 │ - Attaches to browser (--remote-debugging-port=9222)            │
 │ - Navigates to pinned Gemini chat                               │
 │ - Sends message (push)                                          │

@@ -30,7 +30,7 @@ No layer → `all`. No PRJ → active project (newest `STATE.md`).
 
 Lean on the unified Python engine before reading anything by hand:
 ```bash
-python3 company/os/toolkit/ceo/sofi_scan.py <mode> "<query>" --prj <PRJ> --md
+python3 company/os/toolkit/core/sofi_scan.py <mode> "<query>" --prj <PRJ> --md
 ```
 Mode per layer: `ui/blade/css` → `design` · `integration` → `wiring` · `api/db/js` → `search`
 then open hits · `all` → `all`. UserFlow/journey → `flow` (routes→views + orphan/dead-end views).

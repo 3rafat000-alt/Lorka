@@ -54,9 +54,9 @@ sofi dispatch PRJ-XXXX --agent mob-release-engineer --ticket TKT-NNN     # signi
 flutter analyze
 flutter test
 dart format --set-exit-if-changed lib/
-python3 company/os/toolkit/ceo/sofi_verify.py --prj PRJ-XXXX --only lint
-python3 company/os/toolkit/ceo/sofi_scan.py wiring "" --prj PRJ-XXXX --md
-python3 company/os/toolkit/ceo/sofi_scan.py security "" --prj PRJ-XXXX --md
+python3 company/os/toolkit/core/sofi_verify.py --prj PRJ-XXXX --only lint
+python3 company/os/toolkit/core/sofi_scan.py wiring "" --prj PRJ-XXXX --md
+python3 company/os/toolkit/core/sofi_scan.py security "" --prj PRJ-XXXX --md
 ```
 Each specialist runs these on their own diff before handing it up; `mob-lead` re-confirms before his own review pass. A failing exit code stops the pipeline — fix before proceeding, never route a red diff to review "to save a step."
 

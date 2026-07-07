@@ -19,11 +19,11 @@ description: The one big command — take a feature end-to-end through the full 
 
 ### 1. Scan (Python, token-frugal — the token saver)
 ```bash
-python3 company/os/toolkit/ceo/feature_scan.py "<feature>" --prj <PRJ> --md         # 4-pillar file-set + pre-flags
-python3 company/os/toolkit/ceo/sofi_scan.py security "<feature>" --prj <PRJ> --md    # OWASP pre-flags
-python3 company/os/toolkit/ceo/sofi_scan.py design   "<feature>" --prj <PRJ> --md    # taste/a11y/RTL pre-flags
-python3 company/os/toolkit/ceo/sofi_scan.py wiring   "<feature>" --prj <PRJ> --md    # interconnection gaps
-python3 company/os/toolkit/ceo/sofi_scan.py flow      ""         --prj <PRJ> --md    # UserFlow + orphan views
+python3 company/os/toolkit/core/feature_scan.py "<feature>" --prj <PRJ> --md         # 4-pillar file-set + pre-flags
+python3 company/os/toolkit/core/sofi_scan.py security "<feature>" --prj <PRJ> --md    # OWASP pre-flags
+python3 company/os/toolkit/core/sofi_scan.py design   "<feature>" --prj <PRJ> --md    # taste/a11y/RTL pre-flags
+python3 company/os/toolkit/core/sofi_scan.py wiring   "<feature>" --prj <PRJ> --md    # interconnection gaps
+python3 company/os/toolkit/core/sofi_scan.py flow      ""         --prj <PRJ> --md    # UserFlow + orphan views
 ```
 Emits compact skeletons: file set by pillar + static pre-flags across data, security,
 design, wiring, and UserFlow (`file:line · hint · severity`). **Read these instead of

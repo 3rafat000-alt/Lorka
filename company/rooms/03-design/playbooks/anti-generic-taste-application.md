@@ -11,7 +11,7 @@ Every Gate-2 pass, once `dsn-design-system`'s base tokens and `dsn-ui-designer`'
 ### 1. Scan first — Python engine, token-frugal, 0 model tokens
 ```bash
 python3 company/os/toolkit/uiux/uiux_pipeline.py scan --prj PRJ-XXXX [--query <screen/feature>] --md
-python3 company/os/toolkit/ceo/sofi_scan.py design "<view/feature>" --prj PRJ-XXXX --md
+python3 company/os/toolkit/core/sofi_scan.py design "<view/feature>" --prj PRJ-XXXX --md
 ```
 These flag hardcoded hex values, `!important`, missing `alt`/`aria`, div-elements acting as buttons, no-reduced-motion animations, and generic-AI-UI smells (centered hero, three equal cards, one accent color, zero motion) — mechanically, before any model reads a single screen. Open only the flagged `file:line`s.
 

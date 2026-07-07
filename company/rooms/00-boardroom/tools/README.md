@@ -4,7 +4,7 @@
 
 ## Existing tools this room uses (real paths, grep-verified)
 
-All under `company/os/toolkit/ceo/` — this directory is effectively the Boardroom's toolbox, ported from v5's `engine/tooling/agents/ceo/` and adapted for the 15-room/105-agent structure:
+All under `company/os/toolkit/core/` — this directory is effectively the Boardroom's toolbox, ported from v5's `engine/tooling/agents/ceo/` and adapted for the 15-room/105-agent structure:
 
 | Script | Used by | What it does |
 |---|---|---|
@@ -25,7 +25,7 @@ No script above is owned exclusively by a single Boardroom officer — `ceo_tool
 
 ## What a new Boardroom tool would look like
 
-A genuinely new script belongs at `company/rooms/00-boardroom/tools/<name>.py`, only when no existing script in `company/os/toolkit/ceo/` (or a shared `sofi_tools` module) already covers the job — check `company/nexus/registry.yaml` and `company/os/GOVERNANCE.md`'s registry before writing anything (Article 00 §5, "arm up"). Header contract, mandatory:
+A genuinely new script belongs at `company/rooms/00-boardroom/tools/<name>.py`, only when no existing script in `company/os/toolkit/core/` (or a shared `sofi_tools` module) already covers the job — check `company/nexus/registry.yaml` and `company/os/GOVERNANCE.md`'s registry before writing anything (Article 00 §5, "arm up"). Header contract, mandatory:
 
 ```python
 #!/usr/bin/env python3

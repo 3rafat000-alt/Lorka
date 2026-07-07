@@ -49,9 +49,9 @@ sofi dispatch PRJ-XXXX --agent bck-refactoring-surgeon --ticket TKT-NNN    # onl
 
 ### 5. Mechanical checks before any diff is called ready
 ```bash
-python3 company/os/toolkit/ceo/sofi_verify.py --prj PRJ-XXXX --only lint,view
-python3 company/os/toolkit/ceo/sofi_scan.py wiring "" --prj PRJ-XXXX --md
-python3 company/os/toolkit/ceo/sofi_scan.py security "" --prj PRJ-XXXX --md
+python3 company/os/toolkit/core/sofi_verify.py --prj PRJ-XXXX --only lint,view
+python3 company/os/toolkit/core/sofi_scan.py wiring "" --prj PRJ-XXXX --md
+python3 company/os/toolkit/core/sofi_scan.py security "" --prj PRJ-XXXX --md
 python3 company/os/toolkit/uiux/uiux_pipeline.py gate --prj PRJ-XXXX --query <blade-scope>
 ```
 Each specialist runs these on their own diff before handing it up; `bck-lead` re-confirms before routing to review. A failing exit code stops the pipeline — fix before proceeding, never route a red diff to review "to save a step."

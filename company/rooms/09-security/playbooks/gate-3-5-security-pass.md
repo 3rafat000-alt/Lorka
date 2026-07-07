@@ -57,7 +57,7 @@
 
 11. **Zero-token pre-flag pass first, always.** Every specialist opens with the static scan before reading a single file by hand.
     ```bash
-    python3 company/os/toolkit/ceo/sofi_scan.py security "<target>" --prj <PRJ> --md
+    python3 company/os/toolkit/core/sofi_scan.py security "<target>" --prj <PRJ> --md
     ```
 
 12. **`sec-appsec-engineer` traces flagged patterns to confirmed sinks; `sec-pentester` attempts real exploitation and runs the adversarial self-verify pass on every candidate finding before ranking it** (Article 03 V2 — refute first, report only what survives). `sec-authn-engineer` diffs the shipped implementation against the frozen Gate-3 auth design.

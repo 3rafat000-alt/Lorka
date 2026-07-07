@@ -81,7 +81,7 @@ Entry criteria this room checks before opening any Gate-5 ticket (`gates.yaml`):
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/toolkit/gate/coverage_gate.py` (mechanical ≥90% coverage enforcement, `qa-automation-engineer`'s and `qa-lead`'s shared bar), `company/os/toolkit/gate/perf_budget.py` (mechanical TTI/CWV budget enforcement, `qa-perf-analyst`'s bar), `company/os/toolkit/uiux/uiux_pipeline.py` (`gate` mode — taste/design/RTL fidelity checks `qa-design-auditor` runs before the manual field-by-field walk), `company/os/toolkit/ceo/sofi_verify.py` and `sofi_scan.py` (`design`/`security`/`wiring` modes — pre-flag passes every specialist runs before handing a draft to `qa-lead`).
+See `tools/README.md`. Headline: `company/os/toolkit/gate/coverage_gate.py` (mechanical ≥90% coverage enforcement, `qa-automation-engineer`'s and `qa-lead`'s shared bar), `company/os/toolkit/gate/perf_budget.py` (mechanical TTI/CWV budget enforcement, `qa-perf-analyst`'s bar), `company/os/toolkit/uiux/uiux_pipeline.py` (`gate` mode — taste/design/RTL fidelity checks `qa-design-auditor` runs before the manual field-by-field walk), `company/os/toolkit/core/sofi_verify.py` and `sofi_scan.py` (`design`/`security`/`wiring` modes — pre-flag passes every specialist runs before handing a draft to `qa-lead`).
 
 ## Skills index
 

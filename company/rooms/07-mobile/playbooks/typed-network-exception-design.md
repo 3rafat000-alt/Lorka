@@ -97,7 +97,7 @@ Assert every `DioExceptionType` value and every documented `PlatformException` c
 
 ### 8. Mechanically confirm no unmapped catch blocks remain
 ```bash
-python3 company/os/toolkit/ceo/sofi_scan.py search "catch (e)" --prj PRJ-XXXX --md
+python3 company/os/toolkit/core/sofi_scan.py search "catch (e)" --prj PRJ-XXXX --md
 ```
 Every hit gets inspected — a `catch (e)` that immediately re-throws a typed `ApiException` is fine; a `catch (e)` that swallows, prints, or returns `null` silently is not. This grep is the mechanical half of the room's steel rule, run before `mob-lead`'s review pass spends model tokens re-deriving the same list by eye.
 

@@ -16,9 +16,9 @@ sofi sync PRJ-XXXX
 
 ### 2. Locate + steel-rule scan — Python tools, zero model tokens
 ```bash
-python3 company/os/toolkit/ceo/feature_scan.py "<FEATURE_NAME>" --prj PRJ-XXXX --md
-python3 company/os/toolkit/ceo/sofi_automator.py projects/PRJ-XXXX          # 7-steel-rules scanner; --rule N isolates one, --json for machine output
-python3 company/os/toolkit/ceo/spec_review_preflight.py "<FEATURE_NAME>" --prj PRJ-XXXX  # Phase-1 context bundle
+python3 company/os/toolkit/core/feature_scan.py "<FEATURE_NAME>" --prj PRJ-XXXX --md
+python3 company/os/toolkit/core/sofi_automator.py projects/PRJ-XXXX          # 7-steel-rules scanner; --rule N isolates one, --json for machine output
+python3 company/os/toolkit/core/spec_review_preflight.py "<FEATURE_NAME>" --prj PRJ-XXXX  # Phase-1 context bundle
 ```
 `feature_scan.py` returns the file set grouped by the 4 pillars plus static pre-flags. `sofi_automator.py` runs all 7 steel rules and emits the raw 🔴/🟡 SEV skeleton. **Read these skeletons instead of the tree.** Open only flagged spots; confirm or refute each flag yourself — the scanners locate, the model judges.
 

@@ -23,8 +23,8 @@ Owner of the dials: **`dsn-brand-designer`** (Design room).
 ## 0. Scan first (Python engine — token-frugal, 0 model tokens)
 
 ```bash
-python3 company/os/toolkit/ceo/sofi_scan.py design "<view/feature>" --prj <PRJ> --md   # hardcoded hex, px, !important, missing alt/aria, div-buttons, no reduced-motion, RTL, AI-UI smells
-python3 company/os/toolkit/ceo/sofi_scan.py flow "" --prj <PRJ> --md                    # routes → views map + orphan/dead-end views (UserFlow / UX journey gaps)
+python3 company/os/toolkit/core/sofi_scan.py design "<view/feature>" --prj <PRJ> --md   # hardcoded hex, px, !important, missing alt/aria, div-buttons, no reduced-motion, RTL, AI-UI smells
+python3 company/os/toolkit/core/sofi_scan.py flow "" --prj <PRJ> --md                    # routes → views map + orphan/dead-end views (UserFlow / UX journey gaps)
 ```
 Read the skeleton; open only flagged `file:line`. Then set the dials below and apply the taste
 checklist to what the scan surfaced.

@@ -8,7 +8,7 @@ description: Run SOFI's scheduled reflection loop ("dreaming") — mechanically 
 > Scheduled, never per-turn (per-turn memory updates degrade quality). Retain-by-default:
 > only NEW signals are distilled; raw history is never rewritten. Continuous Metamorphosis (Teaching V).
 > Doctrine: `company/constitution/04-reflection.md`. Owner: **`knw-reflector`** (Knowledge room).
-> Engine: `company/os/toolkit/ceo/reflection_engine.py`.
+> Engine: `company/os/toolkit/core/reflection_engine.py`.
 
 **Usage:** `/sofi-reflect [PRJ-ID]` — defaults to the active project. Run this at a
 gate close, at project wrap-up, or when you suspect a pattern is recurring.
@@ -16,7 +16,7 @@ gate close, at project wrap-up, or when you suspect a pattern is recurring.
 ## The loop (`knw-reflector` runs it; specialists never self-reflect mid-task)
 1. **Locate — 0 model tokens.** Run the scan:
    ```bash
-   python3 company/os/toolkit/ceo/reflection_engine.py scan --prj <PRJ>
+   python3 company/os/toolkit/core/reflection_engine.py scan --prj <PRJ>
    ```
    It prints only NEW candidates (escalations, circuit-breakers, recurring ≥3× patterns)
    not already in `LESSONS.md`. If it says "no new learning signals," stop — nothing to do.
@@ -27,7 +27,7 @@ gate close, at project wrap-up, or when you suspect a pattern is recurring.
    Keep it to 1–2 lines. A lesson is a rule, not a re-summary of the ticket.
 3. **Write** each lesson:
    ```bash
-   python3 company/os/toolkit/ceo/reflection_engine.py write --prj <PRJ> \
+   python3 company/os/toolkit/core/reflection_engine.py write --prj <PRJ> \
      --sig "<sig-from-scan>" --situation "..." --failed "..." --rule "..." \
      --source "<TKT-ID>" --date "<today, from you — never invented in a tool>"
    ```

@@ -8,14 +8,14 @@
 
 ### Step 1: Hydrate Agent Memory
 ```bash
-python3 company/os/toolkit/ceo/agent_preflight.py
+python3 company/os/toolkit/core/agent_preflight.py
 # Expected: ✅ Agent hydrated: 4 files, 44332 chars
 ```
 
 ### Step 2: Test Output Guard (Intentional Violation)
 ```bash
 # Create test output with violation pattern
-cat << 'EOF' | python3 company/os/toolkit/ceo/agent_output_guard.py PRJ-SAKK
+cat << 'EOF' | python3 company/os/toolkit/core/agent_output_guard.py PRJ-SAKK
 # Agent work complete. Next steps unclear.
 # What should I do now? Which option is better?
 EOF
@@ -29,7 +29,7 @@ EOF
 ### Step 3: Test Guard Pass (Clean Output)
 ```bash
 # Clean status output (allowed)
-cat << 'EOF' | python3 company/os/toolkit/ceo/agent_output_guard.py PRJ-SAKK
+cat << 'EOF' | python3 company/os/toolkit/core/agent_output_guard.py PRJ-SAKK
 [status] Pushed findings to desk. Executing guidance. Committed migration fix.
 EOF
 
@@ -39,8 +39,8 @@ EOF
 ### Step 4: Test Pre-flight + Wrapper (Integrated)
 ```bash
 # Simulate agent + guard pipeline
-agent_output=$(python3 company/os/toolkit/ceo/agent_preflight.py)
-echo "$agent_output" | python3 company/os/toolkit/ceo/agent_output_guard.py PRJ-SAKK
+agent_output=$(python3 company/os/toolkit/core/agent_preflight.py)
+echo "$agent_output" | python3 company/os/toolkit/core/agent_output_guard.py PRJ-SAKK
 
 # Expected: passes (no user ask in preflight output)
 ```
@@ -53,11 +53,11 @@ echo "$agent_output" | python3 company/os/toolkit/ceo/agent_output_guard.py PRJ-
 1. Share AGENT_BRIEFING.md link
 2. Add to SessionStart hook:
    ```bash
-   python3 company/os/toolkit/ceo/agent_preflight.py > /dev/null
+   python3 company/os/toolkit/core/agent_preflight.py > /dev/null
    ```
 3. Wrap agent dispatch:
    ```bash
-   company/os/toolkit/ceo/agent_wrapper.sh PRJ-SAKK <agent_command>
+   company/os/toolkit/core/agent_wrapper.sh PRJ-SAKK <agent_command>
    ```
 
 ### Monitor (First 5 Gemini Pushes)

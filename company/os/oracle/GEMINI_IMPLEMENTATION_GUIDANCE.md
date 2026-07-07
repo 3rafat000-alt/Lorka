@@ -138,7 +138,7 @@ sofi dispatch --squad PRJ-SYRH mobile-lead
 
 ### Implementation Code (Gemini Provided)
 
-**File:** `company/os/toolkit/ceo/spec_review_preflight.py`
+**File:** `company/os/toolkit/core/spec_review_preflight.py`
 
 ```python
 def preflight_classify_failure(error_log, code_diff):
@@ -328,7 +328,7 @@ sofi checkpoint PRJ-SAKK "feat: auth modal fix"
 
 ## Phase 4: Exfiltration Guard — SECURITY (Day 9)
 
-**File:** `company/os/toolkit/ceo/sanitize_gemini_payload.py`
+**File:** `company/os/toolkit/core/sanitize_gemini_payload.py`
 
 ```python
 import re
@@ -394,7 +394,7 @@ def append_runtime_constraint_to_brain(prj_id, exception_summary):
 
 ## Phase 6: Orchestration v2 — Days 12–13
 
-**File:** `company/os/toolkit/ceo/squad_orchestrator_v2.py`
+**File:** `company/os/toolkit/core/squad_orchestrator_v2.py`
 
 Extends Phase 2 resource locking with dynamic manifest + auto-cleanup.
 

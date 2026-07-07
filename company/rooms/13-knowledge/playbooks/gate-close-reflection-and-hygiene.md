@@ -18,11 +18,11 @@
 
 3. **Dispatch `knw-reflector` before anyone else in the room.** This ordering matters: a lesson worth distilling should never be compressed away by the curator before it's written down. `knw-reflector` runs the mechanical locate pass at zero model tokens.
    ```bash
-   python3 company/os/toolkit/ceo/reflection_engine.py scan --prj <PRJ>
+   python3 company/os/toolkit/core/reflection_engine.py scan --prj <PRJ>
    ```
 4. **`knw-reflector` distils each surviving candidate into exactly one lesson** — `situation · what-failed · rule`, citing the source ticket. No batching, no re-summarizing, no skipping the citation.
    ```bash
-   python3 company/os/toolkit/ceo/reflection_engine.py write --prj <PRJ> \
+   python3 company/os/toolkit/core/reflection_engine.py write --prj <PRJ> \
      --sig "<kind-subject-ticket>" --situation "<S>" --failed "<F>" --rule "<R>" \
      --source "<TKT-NNN>" --date <YYYY-MM-DD>
    ```

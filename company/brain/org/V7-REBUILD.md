@@ -29,7 +29,7 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
 - Findings JSON archived this session at scratchpad `v7_findings.json` (ephemeral — re-run the workflow to regenerate: script at `.../workflows/scripts/sofi-v7-audit-*.js`).
 
 ## 🔴 OPEN — highest priority
-1. **GitHub PAT leak** — a `ghp_…` token was hardcoded in `company/os/toolkit/ceo/gemini-github-sync.py`
+1. **GitHub PAT leak** — a `ghp_…` token was hardcoded in `company/os/toolkit/core/gemini-github-sync.py`
    and committed to history; the repo has a public remote (`github.com/3rafat000-alt/Lorka`). Working
    code is fixed (env var, commit 5a567a3) but **the token MUST be revoked on GitHub by the owner** —
    the historical blob stays reachable until then. History scrub is optional and deferred (needs
