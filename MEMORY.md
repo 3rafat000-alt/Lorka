@@ -74,7 +74,7 @@
 | Tooling law (10 rules) | `company/os/GOVERNANCE.md` |
 | Dispatcher + all CLI verbs | `company/os/bin/sofi` |
 | Shared Python library | `company/os/sofi_tools/` |
-| Per-role toolkits (scanners) | `company/os/agents/` |
+| Per-role toolkits (scanners) | `company/os/toolkit/` |
 | Local domains / public tunnels | `company/constitution/07-security-law.md` · `sofi domain` / `sofi tunnel` |
 | Oracle desk (external review) | `company/os/oracle/` · `sofi oracle review` · owner `gtw-external-reviewer` |
 | caveman / server-plane | `company/os/{caveman,server-plane}/` |

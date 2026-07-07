@@ -40,7 +40,7 @@ All security work is gated by `sec-lead` (deputy to `brd-cso`).
 1. **Authorize + scope** — confirm target is this project. State what's in/out of bounds.
 2. **Recon (free, Python-first)** — run the engine security pack (0 model tokens):
    ```bash
-   python3 company/os/agents/ceo/sofi_scan.py security "<target>" --prj <PRJ> --md
+   python3 company/os/toolkit/ceo/sofi_scan.py security "<target>" --prj <PRJ> --md
    ```
    Emits pre-flags: XSS (`{!!`), SQLi (raw+interp), mass-assign, hardcoded secrets, IDOR, eval/unserialize,
    weak randomness, missing-auth, CSRF. Open only flagged `file:line`; then grep/ctx for anything semantic the patterns miss.

@@ -64,7 +64,7 @@ Routes are copied verbatim from `company/nexus/routing.yaml` (`routes.<id>`) —
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/templates/project-blueprint.template.md` (the Blueprint's frozen shape), `company/os/agents/ceo/ceo_toolkit.py`'s `ProjectInspector` (health-check the raw idea against an existing codebase when the project is a brownfield extension), `sofi domain register` (part of `new-project.sh`, the local-domain-first discipline).
+See `tools/README.md`. Headline: `company/templates/project-blueprint.template.md` (the Blueprint's frozen shape), `company/os/toolkit/ceo/ceo_toolkit.py`'s `ProjectInspector` (health-check the raw idea against an existing codebase when the project is a brownfield extension), `sofi domain register` (part of `new-project.sh`, the local-domain-first discipline).
 
 ## Skills index
 

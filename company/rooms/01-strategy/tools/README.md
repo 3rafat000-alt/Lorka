@@ -4,7 +4,7 @@
 
 ## Existing tools this room uses (real paths, grep-verified)
 
-`01-strategy` has no dedicated Python toolkit ported from v5 yet — grepping `company/os/agents/` (`ceo/`, `devops/`, `tier-1-architecture/`, `tier-3-quality/`, `tier-4-infrastructure/`, `uiux/`) finds nothing scoped to Strategy specifically, the same gap the Boardroom noted for itself. The room works from shared library calls and one frozen template:
+`01-strategy` has no dedicated Python toolkit ported from v5 yet — grepping `company/os/toolkit/` (`ceo/`, `devops/`, `tier-1-architecture/`, `tier-3-quality/`, `tier-4-infrastructure/`, `uiux/`) finds nothing scoped to Strategy specifically, the same gap the Boardroom noted for itself. The room works from shared library calls and one frozen template:
 
 | Tool | Used by | What it does |
 |---|---|---|
@@ -13,13 +13,13 @@
 | `company/os/sofi_tools/brain.py` (`sofi brain`, `sofi brain-query`) | every `str-*` agent | Reads/writes the project brain; `brain-query type:risk` is the lookup `str-roadmap-planner` runs in `playbooks/two-track-sizing.md` step 1. |
 | `company/os/sofi_tools/domain.py` (`sofi domain register`/`list`) | `str-lead` (confirmation only — `new-project.sh` auto-runs the register) | Confirms `<slug>.local` landed before Gate-0 sign-off; the local-domain-first discipline (Article 10). |
 | `company/os/bin/new-project.sh` | `str-lead` (kicks off the whole room's work) | Scaffolds `projects/<PRJ-XXXX>/` — brain dirs, `prj/<PRJ>` branch, `<slug>.local` registration — the trigger event for `playbooks/gate-0-inception.md` step 1. |
-| `company/os/agents/ceo/ceo_toolkit.py`'s `ProjectInspector` | `str-product-strategist` (occasional) | When the raw idea is a brownfield extension of an existing codebase rather than a greenfield project, a health-check of the existing tree sharpens the Problem Statement before it's written from a blank page — borrowed from the Boardroom's toolbox, not owned here. |
+| `company/os/toolkit/ceo/ceo_toolkit.py`'s `ProjectInspector` | `str-product-strategist` (occasional) | When the raw idea is a brownfield extension of an existing codebase rather than a greenfield project, a health-check of the existing tree sharpens the Problem Statement before it's written from a blank page — borrowed from the Boardroom's toolbox, not owned here. |
 
 No script above is owned exclusively by this room — the shared `sofi_tools` modules and `new-project.sh` are the company's standing console, invoked here under the specialist's own agent id and logged to `.claude/memory/audit.jsonl`.
 
 ## What a new Strategy tool would look like
 
-A genuinely new script belongs at `company/rooms/01-strategy/tools/<name>.py`, only when no existing script in `company/os/sofi_tools/` or `company/os/agents/ceo/` already covers the job — check `company/nexus/registry.yaml`'s `tools:` section and `company/os/GOVERNANCE.md`'s registry rule before writing anything (Article 00 §5, "arm up"). Header contract, mandatory:
+A genuinely new script belongs at `company/rooms/01-strategy/tools/<name>.py`, only when no existing script in `company/os/sofi_tools/` or `company/os/toolkit/ceo/` already covers the job — check `company/nexus/registry.yaml`'s `tools:` section and `company/os/GOVERNANCE.md`'s registry rule before writing anything (Article 00 §5, "arm up"). Header contract, mandatory:
 
 ```python
 #!/usr/bin/env python3

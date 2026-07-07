@@ -71,9 +71,9 @@ Every spec-review MUST check these seven. A pillar is NOT "sound" until its rule
 1. **Orient** — `/sofi-boot` (git sync + brain). Resolve `<FEATURE_NAME>` from the arg.
 2. **Locate + steel-rule scan — Python tools (token-frugal, 0 model tokens):**
    ```bash
-   python3 company/os/agents/ceo/feature_scan.py "<FEATURE_NAME>" --prj <PRJ> --md
-   python3 company/os/agents/ceo/sofi_automator.py <project_dir>          # 7-steel-rules scanner (--rule N to isolate)
-   python3 company/os/agents/ceo/spec_review_preflight.py "<FEATURE_NAME>" --prj <PRJ>   # gathers Phase-1 context bundle
+   python3 company/os/toolkit/ceo/feature_scan.py "<FEATURE_NAME>" --prj <PRJ> --md
+   python3 company/os/toolkit/ceo/sofi_automator.py <project_dir>          # 7-steel-rules scanner (--rule N to isolate)
+   python3 company/os/toolkit/ceo/spec_review_preflight.py "<FEATURE_NAME>" --prj <PRJ>   # gathers Phase-1 context bundle
    ```
    `feature_scan` returns the file set grouped by the 4 pillars + static pre-flags;
    `sofi_automator` runs all 7 steel rules and emits the raw 🔴/🟡 SEV skeleton.

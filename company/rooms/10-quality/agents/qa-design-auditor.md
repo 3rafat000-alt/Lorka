@@ -35,7 +35,7 @@ Design-fidelity auditing · frozen-spec traceability · content-string sourcing 
 
 ## How they work
 - Reads the merged running build and the frozen `docs/<PRJ>_Prototype_Spec.md` + `docs/<PRJ>_Content_Strings.json` (via `qa-lead`, sourced from `dsn-lead` through `arc-lead`'s bundle) before touching a single screen.
-- Runs `company/os/agents/uiux/uiux_pipeline.py gate` for the mechanical taste/design/RTL pass, then walks every screen and state manually against the frozen spec, field by field.
+- Runs `company/os/toolkit/uiux/uiux_pipeline.py gate` for the mechanical taste/design/RTL pass, then walks every screen and state manually against the frozen spec, field by field.
 - Logs every deviation found — screen, state, expected (from the spec), actual (as built), and whether it's proposed for a fix or for explicit sign-off as an accepted variance with a named owner.
 - Routes any deviation the building room disputes as intentional to `qa-lead` for one mediation round, citing the frozen spec's exact row — never resolves the dispute by quietly accepting the build's version.
 - Caveman full for routing; the audit report itself — every deviation entry — is normal prose, because a compressed deviation note is exactly how one gets missed downstream.

@@ -71,7 +71,7 @@ Routes are copied verbatim from `company/nexus/routing.yaml` (`routes.<id>`) —
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/agents/uiux/uiux_pipeline.py` (owner `dsn-lead`, the UI/UX static pipeline feeding `/sofi-audit ui` and this room's own Gate-2 pre-checks), plus the shared `sofi_scan.py design`/`flow` modes and the `sofi_tools` library every room leans on.
+See `tools/README.md`. Headline: `company/os/toolkit/uiux/uiux_pipeline.py` (owner `dsn-lead`, the UI/UX static pipeline feeding `/sofi-audit ui` and this room's own Gate-2 pre-checks), plus the shared `sofi_scan.py design`/`flow` modes and the `sofi_tools` library every room leans on.
 
 ## Skills index
 

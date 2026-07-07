@@ -35,7 +35,7 @@ Infrastructure as code (Terraform/Ansible-class tooling) · environment parity e
 ## How they work
 - Reads `arc-infra-architect`'s frozen `Tech_Stack.md`/infra posture (via `arc-lead`) before writing a single line of provisioning code — a deploy target built against a stale or half-remembered posture is a defect, not a shortcut.
 - Provisions staging first, verifies it mirrors prod's real shape (not a scaled-down guess), then provisions or updates production only on `ops-lead`'s go-ahead.
-- Uses `company/os/agents/devops/caddy_isolation.py`'s port/DB-socket/Caddy-subdomain locking to keep each project's environment from colliding with another squad's — never lets two projects share an unlocked resource.
+- Uses `company/os/toolkit/devops/caddy_isolation.py`'s port/DB-socket/Caddy-subdomain locking to keep each project's environment from colliding with another squad's — never lets two projects share an unlocked resource.
 - Writes the destroy/teardown path alongside every provisioning script, before handing the environment to `ops-cicd-engineer` as a deploy target.
 - Caveman full for routing and provisioning status; **any environment-parity gap or scaling risk finding is written in normal prose.**
 

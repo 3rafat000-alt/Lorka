@@ -587,7 +587,7 @@ def cmd_oracle(a) -> int:
     """External review desk: forward to gemini_review.py (push→receive→parse→act).
     `sofi oracle ...` is the v6 verb; `sofi gemini ...` stays as the muscle-memory alias."""
     import subprocess
-    script = paths.tooling_dir() / "agents" / "ceo" / "gemini_review.py"
+    script = paths.tooling_dir() / "toolkit" / "ceo" / "gemini_review.py"
     if not script.exists():
         print(f"✗ gemini_review.py not found at {script}", file=sys.stderr)
         return 2

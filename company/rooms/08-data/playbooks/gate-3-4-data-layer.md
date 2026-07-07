@@ -60,7 +60,7 @@ sofi dispatch PRJ-XXXX --agent dat-db-engineer --note "execute frozen migrations
 ```
 `dat-db-engineer` writes and runs the migrations from the now-final schema design, each paired with a tested `down()`, and runs the mechanical check:
 ```bash
-python3 company/os/agents/tier-1-architecture/data-schema-engineer/migration_check.py database/migrations/
+python3 company/os/toolkit/tier-1-architecture/data-schema-engineer/migration_check.py database/migrations/
 ```
 Exit `0` required before anything else in this leg proceeds — a non-reversible migration blocks the room's entire Gate-4 contribution, not just this one file.
 

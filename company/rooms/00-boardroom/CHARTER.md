@@ -80,7 +80,7 @@ Since the Boardroom has no single gateway Lead — the CEO sits above the room-L
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/agents/ceo/ceo_toolkit.py` (Orchestrator · ProjectInspector · ComplianceEngine), `route.py`, `dispatch.py`, `squad_orchestrator_v2.py`, `handoff_validator.py`, `agent_preflight.py` / `agent_output_guard.py`, `gemini_bridge.py` + `gemini_review.py` + `sanitize_gemini_payload.py` (oracle desk), `sofi_scan.py` / `feature_scan.py` (0-token static location), `spec_review_preflight.py`, `sofi_automator.py`.
+See `tools/README.md`. Headline: `company/os/toolkit/ceo/ceo_toolkit.py` (Orchestrator · ProjectInspector · ComplianceEngine), `route.py`, `dispatch.py`, `squad_orchestrator_v2.py`, `handoff_validator.py`, `agent_preflight.py` / `agent_output_guard.py`, `gemini_bridge.py` + `gemini_review.py` + `sanitize_gemini_payload.py` (oracle desk), `sofi_scan.py` / `feature_scan.py` (0-token static location), `spec_review_preflight.py`, `sofi_automator.py`.
 
 ## Skills index
 

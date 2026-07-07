@@ -4,21 +4,21 @@
 
 ## Existing tools this room uses (real paths, grep-verified)
 
-Room 02-research carries no dedicated Python scanners of its own — v5's tier-0-strategy layer (`engine/tooling/agents/tier-0-strategy/`, the ancestor of this room) never had one either; a grep of `company/os/agents/` for `research|competitor|journey|persona|web` at build time returned no hits. This room instead leans on the shared layer:
+Room 02-research carries no dedicated Python scanners of its own — v5's tier-0-strategy layer (`engine/tooling/agents/tier-0-strategy/`, the ancestor of this room) never had one either; a grep of `company/os/toolkit/` for `research|competitor|journey|persona|web` at build time returned no hits. This room instead leans on the shared layer:
 
 | Tool | Path | Used by | What it does |
 |---|---|---|---|
 | `sofi_tools` shared library | `company/os/sofi_tools/` | all seven, via the `sofi` CLI | `brain` (read/write `_context/*`), `tickets` (Gate-1 ticket validation, Room Isolation Law check), `routing` (resolve `model·effort·caveman` for any `res-*` id), `gates` (`validate_evidence`, `gates.yaml` loader), `guard` (`assert_net_allowed` — the mechanical check behind "only Web-tool holders touch the net") |
 | `sofi` CLI | `company/os/bin/sofi` | all seven | `sync`, `checkpoint`, `gate-check`, `gate-tag`, `dispatch`, `escalate`, `brain-query` — the mechanical spine of every step in `playbooks/discovery-gate-procedure.md` |
-| `feature_scan.py` | `company/os/agents/ceo/feature_scan.py` | `res-lead` (rare — only when a Gate-1 re-open needs a fast static sweep of what already exists in the codebase before re-researching) | 0-token static location pass, shared across rooms |
-| `sofi_scan.py` | `company/os/agents/ceo/sofi_scan.py` | `res-lead` (via `/sofi-audit`, rare for this room — Discovery has little codebase to sweep on a fresh project) | grep-first sweep engine, modes `search\|security\|design\|flow\|wiring\|all` |
-| `gemini_bridge.py` + `gemini_review.py` | `company/os/agents/ceo/` | `res-lead` (oracle desk, Teaching VII, at genuine decision points — e.g. an UNKNOWN verdict that needs a second opinion before blocking the freeze) | sanitize → push → capture → digest-ingest, same oracle desk every room shares |
+| `feature_scan.py` | `company/os/toolkit/ceo/feature_scan.py` | `res-lead` (rare — only when a Gate-1 re-open needs a fast static sweep of what already exists in the codebase before re-researching) | 0-token static location pass, shared across rooms |
+| `sofi_scan.py` | `company/os/toolkit/ceo/sofi_scan.py` | `res-lead` (via `/sofi-audit`, rare for this room — Discovery has little codebase to sweep on a fresh project) | grep-first sweep engine, modes `search\|security\|design\|flow\|wiring\|all` |
+| `gemini_bridge.py` + `gemini_review.py` | `company/os/toolkit/ceo/` | `res-lead` (oracle desk, Teaching VII, at genuine decision points — e.g. an UNKNOWN verdict that needs a second opinion before blocking the freeze) | sanitize → push → capture → digest-ingest, same oracle desk every room shares |
 
 Web access itself is not a "tool" in the scanner sense — `WebSearch`/`WebFetch` are granted directly in each qualifying agent's `.claude/agents/<id>.md` frontmatter (`res-ux-researcher`, `res-web-scout`, `res-competitor-analyst`, `res-data-researcher`, `res-fact-checker`); `res-web-scout` is the *dedicated* holder for company-wide requests, the other four use their grants for their own artifact's direct sourcing needs (Article 09 §6).
 
 ## What a new Research tool would look like
 
-A genuinely new script belongs at `company/rooms/02-research/tools/<name>.py`, only when no existing script in `company/os/sofi_tools` or `company/os/agents/` already covers the job — check `company/nexus/registry.yaml` and `company/os/GOVERNANCE.md`'s promotion ladder before writing anything (Article 00 §5, "arm up"). Header contract, mandatory:
+A genuinely new script belongs at `company/rooms/02-research/tools/<name>.py`, only when no existing script in `company/os/sofi_tools` or `company/os/toolkit/` already covers the job — check `company/nexus/registry.yaml` and `company/os/GOVERNANCE.md`'s promotion ladder before writing anything (Article 00 §5, "arm up"). Header contract, mandatory:
 
 ```python
 #!/usr/bin/env python3

@@ -26,7 +26,7 @@ Gemini assessed criticality and reordered phases. Original timeline (1→2→3�
 
 ### Implementation Code (Gemini Provided)
 
-**File:** `company/os/agents/devops/caddy_isolation.py`
+**File:** `company/os/toolkit/devops/caddy_isolation.py`
 
 ```python
 import os
@@ -138,7 +138,7 @@ sofi dispatch --squad PRJ-SYRH mobile-lead
 
 ### Implementation Code (Gemini Provided)
 
-**File:** `company/os/agents/ceo/spec_review_preflight.py`
+**File:** `company/os/toolkit/ceo/spec_review_preflight.py`
 
 ```python
 def preflight_classify_failure(error_log, code_diff):
@@ -328,7 +328,7 @@ sofi checkpoint PRJ-SAKK "feat: auth modal fix"
 
 ## Phase 4: Exfiltration Guard — SECURITY (Day 9)
 
-**File:** `company/os/agents/ceo/sanitize_gemini_payload.py`
+**File:** `company/os/toolkit/ceo/sanitize_gemini_payload.py`
 
 ```python
 import re
@@ -366,7 +366,7 @@ push_to_gemini(sanitized_payload)
 
 ## Phase 5: Observe Loop — Days 10–11
 
-**File:** `company/os/agents/tier-4-infrastructure/observe_sentry_loop.py`
+**File:** `company/os/toolkit/tier-4-infrastructure/observe_sentry_loop.py`
 
 ```python
 def append_runtime_constraint_to_brain(prj_id, exception_summary):
@@ -394,7 +394,7 @@ def append_runtime_constraint_to_brain(prj_id, exception_summary):
 
 ## Phase 6: Orchestration v2 — Days 12–13
 
-**File:** `company/os/agents/ceo/squad_orchestrator_v2.py`
+**File:** `company/os/toolkit/ceo/squad_orchestrator_v2.py`
 
 Extends Phase 2 resource locking with dynamic manifest + auto-cleanup.
 

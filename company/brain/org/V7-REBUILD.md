@@ -25,11 +25,11 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
 33-agent read-only workflow, **646 files read**, 30 subsystems. Aggregate:
 - 47 cruft candidates · 76 inconsistencies (17 HIGH) · 28 redundancies · 141 v7 recommendations.
 - 🟢 GOLD (keep, use as templates): rooms 00/01/02/05/07/12 have exact spec↔spawnable↔registry↔routing↔gates parity.
-- 🔴 ROT (concentrated): `engine/` (dead) · `company/os/agents/` legacy tier naming · OODA engine (broken) · autopilot (never ran) · `company/brain/org/` v5 files · doctrine drift in CLAUDE.md/registry/gates.
+- 🔴 ROT (concentrated): `engine/` (dead) · `company/os/toolkit/` legacy tier naming · OODA engine (broken) · autopilot (never ran) · `company/brain/org/` v5 files · doctrine drift in CLAUDE.md/registry/gates.
 - Findings JSON archived this session at scratchpad `v7_findings.json` (ephemeral — re-run the workflow to regenerate: script at `.../workflows/scripts/sofi-v7-audit-*.js`).
 
 ## 🔴 OPEN — highest priority
-1. **GitHub PAT leak** — a `ghp_…` token was hardcoded in `company/os/agents/ceo/gemini-github-sync.py`
+1. **GitHub PAT leak** — a `ghp_…` token was hardcoded in `company/os/toolkit/ceo/gemini-github-sync.py`
    and committed to history; the repo has a public remote (`github.com/3rafat000-alt/Lorka`). Working
    code is fixed (env var, commit 5a567a3) but **the token MUST be revoked on GitHub by the owner** —
    the historical blob stays reachable until then. History scrub is optional and deferred (needs
@@ -55,7 +55,7 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
 | 4 | Purge v5 brain rot: `company/brain/org/{PERSONAS,TEAM_STATUS,HANDOFFS}.md` (30-agent/5-tier) | 🟢 | ⏳ |
 | 3 | OODA engine (broken store() signature) + autopilot ("v2 live" but never ran) — retire + de-reference | 🟡 | ✅ DONE — deleted both + v5 docs + 2 stale reports + orphan branch; de-ref'd CLAUDE/MEMORY/reflection; commit f1702c6 |
 | 6 | De-dup + dead functions (budget.py, event_server.py, runlog.py, lessons_cache/memdb write-halves; _gate_num, role_room wrappers; index.html vs identity.css tokens) | 🟡 | ⏳ |
-| 2 | Restructure `company/os/agents/` legacy tier naming → room-aligned tool layout (all scripts LIVE — dozens of cross-refs must move in lockstep) | 🔴 | ⏳ dedicated workflow |
+| 2 | Restructure `company/os/toolkit/` legacy tier naming → room-aligned tool layout (all scripts LIVE — dozens of cross-refs must move in lockstep) | 🔴 | ⏳ dedicated workflow |
 | 6b | Deliberate spawnable frontmatter unification (canonical format for all 105 + reconcile grants with registry) — also fixes the `sofi doctor` write bug | 🟡 | ⏳ |
 | 7 | Build the named-but-unbuilt room tools (kill-criterion-linter, two-track-classifier, token-dup linter, …) | build | ⏳ |
 | 8 | ☁️ Cloud layer: remote/cloud agents · dashboard deploy · GitHub/CI · oracle strengthening | build | ⏳ |

@@ -61,7 +61,7 @@ content, manual testers) do **not** run scripts — they think and write specs.
 ```
 need a one-off?        → projects/<PRJ>/_scratch/tmp_<role>_<purpose>.py   (Rule 3)
    ↓ proved useful, reusable, headered, reviewed                          (Rule 4)
-promote → per-role toolkit  company/os/agents/<family>/<role>/<name>.py
+promote → per-role toolkit  company/os/toolkit/<family>/<role>/<name>.py
    ↓ used by 2+ rooms
 promote → shared library    company/os/sofi_tools/<module>.py
    ↓ always

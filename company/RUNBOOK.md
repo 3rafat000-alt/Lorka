@@ -107,7 +107,7 @@ Devs never go online — res-web-scout and the architecture/security/ops roles h
 
 - **Ladder** 🟢 mechanical → 🔵 workhorse → 🔮 gatekeeper → 🟣 deep; escalate on evidence only; 🟣 forbidden for routine code. Single source: `nexus/routing.yaml` (`gtw-router` assigns; `priority_override` CRITICAL +1/+1 reaches gatekeeper, LOW caps at workhorse·medium).
 - **Log every route** in the thinking block AND `STATE.last_route`.
-- **Python locates, the model judges** — static scans (`company/os/agents/` scanners: feature_scan, sofi_scan, uiux_pipeline) pre-flag file:line at zero model tokens; the model spends only on judgment. This is THE cost lever (`/sofi-audit`, `/sofi-feature`).
+- **Python locates, the model judges** — static scans (`company/os/toolkit/` scanners: feature_scan, sofi_scan, uiux_pipeline) pre-flag file:line at zero model tokens; the model spends only on judgment. This is THE cost lever (`/sofi-audit`, `/sofi-feature`).
 - **Two-phase reviews:** scan + SEV draft on mechanical/workhorse, ONE full-context handover to the gatekeeper (LES-005 — no gatekeeper lockout loops).
 - **Effort classes** (routing.yaml `effort_scaling`): trivial-fix 1 agent/1–3 calls · single-role 1/3–10 · cross-room 2–5 behind frozen input · audit-sweep 3–8 read-only + adversarial verify · arbitration 1 deep as-needed. Every Work Order states its class + call budget + fail-safe stop.
 - **Budgets & breakers:** `gtw-budget-warden` enforces per-role/per-gate caps (`sofi budget`); breach = circuit break + escalate. 3 failed attempts = HALT + crash dump (LES-002).

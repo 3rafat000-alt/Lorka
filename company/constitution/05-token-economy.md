@@ -19,7 +19,7 @@ Tokens are payroll. This article is how a 105-agent company stays affordable: ro
 
 THE cost lever, recurring everywhere: static tooling does the finding for **0 model tokens**; the model spends tokens only on judgment.
 
-- Scanners in `company/os/agents/` (`feature_scan`, `sofi_scan`, `uiux_pipeline`, …) sweep layers and pre-flag findings; `/sofi-audit`, `/sofi-feature`, `/sofi-spec-review` all run scan-first.
+- Scanners in `company/os/toolkit/` (`feature_scan`, `sofi_scan`, `uiux_pipeline`, …) sweep layers and pre-flag findings; `/sofi-audit`, `/sofi-feature`, `/sofi-spec-review` all run scan-first.
 - Reflection locates candidates mechanically before any distillation (`04-reflection.md`).
 - The oracle bridge sanitizes, prunes, and condenses payloads in Python before a single token is spent on the reply (`07-security-law.md` §3).
 - Two-phase reviews: grep sweep + SEV draft on `mechanical`/`workhorse` → full-context handover to `gatekeeper` for the hard gate only.

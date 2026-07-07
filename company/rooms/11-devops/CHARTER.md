@@ -79,7 +79,7 @@ Entry criteria this room checks before opening any Gate-6 ticket (`gates.yaml`):
 
 ## Tools index
 
-See `tools/README.md`. Headline: `company/os/sofi_tools/domain.py` (`sofi domain`, `ops-domain-warden`'s console for `<slug>.local` registration and up/down), `company/os/sofi_tools/tunnel.py` (`sofi tunnel`, the bounded public-tunnel mechanism `ops-domain-warden` owns per Article 07 §5), `company/os/agents/devops/caddy_isolation.py` (per-project port/DB-socket/Caddy-subdomain isolation with a timeout guard, `ops-cloud-engineer`'s environment-parity backbone), `company/os/agents/tier-1-architecture/data-schema-engineer/migration_check.py` (mechanical reversibility check `ops-migration-runner` re-runs at deploy time), `company/os/sofi_tools/gates.py` (`sofi gate-check`, the mechanical Gate-6/Gate-7 validation every specialist's "done" is measured against).
+See `tools/README.md`. Headline: `company/os/sofi_tools/domain.py` (`sofi domain`, `ops-domain-warden`'s console for `<slug>.local` registration and up/down), `company/os/sofi_tools/tunnel.py` (`sofi tunnel`, the bounded public-tunnel mechanism `ops-domain-warden` owns per Article 07 §5), `company/os/toolkit/devops/caddy_isolation.py` (per-project port/DB-socket/Caddy-subdomain isolation with a timeout guard, `ops-cloud-engineer`'s environment-parity backbone), `company/os/toolkit/tier-1-architecture/data-schema-engineer/migration_check.py` (mechanical reversibility check `ops-migration-runner` re-runs at deploy time), `company/os/sofi_tools/gates.py` (`sofi gate-check`, the mechanical Gate-6/Gate-7 validation every specialist's "done" is measured against).
 
 ## Skills index
 

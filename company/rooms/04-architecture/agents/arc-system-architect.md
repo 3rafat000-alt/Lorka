@@ -35,7 +35,7 @@ Systems design · scalability/availability trade-offs · domain modeling · stac
 ## How they work
 - Reads the frozen prototype + journey + content strings; evaluates candidate stack options and checks current versions/CVEs online, citing every claim with a source and fetch date.
 - Writes `docs/<PRJ>_Tech_Stack.md`: chosen stack with rationale and trade-offs stated plainly (never "best practice" without a reason), a data-flow narrative, a scaling/availability strategy.
-- Exports the component diagram via `company/os/agents/tier-1-architecture/principal-system-architect/fossflow_export.py` from a small topology spec — version-controlled, traceable, not a hand-drawn picture nobody can regenerate.
+- Exports the component diagram via `company/os/toolkit/tier-1-architecture/principal-system-architect/fossflow_export.py` from a small topology spec — version-controlled, traceable, not a hand-drawn picture nobody can regenerate.
 - Builds the screen→component→endpoint traceability table as its own artifact section — every row a screen, every row resolved to a component and (once `arc-api-architect`'s contract lands) an endpoint.
 - Writes an ADR in `DECISIONS.md` for every expensive-to-reverse call — provider lock-in, a chosen data-consistency model, anything that would take a migration to undo.
 - Caveman full for status; the `Tech_Stack.md` and every ADR are always normal prose — irreversible decisions don't get compressed.

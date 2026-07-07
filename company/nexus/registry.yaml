@@ -1038,71 +1038,71 @@ tools:
   scanners:  # Python locates, the model judges (05-token-economy.md §2).
              # Toolkit dirs keep their v5 layout during transition; owner = v6 agent id.
     - name: feature_scan
-      path: company/os/agents/ceo/feature_scan.py
+      path: company/os/toolkit/ceo/feature_scan.py
       owner: brd-ceo
       use: "static feature sweep feeding /sofi-feature and /sofi-spec-review"
     - name: sofi_scan
-      path: company/os/agents/ceo/sofi_scan.py
+      path: company/os/toolkit/ceo/sofi_scan.py
       owner: brd-ceo
       use: "layered codebase scan feeding /sofi-audit"
     - name: spec_review_preflight
-      path: company/os/agents/ceo/spec_review_preflight.py
+      path: company/os/toolkit/ceo/spec_review_preflight.py
       owner: arc-review-architect
       use: "phase-1 grep sweep + SEV skeleton before the gatekeeper hard gate"
     - name: dispatch
-      path: company/os/agents/ceo/dispatch.py
+      path: company/os/toolkit/ceo/dispatch.py
       owner: gtw-dispatcher
       use: "renders the delegation block for the open ticket (sofi dispatch)"
     - name: reflection_engine
-      path: company/os/agents/ceo/reflection_engine.py
+      path: company/os/toolkit/ceo/reflection_engine.py
       owner: knw-reflector
       use: "mechanical signal location for /sofi-reflect (0-token candidate finding)"
     - name: handoff_validator
-      path: company/os/agents/ceo/handoff_validator.py
+      path: company/os/toolkit/ceo/handoff_validator.py
       owner: gtw-gatekeeper
       use: "ticket/evidence validation support for sofi gate-check"
     - name: oracle_review
-      path: company/os/agents/ceo/gemini_review.py
+      path: company/os/toolkit/ceo/gemini_review.py
       owner: gtw-external-reviewer
       use: "oracle desk driver — sanitize → condense → push → capture → parse → ingest"
     - name: oracle_bridge
-      path: company/os/agents/ceo/gemini_bridge.py
+      path: company/os/toolkit/ceo/gemini_bridge.py
       owner: gtw-external-reviewer
       use: "low-level pinned-chat bridge under oracle_review"
     - name: oracle_sanitizer
-      path: company/os/agents/ceo/sanitize_gemini_payload.py
+      path: company/os/toolkit/ceo/sanitize_gemini_payload.py
       owner: gtw-external-reviewer
       use: "redacts keys/secrets/.env before any byte leaves the machine (Article 07 §3)"
     - name: fossflow_export
-      path: company/os/agents/tier-1-architecture/principal-system-architect/fossflow_export.py
+      path: company/os/toolkit/tier-1-architecture/principal-system-architect/fossflow_export.py
       owner: arc-system-architect
       use: "gate-3 isometric component/infra diagrams as version-controlled JSON"
     - name: migration_check
-      path: company/os/agents/tier-1-architecture/data-schema-engineer/migration_check.py
+      path: company/os/toolkit/tier-1-architecture/data-schema-engineer/migration_check.py
       owner: dat-db-engineer
       use: "reversibility check — migration without rollback = rejected"
     - name: stride_scaffold
-      path: company/os/agents/tier-1-architecture/security-compliance-architect/stride_scaffold.py
+      path: company/os/toolkit/tier-1-architecture/security-compliance-architect/stride_scaffold.py
       owner: sec-threat-modeler
       use: "STRIDE threat-model scaffold for the gate-3 security bundle"
     - name: coverage_gate
-      path: company/os/agents/tier-3-quality/qa-sre-lead/coverage_gate.py
+      path: company/os/toolkit/tier-3-quality/qa-sre-lead/coverage_gate.py
       owner: qa-automation-engineer
       use: "coverage >= 90% or the build FAILS (gate-5 exit bar)"
     - name: perf_budget
-      path: company/os/agents/tier-3-quality/performance-load-analyst/perf_budget.py
+      path: company/os/toolkit/tier-3-quality/performance-load-analyst/perf_budget.py
       owner: qa-perf-analyst
       use: "TTI < 2s and CWV budget enforcement (gate-5 exit bar)"
     - name: uiux_pipeline
-      path: company/os/agents/uiux/uiux_pipeline.py
+      path: company/os/toolkit/uiux/uiux_pipeline.py
       owner: dsn-lead
       use: "UI/UX static pipeline feeding /sofi-audit ui + gate-2 checks"
     - name: caddy_isolation
-      path: company/os/agents/devops/caddy_isolation.py
+      path: company/os/toolkit/devops/caddy_isolation.py
       owner: ops-domain-warden
       use: "per-project Caddy vhost isolation for <slug>.local"
     - name: observe_sentry_loop
-      path: company/os/agents/tier-4-infrastructure/observe_sentry_loop.py
+      path: company/os/toolkit/tier-4-infrastructure/observe_sentry_loop.py
       owner: obs-insights-analyst
       use: "gate-8 Sentry loop — SLO breach → auto-filed Gate-1 re-open issue"
 
