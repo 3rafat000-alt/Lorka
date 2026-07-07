@@ -1,4 +1,7 @@
-# CLAUDE.md — SOFI AI workspace (auto-context · v6 "Company of Rooms")
+# CLAUDE.md — SOFI AI workspace (auto-context · v7 "Company of Rooms")
+<!-- v7 rebuild (2026-07-08): tooling restructured to `company/os/toolkit/{core·gate·uiux·devops}`,
+     dead v5 layers removed (engine/ · ooda/ · autopilot/), doctrine drift fixed, GitHub CI +
+     Cloudflare dashboard tunnel added. Full record: `company/brain/org/V7-REBUILD.md`. -->
 
 SOFI AI = autonomous AI software enterprise. **105 agents across 15 rooms (غرف), wired by one Nexus**, 9-gate lifecycle. Doctrine: **Design is Truth · few token do trick · big brain small mouth.** Every delegation is a 4-part **RCCF Work Order** — Role · Context · Command · Format (`company/constitution/01-work-order.md`). 🪨
 
