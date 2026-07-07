@@ -54,8 +54,8 @@ throwing away proven work. v6 stays fully recoverable at tag `v6.1-recovery-pre-
 | 5d | skills referencing mock/demo scripts as production (spec_review_preflight.py mock; reflection confidence gate) | 🟡 | ⏳ |
 | 4 | Purge v5 brain rot: `company/brain/org/{PERSONAS,TEAM_STATUS,HANDOFFS}.md` (30-agent/5-tier) | 🟢 | ⏳ |
 | 3 | OODA engine (broken store() signature) + autopilot ("v2 live" but never ran) — retire + de-reference | 🟡 | ✅ DONE — deleted both + v5 docs + 2 stale reports + orphan branch; de-ref'd CLAUDE/MEMORY/reflection; commit f1702c6 |
-| 6 | De-dup + dead functions (budget.py, event_server.py, runlog.py, lessons_cache/memdb write-halves; _gate_num, role_room wrappers; index.html vs identity.css tokens) | 🟡 | ⏳ |
-| 2 | Restructure `company/os/toolkit/` legacy tier naming → room-aligned tool layout (all scripts LIVE — dozens of cross-refs must move in lockstep) | 🔴 | ⏳ dedicated workflow |
+| 6 | De-dup + dead functions | 🟡 | 🔶 PARTIAL — deleted budget.py + event_server.py (d8aeaaf); remaining: runlog, dup fns (_gate_num, role_room), index.html vs identity.css tokens |
+| 2 | Restructure `os/agents`→`os/toolkit/` + flatten tier nesting into `toolkit/gate/` | 🔴 | ✅ DONE — rename 90279c4, flatten f52b454 (runtime-verified: cli, scan/oracle clusters, uiux, dashboard, sofi CLI; 0 broken refs). Remaining polish: rename `toolkit/ceo`→`core` (Phase 9). server-plane KEPT (live remote-publish subsystem, feeds Phase 8). |
 | 6b | Deliberate spawnable frontmatter unification (canonical format for all 105 + reconcile grants with registry) — also fixes the `sofi doctor` write bug | 🟡 | ⏳ |
 | 7 | Build the named-but-unbuilt room tools (kill-criterion-linter, two-track-classifier, token-dup linter, …) | build | ⏳ |
 | 8 | ☁️ Cloud layer: remote/cloud agents · dashboard deploy · GitHub/CI · oracle strengthening | build | ⏳ |
