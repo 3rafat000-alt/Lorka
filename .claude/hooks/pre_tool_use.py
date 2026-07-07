@@ -17,6 +17,8 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+AUDIT = Path(__file__).resolve().parents[1] / "memory" / "audit.jsonl"  # .claude/memory/audit.jsonl
+
 # (regex on a lowercased, whitespace-normalized command, human-readable reason)
 DANGEROUS = [
     # —— filesystem / system ——

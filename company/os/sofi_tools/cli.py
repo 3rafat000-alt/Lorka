@@ -44,7 +44,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from . import (paths, brain, tickets, routing, gates, guard, runlog, gitops,
+from . import (paths, brain, tickets, routing, gates, guard, gitops,
                domain, tunnel, registry, scheduler, memdb, resume,
                telemetry, agentlint, transitions)
 
@@ -214,12 +214,17 @@ def cmd_route(a) -> int:
 
 
 def cmd_gate_check(a) -> int:
+    a.prj = a.prj or getattr(a, "prj_opt", None)
+    if not a.prj:
+        print("gate-check: a project id is required (positional PRJ or --prj PRJ)"); return 2
     _need_project(a.prj)
     order = gates.validate_no_skip(a.prj)
     arts = gates.validate_artifacts(a.prj)
     room = gates.validate_room_boundary(a.prj)
     evid = gates.validate_evidence(a.prj)
     print(f"━━ gate-check {a.prj} ━━")
+    if getattr(a, "room", None):
+        print(f"  room ctx : {a.room} (context only — boundary validation is project-wide)")
     print(f"  sequence : {' '.join(map(str, order['sequence']))}")
     print(f"  no-skip  : {'✓' if order['ok'] else '✗ ' + '; '.join(order['skips'])}")
     if order.get("transitions"):
@@ -611,9 +616,11 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("route"); s.add_argument("role")
     s.add_argument("priority", nargs="?", default=None); s.set_defaults(fn=cmd_route)
 
-    s = sub.add_parser("gate-check"); s.add_argument("prj")
-    s.add_argument("--to-gate", type=int, default=None, dest="to_gate",
-                   help="also validate this proposed advance via transitions.check_gate_advance")
+    s = sub.add_parser("gate-check"); s.add_argument("prj", nargs="?", default=None)
+    s.add_argument("--to-gate", "--gate", type=int, default=None, dest="to_gate",
+                   help="also validate this proposed advance via transitions.check_gate_advance (alias: --gate)")
+    s.add_argument("--prj", dest="prj_opt", default=None, help="alias for the positional PRJ id")
+    s.add_argument("--room", default=None, help="squad-partner room context (boundary validation stays project-wide)")
     s.set_defaults(fn=cmd_gate_check)
 
     s = sub.add_parser("dispatch"); s.add_argument("prj")
