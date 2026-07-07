@@ -475,23 +475,29 @@ def cmd_tools(_a) -> int:
 
 
 # Parallel squads per gate — v6 room specialists behind the frozen upstream input
-# (nexus/gates.yaml squad_rooms; effort class: cross-room).
-_SQUADS = {
-    "3": ["arc-data-architect", "arc-api-architect", "sec-threat-modeler"],
-    "4": ["dat-db-engineer", "bck-api-engineer", "bck-blade-engineer",
-          "fnt-vue-engineer", "mob-flutter-engineer"],
-    "5": ["qa-automation-engineer", "qa-manual-explorer",
-          "qa-perf-analyst", "sec-pentester"],
-}
+# Parallel squads run only behind a FROZEN upstream input — gates 3, 4, 5
+# (G3 schema/api/security · G4 engineers · G5 QA dims). The roster is sourced live
+# from nexus/gates.yaml (single source of truth), never hardcoded.
+_SQUAD_GATES = {3, 4, 5}
 
 
 def cmd_squad(a) -> int:
-    """Render parallel delegation prompts for a gate's squad — agents run concurrently
-    behind the frozen upstream input (the parallelism pattern, as a command)."""
+    """Render parallel delegation prompts for a gate's squad — the gate's specialists
+    run concurrently behind the frozen upstream input (the parallelism pattern, as a
+    command). Roster comes from nexus/gates.yaml; the room Leads coordinate the squad,
+    they don't run AS it, so *-lead ids are dropped."""
     _need_project(a.prj)
-    roles = _SQUADS.get(str(a.gate))
+    try:
+        gate = int(a.gate)
+    except (TypeError, ValueError):
+        print(f"✗ gate must be a number (got {a.gate!r})", file=sys.stderr); return 2
+    if gate not in _SQUAD_GATES:
+        print(f"✗ no parallel squad for gate {a.gate} — squads run only at gates "
+              f"{', '.join(map(str, sorted(_SQUAD_GATES)))} (behind a frozen input)", file=sys.stderr)
+        return 2
+    roles = [r for r in gates.roles_for_gate(gate) if not r.endswith("-lead")]
     if not roles:
-        print(f"✗ no parallel squad for gate {a.gate} (squads: {', '.join(_SQUADS)})", file=sys.stderr)
+        print(f"✗ gates.yaml lists no squad agents for gate {a.gate}", file=sys.stderr)
         return 2
     t = tickets.next_open(a.prj)
     tkt = t.id if t else "(open a ticket in HANDOFFS)"
