@@ -32,6 +32,8 @@
 | How to delegate (RCCF) | `engine/protocols/01-delegation-rccf.md` |
 | Coordination / registry / read-execute split / re-delegation (anti-amnesia) | `engine/protocols/04-coordination-registry.md` |
 | Artifact registry tool (add·list·find·verify) | `engine/tooling/agents/ceo/registry.py` |
+| Dependency-aware next-ticket resolver (unblocked frontier) | `engine/tooling/agents/ceo/next_ticket.py` |
+| Adaptive routing (longContext floor · triage · complexity · remediate) | `engine/routing/routing.yaml` §adaptive_routing |
 | How to drive a project end-to-end | `engine/RUNBOOK.md` |
 | Git law | `engine/protocols/git-discipline.md` |
 
