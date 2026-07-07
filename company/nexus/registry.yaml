@@ -333,7 +333,7 @@ rooms:
         model: sonnet
         route: "workhorse · high · full"
         budget: 3k-5k
-        tools: [Read, Grep, Glob, Write, Edit, WebSearch, WebFetch]
+        tools: [Read, Grep, Glob, WebSearch, WebFetch]
       - id: arc-review-architect
         title: "Review Architect — 4-pillar spec review + 7 steel rules, read-only"
         spec: company/rooms/04-architecture/agents/arc-review-architect.md
