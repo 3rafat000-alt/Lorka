@@ -14,13 +14,14 @@ This script:
 """
 
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-GITHUB_TOKEN = "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"
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")  # SECURITY: never hardcode — export in env / .env (git-ignored)
 GITHUB_REPO = "3rafat000-alt/SOFI-PRJ"
 SOFI_PROJECT = "PRJ-SAKK"
 
