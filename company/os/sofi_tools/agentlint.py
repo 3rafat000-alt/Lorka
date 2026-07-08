@@ -34,7 +34,11 @@ from pathlib import Path
 from . import paths
 
 _ALLOWED_MODELS = {"haiku", "sonnet", "opus", "inherit"}
-_RCCF_SECTIONS = ("Role", "Context", "Command", "Format")
+# Canonical body sections — the 6-part Arabic professional pattern (v7.1).
+# Merged onto the RCCF spine (Role·Context·Command·Format kept as supporting
+# sections); every spawnable body must carry all six named dimensions.
+# Substring-checked against the body, so header emoji/order don't matter.
+_RCCF_SECTIONS = ("الدور", "المهمة", "السياق", "التحليل والمنطق", "شروط التوقف", "المخرجات")
 _FRONTMATTER = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.S)
 _TOP_FIELD = re.compile(r"^([a-zA-Z_]+):\s*(.*)$")
 _TRIGGER_HINTS = ("use when", "triggers", "trigger:")
