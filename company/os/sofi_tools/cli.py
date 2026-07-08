@@ -50,6 +50,10 @@ from . import (paths, brain, tickets, routing, gates, guard, gitops,
 
 _ROUTE_DELEGATION = """\
 You are {role}. Project: {prj}.
+Read files with the Read tool. The `sofi`/`git` SHELL steps below are for Bash-holding roles
+only — if your grant is Read/Grep/Glob/Write/Edit (no Bash: design/research/knowledge/most
+strategy roles), skip every shell line: orient by READING the brain files, produce your
+artifact, and hand it back — the orchestrator runs the git checkpoint/push for you.
 BEFORE acting, read in order:
   - company/constitution/00-operating-system.md   (your contract)
   - company/constitution/06-git-discipline.md     (shared-repo rules — read once, obey always)
