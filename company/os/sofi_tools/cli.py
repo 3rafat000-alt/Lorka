@@ -514,6 +514,54 @@ def cmd_squad(a) -> int:
     return 0
 
 
+def cmd_room(a) -> int:
+    """Fan a task out to EVERY agent in a room — the whole room works CONCURRENTLY on the
+    same ask (room-level delegation; /sofi-delegate <NN> uses this). Resolve the room by
+    number (00-14), slug (04-architecture), or code (arc)."""
+    rooms = registry.rooms()
+    want = str(a.room).strip()
+    wnum = want.lstrip("0") or "0"
+    room = None
+    for code, r in rooms.items():
+        d = str(r.get("dir", "") or "")
+        num = d.split("-")[0].lstrip("0") or "0"
+        if want == code or want == d or wnum == num:
+            room = r
+            break
+    if not room:
+        avail = ", ".join(sorted(str(r.get("dir", "")) for r in rooms.values()))
+        print(f"✗ no room matching '{a.room}'. Use a number 00-14, a slug (04-architecture), "
+              f"or a code (arc).\n  rooms: {avail}", file=sys.stderr)
+        return 2
+    roles = list(room.get("agents") or [])
+    if not roles:
+        print(f"✗ room {room.get('dir')} lists no agents in registry", file=sys.stderr)
+        return 2
+    prj = getattr(a, "prj", None) or "<PRJ-ID>"
+    task = getattr(a, "task", None) or "<the shared ask — the SAME brief goes to every agent below>"
+    tkt = "(open a ticket in HANDOFFS)"
+    if prj != "<PRJ-ID>":
+        try:
+            t = tickets.next_open(prj)
+            tkt = t.id if t else tkt
+        except Exception:
+            pass
+    print(f"━━ {room.get('emoji','')} {room.get('dir')} — {len(roles)} agents work IN PARALLEL "
+          f"(lead: {room.get('lead','?')}) ━━")
+    print("   Spawn them in ONE message so they run concurrently. The Lead coordinates; "
+          "specialists execute their slice.\n")
+    for role in roles:
+        try:
+            route = routing.format_route(role)
+        except Exception:
+            route = "(set route per company/nexus/routing.yaml)"
+        print(_ROUTE_DELEGATION.format(
+            role=role, prj=prj, tkt=tkt, route=route, spec=_spec_for(role),
+            task=task, expected="your slice of this ask, per your room role"))
+        print()
+    return 0
+
+
 def cmd_powers(a) -> int:
     """Surface the team's superpowers (external_powers) from the tooling registry."""
     reg = paths.tooling_dir() / "registry.yaml"
@@ -634,6 +682,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("squad"); s.add_argument("prj"); s.add_argument("gate")
     s.set_defaults(fn=cmd_squad)
+
+    s = sub.add_parser("room", help="fan a task to EVERY agent in a room, in parallel (00-14 / slug / code)")
+    s.add_argument("room"); s.add_argument("--prj", default=None); s.add_argument("--task", default=None)
+    s.set_defaults(fn=cmd_room)
 
     sub.add_parser("powers").set_defaults(fn=cmd_powers)
 

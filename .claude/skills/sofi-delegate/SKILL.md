@@ -11,8 +11,16 @@ Work Order it gets. This skill assembles the **4-part RCCF block** — 🎭 Role
 **the exact ask**, and **what "done" looks like.** No field → the agent guesses → tokens burn
 (Teaching IV).
 
-**Usage:** `/sofi-delegate <agent-id> "<the task>"` — e.g. `/sofi-delegate bck-blade-engineer "build POST /auth/login"`.
-Agent unsure? run `/sofi-team` (or `sofi registry`) first to pick.
+**Usage — two modes:**
+- **One agent:** `/sofi-delegate <agent-id> "<the task>"` — e.g. `/sofi-delegate bck-blade-engineer "build POST /auth/login"`. Unsure who? run `/sofi-team` (or `sofi registry`) first.
+- **Whole room, in parallel:** `/sofi-delegate <room>` — just a number `00`–`14`, a slug `04-architecture`, or a code `arc` → fan the SAME ask out to **every agent in that room at once**. Task inline: `/sofi-delegate 04 "review the payment schema"`.
+
+## Room mode (one number = the whole room, in parallel)
+When the arg is a room (number `00`–`14`, slug `05-backend`, or code `bck`), don't hand-build one block — render them all at 0 model tokens, then spawn together:
+1. `sofi room <room> [--prj <PRJ>] [--task "<the ask>"]` — prints a full RCCF delegation block for **every** agent in the room (route · spec · contract already filled; resolves the room by number/slug/code).
+2. **Spawn them all in ONE message** (several Agent calls in the same turn) so they run concurrently — that IS the parallelism (flat topology: depth = new rounds, never nesting).
+3. The room **Lead** coordinates + gate-merges; specialists execute their slice. Same frozen brief to all; each returns its own artifact.
+- Omit `--task` → the block carries a `<the shared ask>` placeholder to fill before spawning. Include the room Lead? `sofi room` lists the whole roster (Lead + specialists); drop the Lead's block if you want workers-only.
 
 ## Procedure (build the block by reading 4 places)
 
