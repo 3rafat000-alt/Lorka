@@ -179,6 +179,7 @@
   </div>
   <div class="nav" id="nav">
     <div class="t active" data-tab="home">الرئيسية</div>
+    <div class="t" data-tab="guide">دليل الاستخدام</div>
     <div class="t" data-tab="network">شبكة الدماغ <span class="c" id="c-net">105</span></div>
     <div class="t" data-tab="observatory">المرصد الحي <span class="c" id="c-obs">0</span></div>
     <div class="t" data-tab="tasks">إدارة المهام <span class="c" id="c-task">0</span></div>
@@ -254,6 +255,127 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- GUIDE — how to drive the team -->
+  <div class="panel" id="tab-guide">
+    <div class="hero" style="grid-template-columns:1fr">
+      <div>
+        <span class="kicker">دليل الاستخدام</span>
+        <h1 style="margin-top:14px">كيف تُشغّل الفريق<br><em>بابٌ واحد، مئةٌ وخمسة وكلاء.</em></h1>
+        <p class="lede">لا تُكلّم كل وكيلٍ وحده — تُكلّم <b>منسّقاً واحداً</b> بلغةٍ عادية، فيوجّه الطلب إلى الغرفة الصحيحة، يستدعي المتخصّصين (كلٌّ يُنجز شريحته ويرجع)، يدمج النتائج، ويُعدّي البوّابات. ثلاثُ طرقٍ للكلام، ثلاثةَ عشرَ اختصاراً، وحلقةُ عملٍ واحدة تتكرّر.</p>
+        <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+          <button class="enter" onclick="go('network')">شبكة الدماغ ←</button>
+          <button class="enter" style="background:transparent;color:var(--ink);border:1px solid var(--hair-2)" onclick="go('commands')">الأوامر المباشرة</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1 · HOW TO TALK -->
+    <div class="sec">
+      <div class="sec-h"><span class="kicker">١ · كيف تُكلّمه</span><h2>ثلاثُ طرق</h2></div>
+      <div class="grid g3" style="gap:14px">
+        <div class="card"><div class="card-b">
+          <b>🗣️ لغةٌ عادية</b>
+          <div class="note" style="margin-top:6px">قُل ما تريد — أنا أوجّه للغرفة والوكيل الصحيح.</div>
+          <div class="mono" style="margin-top:10px">"راجِع أمان الدفع في SAKK"</div>
+          <div class="mono">"ابنِ صفحة إعدادات المستخدم"</div>
+        </div></div>
+        <div class="card"><div class="card-b">
+          <b>⌨️ اختصار <span class="mono">/name</span></b>
+          <div class="note" style="margin-top:6px">أمرٌ منضبطٌ جاهز — أو قُل كلمة الـtrigger فأستدعيه.</div>
+          <div class="mono" style="margin-top:10px">/sofi-audit api</div>
+          <div class="mono">/sofi-feature "instant transfer"</div>
+        </div></div>
+        <div class="card"><div class="card-b">
+          <b>🐍 الأداة مباشرة</b>
+          <div class="note" style="margin-top:6px">للأوامر الميكانيكية (قراءة/تنسيق).</div>
+          <div class="mono" style="margin-top:10px">sofi doctor</div>
+          <div class="mono">sofi squad PRJ-SAKK 4</div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- 2 · SKILLS — spine -->
+    <div class="sec">
+      <div class="sec-h"><span class="kicker">٢ · الاختصارات · العمود الفقري</span><h2>ستّةٌ للانضباط اليومي</h2></div>
+      <div class="doctrine">
+        <div class="dtile"><div class="n">🧭</div><h4 class="mono" style="font-size:13px">/sofi-boot</h4><p><b>وجِّه.</b> sync + الدماغ + آخر حالة (بوّابة/فرع/head_sha). ابدأ بيه كلَّ جلسة — لا بدايةَ عمياء.</p></div>
+        <div class="dtile"><div class="n">👥</div><h4 class="mono" style="font-size:13px">/sofi-team</h4><p><b>الروستر.</b> ١٥ غرفة · ١٠٥ وكيل — مَن يعمل ماذا، وبأيّ <span class="mono">id</span> تستدعيه (مثل <span class="mono">sec-pentester</span>).</p></div>
+        <div class="dtile"><div class="n">📋</div><h4 class="mono" style="font-size:13px">/sofi-delegate</h4><p><b>فوِّض.</b> يبني أمر عمل RCCF جاهزاً لأيّ وكيل. <span class="mono">/sofi-delegate sec-pentester "اختبر auth"</span></p></div>
+        <div class="dtile"><div class="n">⛩</div><h4 class="mono" style="font-size:13px">/sofi-gate</h4><p><b>البوّابة.</b> افحص شرطَ خروج البوّابة الحالية + قرّر التقدّم — بتحقّقٍ عدائيٍّ بسياقٍ نظيف.</p></div>
+        <div class="dtile"><div class="n">🤝</div><h4 class="mono" style="font-size:13px">/sofi-handoff</h4><p><b>اقفِل.</b> artifact + checkpoint + حدِّث الحالة + اكتب التذكرة التالية. <b>اقفل بيه دائماً</b> — الجلسة غير المحفوظة غير مرئية للتالية.</p></div>
+        <div class="dtile"><div class="n">💭</div><h4 class="mono" style="font-size:13px">/sofi-reflect</h4><p><b>تأمَّل.</b> استخلص دروساً من تاريخ التسليمات → <span class="mono">LESSONS.md</span> (عند إغلاق بوّابة، لا كلَّ دور).</p></div>
+      </div>
+    </div>
+
+    <!-- 2 · SKILLS — power tools -->
+    <div class="sec">
+      <div class="sec-h"><span class="kicker">٢ · الاختصارات · أدوات الشغل</span><h2>سبعةٌ تُنجز العمل</h2></div>
+      <div class="doctrine">
+        <div class="dtile"><div class="n">⭐</div><h4 class="mono" style="font-size:12.5px">/sofi-feature "X"</h4><p><b>الكبير.</b> ميزةٌ كاملة في أمرٍ واحد: scan → مراجعة معماري → إصلاح → تحقّق → بوّابة → handoff.</p></div>
+        <div class="dtile"><div class="n">🔍</div><h4 class="mono" style="font-size:12.5px">/sofi-audit &lt;layer&gt;</h4><p><b>افحص طبقة</b> (grep أولاً، رخيص). <span class="mono">ui · api · db · css · integration · all</span></p></div>
+        <div class="dtile"><div class="n">🏛️</div><h4 class="mono" style="font-size:12px">/sofi-spec-review "X"</h4><p><b>مراجعة معماري.</b> ٤ ركائز (بيانات·إدارة·واجهة·حواف) + ٧ قواعد فولاذية، مع الاستشهاد ملف:سطر.</p></div>
+        <div class="dtile"><div class="n">🛡️</div><h4 class="mono" style="font-size:12.5px">/sofi-secure &lt;mode&gt;</h4><p><b>الأمن.</b> يوصّل ٨١٧ skill سايبر. <span class="mono">threat · pentest · scan · verify</span></p></div>
+        <div class="dtile"><div class="n">🔧</div><h4 class="mono" style="font-size:12.5px">/sofi-fix &lt;target&gt;</h4><p><b>صلّح.</b> نتائج الفحص → إصلاحاتٌ مطبَّقة + كوميت لكلٍّ منها (المنسّق لا يكتب كوداً).</p></div>
+        <div class="dtile"><div class="n">📄</div><h4 class="mono" style="font-size:12.5px">/sofi-report &lt;kind&gt;</h4><p><b>وثّق.</b> تقريرٌ بالأدلة (ملف:سطر) يُكتب في الدماغ، لا يضيع في الشات. ثنائي اللغة.</p></div>
+        <div class="dtile"><div class="n">🎨</div><h4 class="mono" style="font-size:12px">/sofi-design-taste</h4><p><b>ذوق التصميم.</b> يقتل الـUI العام — ٣ مؤشّرات + checklist احترافي (بوّابة ٢/٤). a11y يكسب دائماً.</p></div>
+      </div>
+    </div>
+
+    <!-- 3 · SESSION FLOW -->
+    <div class="sec">
+      <div class="sec-h"><span class="kicker">٣ · تدفّق جلسة نموذجي</span><h2>حلقةٌ واحدة، تتكرّر</h2></div>
+      <div class="card"><div class="card-b">
+        <div class="grid" style="grid-template-columns:repeat(6,1fr);gap:10px;text-align:center">
+          <div><div style="font-size:22px">🧭</div><b class="mono" style="font-size:12px">/sofi-boot</b><div class="note">وجِّه</div></div>
+          <div><div style="font-size:22px">🔍</div><b class="mono" style="font-size:12px">audit / feature</b><div class="note">افحص/اشتغل</div></div>
+          <div><div style="font-size:22px">🔧</div><b class="mono" style="font-size:12px">/sofi-fix</b><div class="note">صلّح</div></div>
+          <div><div style="font-size:22px">📄</div><b class="mono" style="font-size:12px">/sofi-report</b><div class="note">وثّق</div></div>
+          <div><div style="font-size:22px">⛩</div><b class="mono" style="font-size:12px">/sofi-gate</b><div class="note">اعدِّ</div></div>
+          <div><div style="font-size:22px">🤝</div><b class="mono" style="font-size:12px">/sofi-handoff</b><div class="note">اقفِل</div></div>
+        </div>
+        <div class="note" style="margin-top:16px;text-align:center"><b>القاعدة الذهبية:</b> <span class="mono">/sofi-boot</span> أوّلَ حاجة · <span class="mono">/sofi-handoff</span> آخرَ حاجة. بينهما: افحص → صلّح → وثّق → اعدِّ.</div>
+      </div></div>
+    </div>
+
+    <!-- 4 · SCENARIOS -->
+    <div class="sec">
+      <div class="sec-h"><span class="kicker">٤ · سيناريوهاتٌ جاهزة</span><h2>أمثلةٌ حقيقية</h2></div>
+      <div class="grid g2" style="gap:14px">
+        <div class="card"><div class="card-b">
+          <b>◆ ميزةٌ جديدة كاملة</b>
+          <div class="note" style="margin-top:6px">أمرٌ واحد يعمل الحلقةَ كلَّها (scan → review → fix → verify → gate → handoff).</div>
+          <div class="mono" style="margin-top:10px">/sofi-feature "تحويل فوري بين المحافظ"</div>
+        </div></div>
+        <div class="card"><div class="card-b">
+          <b>● إصلاح خطأ (bug)</b>
+          <div class="note" style="margin-top:6px">صِف العطل — أفحص، أحدّد السبب (ملف:سطر)، أصلّح، أتحقّق.</div>
+          <div class="mono" style="margin-top:10px">"bug: تصدير PDF يخرج فارغاً"</div>
+          <div class="mono">→ /sofi-audit api → /sofi-fix</div>
+        </div></div>
+        <div class="card"><div class="card-b">
+          <b>🛡️ قبل الإطلاق</b>
+          <div class="note" style="margin-top:6px">غرفة الأمن تهاجم النظامَ الشغّال، ثم فحصُ البوّابة.</div>
+          <div class="mono" style="margin-top:10px">/sofi-secure pentest → /sofi-gate</div>
+        </div></div>
+        <div class="card"><div class="card-b">
+          <b>👥 مَن يعمل هذا؟</b>
+          <div class="note" style="margin-top:6px">اعرف الوكيلَ الصحيح، أو فوّض له مباشرةً بأمرِ عملٍ منضبط.</div>
+          <div class="mono" style="margin-top:10px">/sofi-team</div>
+          <div class="mono">/sofi-delegate bck-api-engineer "…"</div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- 5 · LIFECYCLE -->
+    <div class="sec">
+      <div class="sec-h"><span class="kicker">٥ · دورة الحياة</span><h2>تسعُ بوّاباتٍ — بلا تخطٍّ</h2></div>
+      <div class="card"><div class="card-b">
+        <div class="mono" style="line-height:2.1;font-size:12.5px">٠ فكرة (str) ← ١ بحث (res) ← ٢ تصميم (dsn) ← ٣ معمارية (arc·dat·sec) ← ٤ بناء متوازٍ (bck·fnt·mob) ← ٥ جودة (qa) ← ٦ staging (ops) ← ٧ إنتاج (ops) ← ٨ مراقبة (obs)</div>
+        <div class="note" style="margin-top:12px"><b>قانون العزل:</b> متخصّص ← قائدُ غرفته ← قائدُ الغرفة الهدف ← متخصّصها. لا يتكلّم المتخصّصون مباشرةً عبر الجدران. وكلُّ عملٍ <b>يُؤصَّل</b> ويُتحقَّق منه بسياقٍ نظيف قبل أن تفتح البوّابةُ التالية.</div>
+      </div></div>
     </div>
   </div>
 
