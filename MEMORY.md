@@ -82,7 +82,6 @@
 | Who holds Web tools | `company/nexus/registry.yaml` (grants) · `company/constitution/09-research-law.md` |
 | Artifact templates (ADR, OpenAPI, journey map…) | `company/templates/` |
 | Scaffold a new project | `company/os/bin/new-project.sh` |
-| Observability console | `dashboard/` (registry-driven) |
 
 ## Ingest vs reach (context vs connections)
 - **Ingest (evergreen → brain):** locked decisions, durable rules, lessons. Test: *"still worth having in a year?"*
