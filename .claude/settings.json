@@ -1,9 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Edit(/.claude/skills/sofi-reflect/**)",
-      "Edit(/.claude/skills/sofi-secure/**)"
-    ]
+    "allow": []
   },
   "skillOverrides": {
     "seo": "off",
@@ -56,16 +53,6 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_start.py\""
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/user_prompt_submit.py\""
           }
         ]
       }
