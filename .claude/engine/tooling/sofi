@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+"""SOFI tooling dispatcher — one entry for the deterministic agent substrate.
+
+The "Maestro" is the main Claude session; these tools are the file/SQLite
+substrate it (and leaf agents) drive via Bash. There is NO always-on daemon:
+the task queue is a ledger, dispatch happens when the session reads it.
+
+Usage
+  sofi <tool> [args...]   run a tool, args pass through verbatim
+  sofi selftest           run every tool's selftest, aggregate verdict
+  sofi tools              list the tools
+  sofi help               this text
+
+Tools
+  registry   Single Source of Truth — DB schema + API contracts (SSoT)
+  taskq      Stateful task queue / State-DB (sqlite, strict state machine)
+  validate   Maestro guard — reject malformed delegation/gateway payloads
+  gateway    Semantic Gateway — structured intent -> validated -> enqueued
+  check      Runtime check-runner — pint/phpstan/vue-tsc/eslint/vitest self-heal
+  gitflow    Guard-railed git/gh helper — branch/commit/push/PR, no force/reset
+
+Exit code = the invoked tool's exit code. `sofi selftest` exits 0 only if all pass.
+"""
+import os
+import sys
+import json
+import subprocess
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+TOOLS = ["registry", "taskq", "validate", "gateway", "check", "gitflow"]
+
+
+def _tool_path(name):
+    return HERE / (name + ".py")
+
+
+def run_tool(name, argv):
+    path = _tool_path(name)
+    if not path.exists():
+        print(json.dumps({"ok": False, "error": "tool not found: " + name}))
+        return 2
+    return subprocess.run([sys.executable, str(path), *argv]).returncode
+
+
+def run_selftests(as_json):
+    results = {}
+    for t in TOOLS:
+        path = _tool_path(t)
+        if not path.exists():
+            results[t] = 2
+            continue
+        proc = subprocess.run(
+            [sys.executable, str(path), "selftest", "--json"],
+            capture_output=True, text=True,
+        )
+        results[t] = proc.returncode
+    ok = all(rc == 0 for rc in results.values())
+    if as_json:
+        print(json.dumps({
+            "ok": ok,
+            "verdict": "PASS" if ok else "FAIL",
+            "tools": {t: ("PASS" if rc == 0 else "FAIL") for t, rc in results.items()},
+        }, ensure_ascii=False))
+    else:
+        for t, rc in results.items():
+            print("{:<5}  {}".format("PASS" if rc == 0 else "FAIL", t))
+        print("ALL PASS" if ok else "SOME FAILED")
+    return 0 if ok else 1
+
+
+def main():
+    argv = sys.argv[1:]
+    if not argv or argv[0] in ("-h", "--help", "help"):
+        print(__doc__)
+        return 0
+    cmd = argv[0]
+    rest = argv[1:]
+    if cmd == "tools":
+        for t in TOOLS:
+            print(t)
+        return 0
+    if cmd == "selftest":
+        return run_selftests("--json" in rest)
+    if cmd in TOOLS:
+        return run_tool(cmd, rest)
+    print("unknown tool '{}'. try: sofi tools".format(cmd), file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
