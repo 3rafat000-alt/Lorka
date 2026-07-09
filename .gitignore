@@ -95,3 +95,6 @@ netbird-host/
 
 # —— SOFI runtime pointers (regenerated per session) ——
 engine/.sofi_agent_briefing_current
+
+# —— SOFI orchestrator/tooling runtime state (task queue, registry, artifacts) ——
+.sofi/

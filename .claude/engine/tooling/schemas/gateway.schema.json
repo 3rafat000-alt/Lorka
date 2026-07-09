@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SOFI Semantic Gateway Output",
+  "description": "Structured instruction produced by the Translator/Semantic-Gateway from raw human intent.",
+  "type": "object",
+  "required": ["instruction_type", "target_stacks", "actions"],
+  "additionalProperties": true,
+  "properties": {
+    "instruction_type": {
+      "type": "string",
+      "enum": [
+        "FEATURE_EXPANSION",
+        "BUG_FIX",
+        "UI_CHANGE",
+        "SECURITY_REVIEW",
+        "REFACTOR",
+        "DATA_TASK",
+        "GENERIC"
+      ]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    },
+    "target_stacks": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "summary": { "type": "string" },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["sub_system", "task"],
+        "properties": {
+          "sub_system": {
+            "type": "string",
+            "enum": [
+              "BACKEND",
+              "MOBILE_UI",
+              "WEB_UI",
+              "DATA",
+              "SECURITY",
+              "DEVOPS",
+              "DOCS"
+            ]
+          },
+          "task": { "type": "string", "minLength": 1 },
+          "recipient": { "type": "string" }
+        }
+      }
+    }
+  }
+}
