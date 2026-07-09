@@ -1,0 +1,49 @@
+# SOFI Agent Registry — 105 agents, 15 rooms
+# Auto-generated. Matches engine/ROSTER.md 1:1.
+
+rooms:
+  brd:
+    agents: [ceo, chief-of-staff, cpo, cto, cso, cqo, arbiter]
+    lead: ceo
+  gtw:
+    agents: [dispatcher, router, gatekeeper, external-reviewer, conflict-resolver, budget-warden]
+    lead: dispatcher
+  str:
+    agents: [lead, product-strategist, business-analyst, market-analyst, roadmap-planner, risk-analyst, monetization-strategist]
+    lead: lead
+  res:
+    agents: [lead, ux-researcher, journey-architect, web-scout, competitor-analyst, data-researcher, fact-checker]
+    lead: lead
+  dsn:
+    agents: [lead, ui-designer, ux-architect, design-system, content-strategist, brand-designer, motion-designer, a11y-specialist]
+    lead: lead
+  arc:
+    agents: [lead, system-architect, data-architect, api-architect, integration-architect, infra-architect, review-architect]
+    lead: lead
+  bck:
+    agents: [lead, api-engineer, domain-engineer, blade-engineer, queue-engineer, integration-engineer, refactoring-surgeon, code-reviewer]
+    lead: lead
+  fnt:
+    agents: [lead, vue-engineer, react-engineer, css-artisan, interaction-engineer, a11y-engineer, performance-engineer, code-reviewer]
+    lead: lead
+  mob:
+    agents: [lead, flutter-engineer, state-engineer, platform-engineer, perf-profiler, release-engineer]
+    lead: lead
+  dat:
+    agents: [lead, db-engineer, cache-engineer, analytics-engineer, ml-engineer, etl-engineer, privacy-officer]
+    lead: lead
+  sec:
+    agents: [lead, threat-modeler, appsec-engineer, pentester, authn-engineer, secrets-warden, compliance-auditor, incident-responder]
+    lead: lead
+  qa:
+    agents: [lead, test-architect, automation-engineer, manual-explorer, perf-analyst, regression-warden, design-auditor]
+    lead: lead
+  ops:
+    agents: [lead, cicd-engineer, cloud-engineer, release-manager, domain-warden, migration-runner, cost-optimizer]
+    lead: lead
+  obs:
+    agents: [lead, sre, monitoring-engineer, alerting-engineer, incident-commander, insights-analyst]
+    lead: lead
+  knw:
+    agents: [lead, memory-curator, reflector, doc-writer, historian, brain-query]
+    lead: lead
