@@ -23,11 +23,11 @@ done
 
 ROSTER="$SOFI_ROOT/engine/ROSTER.md"
 # Try to extract route from roster
-MODEL="opencode/big-pickle"
+MODEL="claude"
 
 cat <<RCCF
 🎭 Role     You are ${ROLE} — ${AGENT}.
-            Model: ${MODEL} (unified)
+            Model: ${MODEL} (session model)
             Spec: engine/agents/${AGENT}.md
 
 📂 Context  Foundation: Teaching I (Design is Truth) + Teaching IV (Token Economy).

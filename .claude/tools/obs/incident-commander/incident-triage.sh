@@ -6,7 +6,7 @@ RED=$(tput setaf 1); GREEN=$(tput setaf 2); YELLOW=$(tput setaf 3); BLUE=$(tput 
 
 usage() { echo "Usage: $(basename "$0") --alert 'description' --severity sev1|sev2|sev3 [--prj PRJ-ID] [--auto]"; exit 0; }
 ALERT=""; SEVERITY=""; PRJ=""; AUTO=false
-while [[ $# -gt 0 ]]; do case "$1" in --alert) ALERT="$2"; shift2 ;; --severity) SEVERITY="$2"; shift2 ;; --prj) PRJ="$2"; shift2 ;; --auto) AUTO=true ;; --help|-h) usage ;; *) usage ;; esac; shift; done
+while [[ $# -gt 0 ]]; do case "$1" in --alert) ALERT="$2"; shift ;; --severity) SEVERITY="$2"; shift ;; --prj) PRJ="$2"; shift ;; --auto) AUTO=true ;; --help|-h) usage ;; *) usage ;; esac; shift; done
 [[ -z "$ALERT" || -z "$SEVERITY" ]] && usage
 
 echo "${BLUE}[triage]${RESET} Incident: $ALERT"
@@ -18,7 +18,7 @@ case "$SEVERITY" in
   sev2)  RESPONSE="15 min"; ACTION="Rollback or feature-flag off. Notify team lead." ;;
   sev3)  RESPONSE="1 hour"; ACTION="Fix-forward in normal cycle. Log in standup." ;;
   *) echo "${RED}Unknown severity${RESET}"; exit 1 ;;
-end
+esac
 
 echo "  Response SLA: $RESPONSE"
 echo "  Action: $ACTION"
@@ -34,7 +34,6 @@ echo ""
 
 if $AUTO && [[ "$SEVERITY" == "sev1" || "$SEVERITY" == "sev2" ]]; then
   echo "${YELLOW}  Auto-rollback triggered${RESET}"
-  local sha
   sha=$(git -C "$SOFI_ROOT" log --oneline -2 --format='%h' | tail -1)
   echo "    git revert $sha --no-edit && git push"
   echo "    Command: (cd $SOFI_ROOT && git revert $sha --no-edit && git push)"

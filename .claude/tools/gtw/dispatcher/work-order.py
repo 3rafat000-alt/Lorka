@@ -29,7 +29,7 @@ def parse_handoffs(prj_id):
 def build_rccf(ticket, prj, gate):
     role = input(f"🎭 Role for {ticket['id']}? [default: generic-agent]: ") or "generic-agent"
     return f"""🎭 Role     You are {role}.
-            Model: opencode/big-pickle (unified)
+            Model: claude (session model)
 
 📂 Context  Project {prj} · Gate {gate}.
             Read: projects/{prj}/_context/STATE.md · HANDOFFS.md · CONTEXT.md.

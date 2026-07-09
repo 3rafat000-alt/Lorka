@@ -7,7 +7,7 @@ RED=$(tput setaf 1); GREEN=$(tput setaf 2); YELLOW=$(tput setaf 3); BLUE=$(tput 
 usage() { cat <<EOF
 Usage: $(basename "$0") <PRJ-ID> --role <agent-role> [--caveman <off|lite|full|ultra>] [--effort <low|medium|high|max>]
   Stamp and log routing decision.
-  Model: opencode/big-pickle (unified).
+  Model: claude (session model).
   Logs to projects/<PRJ>/_context/ROUTE_LOG.md.
 EOF
 exit 0
@@ -31,7 +31,7 @@ STAMP=$(cat <<STAMP
 | Field | Value |
 |-------|-------|
 | **Role** | $ROLE |
-| **Model** | opencode/big-pickle (unified) |
+| **Model** | claude (session model) |
 | **Caveman** | $CAVEMAN |
 | **Effort** | $EFFORT |
 
@@ -41,7 +41,7 @@ STAMP
 echo "$STAMP" >> "$ROUTE_LOG"
 echo "${MAGENTA}═══ Route Stamp ═══${RESET}"
 echo "  ${BLUE}Role${RESET}:    $ROLE"
-echo "  ${GREEN}Model${RESET}:   opencode/big-pickle (unified)"
+echo "  ${GREEN}Model${RESET}:   claude (session model)"
 echo "  ${YELLOW}Caveman${RESET}: $CAVEMAN"
 echo "  ${YELLOW}Effort${RESET}:  $EFFORT"
 echo "${GREEN}✓ Stamped to ${ROUTE_LOG}${RESET}"
