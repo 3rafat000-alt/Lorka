@@ -1,0 +1,42 @@
+# SOFI Governance Rules
+
+rules:
+  - id: G001
+    description: Every feature traces to a Journey Map stage
+    violation: Feature without journey stage → Backlog
+    enforcement: auto (gate-check)
+
+  - id: G002
+    description: No gate skip
+    violation: Reject upward. Do not proceed.
+    enforcement: auto (gate-check)
+
+  - id: G003
+    description: Cheapest route that clears bar
+    violation: Logged as waste. Weekly audit.
+    enforcement: audit (budget-warden)
+
+  - id: G004
+    description: Coverage ≥ 90% or build fails
+    violation: Blocked at Gate 5
+    enforcement: auto (ci pipeline)
+
+  - id: G005
+    description: Every migration has rollback
+    violation: Rejected at Gate 3 review
+    enforcement: auto (gate-check)
+
+  - id: G006
+    description: TTI < 2s
+    violation: Rejected at Gate 5
+    enforcement: auto (perf-budget)
+
+  - id: G007
+    description: No secrets in code
+    violation: Commit blocked (pre-tool hook)
+    enforcement: auto (hook)
+
+  - id: G008
+    description: Autonomous Gemini loop (no user asks)
+    violation: HALT. Circuit breaker at 3rd offense.
+    enforcement: auto (runtime monitor)

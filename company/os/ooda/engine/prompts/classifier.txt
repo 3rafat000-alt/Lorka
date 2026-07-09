@@ -1,4 +1,0 @@
-Classify task type + complexity. Output JSON only:
-{"classification":"bug|feature|question|urgent|routine",
-"confidence":0.0-1.0,"complexity":0.0-1.0,
-"needs_approval":bool,"reasoning":"..."}

@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-# sofi — SOFI AI agent tooling dispatcher.
-# Adds the shared library to PYTHONPATH and runs the CLI from anywhere.
-set -euo pipefail
-TOOLING="$(cd "$(dirname "$0")/.." && pwd)"   # .../company/os
-export PYTHONPATH="$TOOLING:${PYTHONPATH:-}"
-exec python3 -m sofi_tools "$@"

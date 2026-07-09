@@ -1,0 +1,119 @@
+# Gate Lifecycle Definition
+
+gates:
+  0:
+    name: Inception
+    lead: str-lead
+    owner: "Dr. Amara Okafor"
+    deliverable: Project Blueprint
+    artifacts:
+      - docs/Project_Blueprint.md
+    checks:
+      - Problem statement clear?
+      - Target user identified?
+      - Scope bounded?
+      - Success metrics defined?
+
+  1:
+    name: Discovery
+    lead: res-lead
+    owner: "Hiroshi Tanaka"
+    deliverable: Customer Journey Map
+    artifacts:
+      - docs/Journey_Map.md
+    checks:
+      - Personas evidence-based?
+      - Journey stages complete?
+      - Pain/gain mapped?
+      - Competitor landscape surveyed?
+
+  2:
+    name: Design
+    lead: dsn-lead
+    owner: "Dan Kim"
+    deliverable: Prototype Spec
+    artifacts:
+      - docs/Prototype_Spec.md
+    checks:
+      - Every journey stage has a screen?
+      - All states covered (empty/error/edge)?
+      - WCAG 2.2 AA enforced?
+      - Design tokens documented?
+
+  3:
+    name: Architecture
+    lead: arc-lead
+    owner: "Vikram Rao"
+    deliverable: Architecture Package
+    artifacts:
+      - docs/Architecture.md
+    checks:
+      - Component diagram exists?
+      - Screen→component→endpoint traceable?
+      - Every migration reversible?
+      - Security review passed?
+
+  4:
+    name: Build
+    lead: bck-lead
+    owner: "Elif Kaya"
+    deliverable: Working Software
+    artifacts:
+      - code/
+    checks:
+      - Endpoints match OpenAPI spec?
+      - Coverage ≥ 90%?
+      - TTI < 2s?
+      - No secrets committed?
+
+  5:
+    name: Quality
+    lead: qa-lead
+    owner: "Barb Jensen"
+    deliverable: PASS/BLOCK Verdict
+    artifacts:
+      - QA_Report.md
+    checks:
+      - All tests green?
+      - Design audit passed (built vs spec)?
+      - Security scan clean?
+      - Performance within budget?
+
+  6:
+    name: Staging
+    lead: ops-lead
+    owner: "Linda Schmidt"
+    deliverable: Staged Release
+    artifacts:
+      - deployed to staging
+    checks:
+      - staging ≈ prod parity?
+      - Migration ran successfully?
+      - Rollback tested?
+      - Smoke tests green?
+
+  7:
+    name: Production
+    lead: ops-lead
+    owner: "Linda Schmidt"
+    deliverable: Live Deployment
+    artifacts:
+      - deployed to prod
+    checks:
+      - Blue/green or canary?
+      - Rollback ready?
+      - Monitoring alerted?
+      - Runbook updated?
+
+  8:
+    name: Observe
+    lead: obs-lead
+    owner: "Naomi Brooks"
+    deliverable: SLO Report
+    artifacts:
+      - SLO_Report.md
+    checks:
+      - SLOs met?
+      - Error budget remaining?
+      - Journey leaks detected?
+      - Feedback filed as issues?
