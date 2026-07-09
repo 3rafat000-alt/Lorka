@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SOFI RCCF Delegation Payload",
+  "description": "Agent-to-agent delegation contract validated by the Maestro guard before an executor agent is spawned.",
+  "type": "object",
+  "required": ["sender", "recipient", "action", "parameters"],
+  "additionalProperties": true,
+  "properties": {
+    "sender": { "type": "string", "minLength": 1 },
+    "recipient": { "type": "string", "minLength": 1 },
+    "action": {
+      "type": "string",
+      "enum": [
+        "CREATE_MIGRATION",
+        "GENERATE_UI_SCREEN",
+        "MODIFY_ENDPOINT",
+        "RUN_CHECK",
+        "REVIEW_DIFF",
+        "WRITE_TESTS",
+        "UPDATE_SCHEMA",
+        "FIX_BUG",
+        "GENERIC"
+      ]
+    },
+    "parameters": { "type": "object" },
+    "context_priority": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    },
+    "task_id": { "type": ["string", "integer"] }
+  }
+}

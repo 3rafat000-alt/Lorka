@@ -99,3 +99,6 @@ engine/.sofi_agent_briefing_current
 # —— Dashboard runtime state ——
 dashboard/.server.pid
 dashboard/.server.log
+
+# SOFI runtime state (task queue, registry, config)
+.sofi/

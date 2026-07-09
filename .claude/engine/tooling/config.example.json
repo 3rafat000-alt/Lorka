@@ -1,0 +1,5 @@
+{
+  "laravel_path": "/abs/path/to/laravel-app",
+  "web_path": "/abs/path/to/web-app",
+  "flutter_path": "/abs/path/to/flutter-app"
+}
